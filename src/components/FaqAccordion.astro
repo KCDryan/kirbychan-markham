@@ -1,0 +1,96 @@
+---
+import Accent from './Accent.astro';
+interface Props {
+  faq: { q: string; a: string }[];
+  heading?: string;
+  accent?: string;
+  id?: string;
+}
+const { faq, heading = 'Common questions', accent = 'questions', id = 'faq' } = Astro.props;
+---
+
+{
+  faq.length > 0 && (
+    <section class="faq" id={id} aria-labelledby={`${id}-heading`}>
+      <h2 id={`${id}-heading`}>
+        <Accent text={heading} accent={accent} />
+      </h2>
+      <div class="faq__list">
+        {faq.map((item) => (
+          <details class="faq__item">
+            <summary>
+              <span>{item.q}</span>
+              <span class="faq__icon" aria-hidden="true" />
+            </summary>
+            <div class="faq__answer">
+              <p>{item.a}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .faq {
+    margin-top: var(--sp-8);
+  }
+  .faq h2 {
+    font-size: var(--step-3);
+    margin-bottom: var(--sp-5);
+  }
+  .faq__list {
+    border-top: 1px solid var(--rule);
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--rule);
+  }
+  .faq__item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: var(--sp-4) 0;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    line-height: 1.3;
+  }
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__item summary:hover {
+    color: var(--brown);
+  }
+  .faq__icon {
+    position: relative;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+  }
+  .faq__icon::before,
+  .faq__icon::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 1.5px;
+    background: var(--gold);
+    transition: transform 0.2s var(--ease);
+  }
+  .faq__icon::after {
+    transform: rotate(90deg);
+  }
+  .faq__item[open] .faq__icon::after {
+    transform: rotate(0deg);
+  }
+  .faq__answer {
+    padding-bottom: var(--sp-5);
+    max-width: 68ch;
+  }
+  .faq__answer p {
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+</style>

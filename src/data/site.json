@@ -1,0 +1,36 @@
+{
+  "name": "Kirby Chan & Co. Real Estate Inc.",
+  "shortName": "Kirby Chan & Co.",
+  "brandLine": "Kirby Chan & Co. Real Estate Inc. | Markham",
+  "tagline": "Markham, neighbourhood by neighbourhood.",
+  "url": "https://kirbychanmarkham.com",
+  "locale": "en_CA",
+  "parentSite": "https://kirbychanandco.com",
+  "contact": {
+    "phone": "416-305-8008",
+    "phoneHref": "tel:+14163058008",
+    "email": "info@kirbychanandco.com"
+  },
+  "office": {
+    "street": "8763 Bayview Ave #127",
+    "city": "Richmond Hill",
+    "region": "ON",
+    "postalCode": "L4B 3V1",
+    "country": "CA"
+  },
+  "brokerage": {
+    "legalName": "TODO: brokerage legal name exactly as registered with RECO, for example \"eXp Realty, Brokerage\"",
+    "disclosure": "TODO: registrant disclosure text supplied by Kirby. Must name the brokerage and the registration category as required under TRESA."
+  },
+  "links": {
+    "loftySearch": "",
+    "booking": ""
+  },
+  "social": {
+    "instagram": "",
+    "facebook": "",
+    "youtube": "",
+    "linkedin": ""
+  },
+  "marketSource": "TODO: TRREB, Month Year"
+}

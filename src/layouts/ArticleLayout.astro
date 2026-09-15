@@ -1,0 +1,296 @@
+---
+import Accent from '../components/Accent.astro';
+import type { CollectionEntry } from 'astro:content';
+import type { MarkdownHeading } from 'astro';
+import { getCollection } from 'astro:content';
+import Base from './Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import FaqAccordion from '../components/FaqAccordion.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import Toc from '../components/Toc.astro';
+import Cta from '../components/Cta.astro';
+import site from '../data/site.json';
+import { longDate, neighbourhoodPath } from '../lib/format';
+import { blogPosting, breadcrumbList, faqPage } from '../lib/schema';
+
+interface Props {
+  entry: CollectionEntry<'articles'>;
+  headings: MarkdownHeading[];
+}
+const { entry, headings } = Astro.props;
+const d = entry.data;
+const path = `/${entry.id}/`;
+
+const allHoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
+const linkedHoods = d.related
+  .map((slug) => allHoods.find((h) => h.id === slug))
+  .filter((h): h is CollectionEntry<'neighbourhoods'> => Boolean(h));
+
+const moreArticles = (await getCollection('articles', ({ data }) => !data.draft))
+  .filter((a) => a.id !== entry.id)
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
+  .slice(0, 3);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Articles', path: '/articles/' },
+  { name: d.h1, path },
+];
+
+const jsonLd = [
+  breadcrumbList(crumbs),
+  blogPosting({
+    headline: d.h1,
+    description: d.description,
+    path,
+    published: d.published,
+    updated: d.updated,
+  }),
+  faqPage(d.faq),
+].filter(Boolean);
+
+---
+
+<Base
+  title={d.title}
+  description={d.description}
+  noindex={d.noindex}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <Breadcrumbs crumbs={crumbs} />
+
+  <article>
+    <header class="art-hero">
+      <div class="wrap-narrow">
+        <p class="art-meta">
+          <time datetime={d.published.toISOString()}>{longDate(d.published)}</time>
+          <span aria-hidden="true">&middot;</span>
+          <span>{d.readMinutes} min read</span>
+          {
+            d.updated && (
+              <>
+                <span aria-hidden="true">&middot;</span>
+                <span>Updated {longDate(d.updated)}</span>
+              </>
+            )
+          }
+        </p>
+        <h1>
+          <Accent text={d.h1} accent={d.accent} />
+        </h1>
+        <p class="lede">{d.subtitle}</p>
+      </div>
+    </header>
+
+    <div class="wrap art-body">
+      <div class="art-shell">
+        <div class="art-main">
+          <div class="takeaway">
+            <h2>The quick answer</h2>
+            <p>{d.takeaway}</p>
+          </div>
+
+          <div class="prose">
+            <slot />
+          </div>
+
+          <FaqAccordion faq={d.faq} />
+
+          {
+            linkedHoods.length > 0 && (
+              <section class="art-links">
+                <h2>Neighbourhood guides</h2>
+                <ul>
+                  {linkedHoods.map((h) => (
+                    <li>
+                      <a href={neighbourhoodPath(h.id)}>{h.data.name}</a>
+                      <span>{h.data.personality}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          }
+
+          <div class="disclaimer">
+            <p>
+              <strong>Market data.</strong> Any figures quoted are general information drawn from
+              Toronto Regional Real Estate Board data for the period stated. They are not an
+              appraisal, not an opinion of value for any specific property and not guaranteed.
+            </p>
+            <p>
+              <strong>Not advice.</strong> This article is general information only. It is not
+              legal, tax, mortgage or investment advice. Speak to a qualified professional about
+              your own circumstances before acting.
+            </p>
+            <p>
+              <strong>School boundaries.</strong> Catchments are set by the school boards and are
+              reviewed periodically. Always confirm the boundary for a specific address with the
+              board directly.
+            </p>
+          </div>
+        </div>
+
+        <aside class="art-aside">
+          <Toc headings={headings} />
+          <div class="aside-cta on-dark">
+            <h2>Questions about this?</h2>
+            <p>We answer our own phone.</p>
+            <a class="btn btn--gold btn--sm btn--wide" href="/contact/">Get in touch</a>
+            <a class="aside-cta__phone" href={site.contact.phoneHref}>{site.contact.phone}</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+
+  {
+    moreArticles.length > 0 && (
+      <section class="section section--alt">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Keep reading</p>
+            <h2>
+              More <em>long</em> answers
+            </h2>
+          </div>
+          <ul class="related-row" role="list">
+            {moreArticles.map((a) => (
+              <li>
+                <ArticleCard
+                  slug={a.id}
+                  title={a.data.h1}
+                  subtitle={a.data.subtitle}
+                  published={a.data.published}
+                  minutes={a.data.readMinutes}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <Cta />
+</Base>
+
+<style>
+  .art-hero {
+    background: var(--sand);
+    border-bottom: 1px solid var(--rule);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+  }
+  .art-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brown);
+    margin-bottom: var(--sp-4);
+  }
+  .art-hero h1 {
+    max-width: 20ch;
+  }
+  .art-hero .lede {
+    margin-top: var(--sp-4);
+    max-width: 58ch;
+  }
+
+  .art-body {
+    padding-block: var(--section-y);
+  }
+  .art-shell {
+    display: grid;
+    gap: var(--sp-7);
+  }
+  .art-main > * + * {
+    margin-top: var(--sp-7);
+  }
+  .art-main .prose {
+    max-width: 68ch;
+  }
+
+  .art-links h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--sp-4);
+  }
+  .art-links ul {
+    display: grid;
+    gap: var(--sp-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .art-links li {
+    display: grid;
+    gap: 0.2rem;
+    padding-bottom: var(--sp-4);
+    border-bottom: 1px solid var(--rule);
+  }
+  .art-links li a {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    text-decoration: none;
+  }
+  .art-links li span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .art-aside {
+    display: grid;
+    gap: var(--sp-5);
+    align-content: start;
+  }
+  .aside-cta {
+    padding: var(--sp-5);
+    background: var(--espresso);
+    border-radius: var(--radius-lg);
+    color: var(--text-on-dark-muted);
+  }
+  .aside-cta h2 {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: var(--sp-3);
+  }
+  .aside-cta p {
+    font-size: 0.88rem;
+    margin-bottom: var(--sp-4);
+  }
+  .aside-cta__phone {
+    display: block;
+    margin-top: var(--sp-4);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-on-dark-muted);
+  }
+
+  .related-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 1000px) {
+    .art-shell {
+      grid-template-columns: minmax(0, 1fr) 270px;
+      gap: var(--sp-8);
+      align-items: start;
+    }
+    .art-aside {
+      position: sticky;
+      top: 100px;
+    }
+  }
+</style>

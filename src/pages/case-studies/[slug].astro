@@ -1,0 +1,244 @@
+---
+import Accent from '../../components/Accent.astro';
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FaqAccordion from '../../components/FaqAccordion.astro';
+import CaseStudyCard from '../../components/CaseStudyCard.astro';
+import Cta from '../../components/Cta.astro';
+import { breadcrumbList, faqPage } from '../../lib/schema';
+import { longDate, neighbourhoodPath } from '../../lib/format';
+
+export const getStaticPaths = (async () => {
+  const studies = await getCollection('case-studies', ({ data }) => !data.draft);
+  return studies.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { entry } = Astro.props as Props;
+const d = entry.data;
+const { Content } = await render(entry);
+const path = `/case-studies/${entry.id}/`;
+
+const hoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
+const hood = d.neighbourhood ? hoods.find((h) => h.id === d.neighbourhood) : undefined;
+
+const services = await getCollection('services', ({ data }) => !data.draft);
+const service = d.service ? services.find((s) => s.id === d.service) : undefined;
+
+const more = (await getCollection('case-studies', ({ data }) => !data.draft))
+  .filter((c) => c.id !== entry.id)
+  .slice(0, 2);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Case studies', path: '/case-studies/' },
+  { name: d.h1, path },
+];
+
+// A layout sample must never be indexed or marked up as a real page.
+const isPlaceholder = d.placeholder;
+const jsonLd = isPlaceholder ? [] : [breadcrumbList(crumbs), faqPage(d.faq)].filter(Boolean);
+---
+
+<Base
+  title={d.title}
+  description={d.description}
+  noindex={d.noindex || isPlaceholder}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <Breadcrumbs crumbs={crumbs} />
+
+  <article>
+    <header class="cs-hero">
+      <div class="wrap-narrow">
+        <p class="eyebrow">From my side of the table</p>
+        <h1>
+          <Accent text={d.h1} accent={d.accent} />
+        </h1>
+        <p class="lede">{d.situation}</p>
+        <p class="cs-date">
+          <time datetime={d.published.toISOString()}>{longDate(d.published)}</time>
+        </p>
+      </div>
+    </header>
+
+    <div class="wrap-narrow cs-body">
+      {
+        isPlaceholder && (
+          <div class="notice">
+            <p>
+              <strong>This page is a layout sample.</strong> It does not describe a real client or
+              a real transaction. It is excluded from search engines and carries no structured
+              data. Replace it with a real case study or delete the file before launch.
+            </p>
+          </div>
+        )
+      }
+
+      {
+        d.atAGlance.length > 0 && (
+          <section class="glance">
+            <h2>At a glance</h2>
+            <div class="table-scroll">
+              <table class="stat-table">
+                <tbody>
+                  {d.atAGlance.map((row) => (
+                    <tr>
+                      <th scope="row">{row.label}</th>
+                      <td>{row.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )
+      }
+
+      <section class="hard">
+        <h2>What made it hard</h2>
+        <p>{d.difficulty}</p>
+      </section>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <section class="result">
+        <h2>The result</h2>
+        <p>{d.result}</p>
+      </section>
+
+      {
+        (hood || service) && (
+          <section class="cs-links">
+            <h2>Related reading</h2>
+            <ul>
+              {hood && (
+                <li>
+                  <a href={neighbourhoodPath(hood.id)}>
+                    The {hood.data.name} neighbourhood guide
+                  </a>
+                </li>
+              )}
+              {service && (
+                <li>
+                  <a href={`/services/${service.id}/`}>How we handle {service.data.name}</a>
+                </li>
+              )}
+            </ul>
+          </section>
+        )
+      }
+
+      <FaqAccordion faq={d.faq} />
+
+      <div class="disclaimer">
+        <p>
+          <strong>About these stories.</strong> Case studies are published only with the client's
+          written permission and some details are withheld at their request. Past results do not
+          predict future results.
+        </p>
+        <p>
+          <strong>Not advice.</strong> Nothing here is legal, tax, mortgage or investment advice.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  {
+    more.length > 0 && (
+      <section class="section section--alt">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Keep reading</p>
+            <h2>
+              Other <em>files</em>
+            </h2>
+          </div>
+          <ul class="more" role="list">
+            {more.map((c) => (
+              <li>
+                <CaseStudyCard
+                  slug={c.id}
+                  title={c.data.h1}
+                  situation={c.data.situation}
+                  result={c.data.result}
+                  placeholder={c.data.placeholder}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <Cta />
+</Base>
+
+<style>
+  .cs-hero {
+    background: var(--sand);
+    border-bottom: 1px solid var(--rule);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+  }
+  .cs-hero h1 {
+    max-width: 20ch;
+  }
+  .cs-hero .lede {
+    margin-top: var(--sp-4);
+    max-width: 58ch;
+  }
+  .cs-date {
+    margin-top: var(--sp-4);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brown);
+  }
+  .cs-body {
+    display: grid;
+    gap: var(--sp-7);
+    padding-block: var(--section-y);
+  }
+  .glance h2,
+  .hard h2,
+  .result h2,
+  .cs-links h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--sp-4);
+  }
+  .hard p,
+  .result p {
+    font-size: var(--step-0);
+    line-height: 1.75;
+    color: var(--text-muted);
+  }
+  .result {
+    padding: var(--sp-5) var(--sp-6);
+    background: var(--sand);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  }
+  .result p {
+    color: var(--ink);
+  }
+  .cs-links ul {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    padding-left: 1.2em;
+  }
+  .more {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

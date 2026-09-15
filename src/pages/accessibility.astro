@@ -1,0 +1,107 @@
+---
+import Page from '../layouts/Page.astro';
+import site from '../data/site.json';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Accessibility', path: '/accessibility/' },
+];
+const updated = 'September 2026';
+---
+
+<Page
+  title="Accessibility Statement"
+  description="Our accessibility commitment for kirbychanmarkham.com, the WCAG 2.1 AA standard we build to, known limitations and how to request an accessible format."
+  eyebrow="Legal"
+  h1="Accessibility statement"
+  accent="Accessibility"
+  lede={`What we build to, what we have done, what is still outstanding and how to ask for information in another format. Last updated ${updated}.`}
+  crumbs={crumbs}
+  tone="sand"
+>
+  <section class="section">
+    <div class="wrap-narrow prose">
+      <h2>Our commitment</h2>
+      <p>
+        Kirby Chan &amp; Co. Real Estate Inc. is committed to providing services in a way that
+        respects the dignity and independence of people with disabilities, consistent with the
+        Accessibility for Ontarians with Disabilities Act and the Ontario Human Rights Code.
+      </p>
+      <p>
+        We build this website to meet the Web Content Accessibility Guidelines version 2.1 at Level
+        AA.
+      </p>
+
+      <h2>What we have done</h2>
+      <ul>
+        <li>Semantic HTML, with headings in order and landmarks on every page</li>
+        <li>A skip to content link as the first item in the tab order</li>
+        <li>Visible focus indicators on every interactive element</li>
+        <li>
+          Text and background colour combinations checked against the 4.5 to 1 contrast ratio for
+          body text. Our gold accent is used only for decoration and large display type on light
+          backgrounds because it does not meet that ratio at small sizes
+        </li>
+        <li>Navigation that works entirely with a keyboard, including the neighbourhood menu</li>
+        <li>
+          A scrolling market band that respects the reduced motion setting in your operating system
+          and that is duplicated as plain text in reading order for assistive technology
+        </li>
+        <li>Video embeds that load only when you choose to play them, with descriptive link text</li>
+        <li>Form fields with real labels, clear error messages and a status message region</li>
+        <li>Touch targets of at least 44 by 44 pixels on interactive controls</li>
+        <li>Text that reflows without horizontal scrolling down to a 320 pixel viewport</li>
+        <li>A schematic map that is duplicated as a text list of the same links</li>
+      </ul>
+
+      <h2>Known limitations</h2>
+      <p>We are being specific about these rather than claiming the site is perfect.</p>
+      <ul>
+        <li>
+          Video transcripts and captions are not yet available for every video. We are adding them
+          as videos are published. In the meantime, ask us and we will provide a written summary.
+        </li>
+        <li>
+          Property search is provided by a third party system that we do not control. If you have
+          difficulty using it, contact us and we will run the search for you and send you the
+          results in a format that works for you.
+        </li>
+        <li>
+          Our spam filtering uses Cloudflare Turnstile. If it creates a barrier for you, phone or
+          email us instead and we will take your enquiry directly.
+        </li>
+      </ul>
+
+      <h2>Alternative formats</h2>
+      <p>
+        If you need information from this site in another format, such as large print, plain text
+        or read aloud over the phone, ask us and we will provide it at no extra cost. We will agree
+        a suitable format with you.
+      </p>
+
+      <h2>Feedback</h2>
+      <p>
+        If you run into a barrier on this site, we want to know. Email {site.contact.email} or
+        phone {site.contact.phone}. Tell us the page and what happened and we will reply and
+        explain what we are doing about it.
+      </p>
+      <p>
+        Feedback can be given by email, by phone or in person, whichever suits you. We will
+        acknowledge it and respond in the same format unless you ask for another.
+      </p>
+
+      <h2>Testing</h2>
+      <p>
+        <span class="todo-badge">
+          TODO: record the date of the last accessibility audit, the tools used and who carried it
+          out, then list the results here
+        </span>
+      </p>
+      <p>
+        We test with keyboard navigation, automated checks and screen reader spot checks. Automated
+        tools catch only part of what matters, so the feedback address above is a genuine part of
+        how we find problems.
+      </p>
+    </div>
+  </section>
+</Page>

@@ -1,0 +1,245 @@
+---
+import Accent from '../../components/Accent.astro';
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import LiteYouTube from '../../components/LiteYouTube.astro';
+import VideoCard from '../../components/VideoCard.astro';
+import Cta from '../../components/Cta.astro';
+import { breadcrumbList, videoObject } from '../../lib/schema';
+import { longDate, neighbourhoodPath } from '../../lib/format';
+
+export const getStaticPaths = (async () => {
+  const videos = await getCollection('videos', ({ data }) => !data.draft);
+  return videos.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { entry } = Astro.props as Props;
+const d = entry.data;
+const { Content } = await render(entry);
+const path = `/videos/${entry.id}/`;
+
+const hoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
+const hood = d.neighbourhood ? hoods.find((h) => h.id === d.neighbourhood) : undefined;
+
+const more = (await getCollection('videos', ({ data }) => !data.draft))
+  .filter((v) => v.id !== entry.id)
+  .slice(0, 3);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Videos', path: '/videos/' },
+  { name: d.h1, path },
+];
+
+const jsonLd = [
+  breadcrumbList(crumbs),
+  videoObject({
+    name: d.h1,
+    description: d.description,
+    path,
+    published: d.published,
+    durationMinutes: d.durationMinutes,
+    youtubeId: d.youtubeId,
+  }),
+].filter(Boolean);
+
+---
+
+<Base
+  title={d.title}
+  description={d.description}
+  noindex={d.noindex}
+  ogType="video.other"
+  ogImage={d.youtubeId ? `https://i.ytimg.com/vi/${d.youtubeId}/maxresdefault.jpg` : undefined}
+  jsonLd={jsonLd}
+>
+  <Breadcrumbs crumbs={crumbs} />
+
+  <article class="vid">
+    <div class="wrap vid__top">
+      <div class="vid__player">
+        <LiteYouTube id={d.youtubeId} title={d.h1} />
+      </div>
+      <div class="vid__intro">
+        <p class="eyebrow">{d.category}</p>
+        <h1>
+          <Accent text={d.h1} accent={d.accent} />
+        </h1>
+        <p class="vid__meta">
+          <time datetime={d.published.toISOString()}>{longDate(d.published)}</time>
+          <span aria-hidden="true">&middot;</span>
+          <span>{d.durationMinutes} min</span>
+        </p>
+        <p class="lede">{d.summary}</p>
+        {
+          hood && (
+            <a class="vid__hood" href={neighbourhoodPath(hood.id)}>
+              Read the {hood.data.name} neighbourhood guide
+            </a>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="wrap vid__body">
+      {
+        d.takeaways.length > 0 && (
+          <section class="takeaways">
+            <h2>Key takeaways</h2>
+            <ul>
+              {d.takeaways.map((t) => (
+                <li>{t}</li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      <div class="prose vid__notes">
+        <Content />
+      </div>
+
+      <section class="transcript">
+        <h2>Transcript</h2>
+        {
+          d.transcript ? (
+            <div class="transcript__body">
+              {d.transcript.split('\n\n').map((para) => (
+                <p>{para}</p>
+              ))}
+            </div>
+          ) : (
+            <p class="transcript__empty">
+              <span class="todo-badge">
+                TODO: paste the transcript into this file's frontmatter once the video is published
+              </span>
+            </p>
+          )
+        }
+      </section>
+
+      <div class="disclaimer">
+        <p>
+          <strong>Not advice.</strong> This video and these notes are general information only.
+          Nothing here is legal, tax, mortgage or investment advice.
+        </p>
+        <p>
+          <strong>Market data.</strong> Any figures mentioned reflect the period stated at the time
+          of recording and may be out of date. Always confirm current figures before acting.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  {
+    more.length > 0 && (
+      <section class="section section--alt">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Keep watching</p>
+            <h2>
+              More from the <em>library</em>
+            </h2>
+          </div>
+          <ul class="more" role="list">
+            {more.map((v) => (
+              <li>
+                <VideoCard
+                  slug={v.id}
+                  title={v.data.h1}
+                  category={v.data.category}
+                  minutes={v.data.durationMinutes}
+                  youtubeId={v.data.youtubeId}
+                  summary={v.data.summary}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <Cta />
+</Base>
+
+<style>
+  .vid__top {
+    display: grid;
+    gap: var(--sp-6);
+    padding-block: var(--sp-7);
+    align-items: start;
+  }
+  .vid__intro h1 {
+    font-size: var(--step-4);
+    margin-block: var(--sp-2) var(--sp-3);
+  }
+  .vid__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: var(--sp-4);
+  }
+  .vid__hood {
+    display: inline-block;
+    margin-top: var(--sp-5);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .vid__body {
+    display: grid;
+    gap: var(--sp-7);
+    max-width: 72ch;
+    padding-bottom: var(--section-y);
+  }
+  .takeaways {
+    padding: var(--sp-5) var(--sp-6);
+    background: var(--sand);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  }
+  .takeaways h2 {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brown);
+    margin-bottom: var(--sp-4);
+  }
+  .takeaways ul {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    padding-left: 1.2em;
+  }
+  .transcript h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--sp-4);
+  }
+  .transcript__body p + p {
+    margin-top: var(--sp-4);
+  }
+  .more {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  @media (min-width: 900px) {
+    .vid__top {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: var(--sp-7);
+    }
+  }
+</style>

@@ -1,0 +1,44 @@
+---
+import Page from '../../layouts/Page.astro';
+import NeighbourhoodGrid from '../../components/NeighbourhoodGrid.astro';
+import site from '../../data/site.json';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Contact', path: '/contact/' },
+  { name: 'Thank you', path: '/contact/thank-you/' },
+];
+---
+
+<Page
+  title="Thank You | Kirby Chan & Co. Markham"
+  description="Your enquiry has reached us. We reply within one business day and in the meantime here are the twelve Markham neighbourhood guides to read through."
+  eyebrow="Received"
+  h1="Thank you. That reached us."
+  accent="reached us"
+  lede="We read every message ourselves and we reply within one business day. If it is urgent, call and you will get a person rather than a queue."
+  crumbs={crumbs}
+  noindex={true}
+  tone="sand"
+>
+  <Fragment slot="hero-actions">
+    <div class="page-hero__actions">
+      <a class="btn btn--primary" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
+      <a class="btn btn--ghost" href="/neighbourhoods/">Read the neighbourhood guides</a>
+    </div>
+  </Fragment>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">While you wait</p>
+        <h2>Start with <em>two</em> guides</h2>
+        <p class="lede">
+          Read the neighbourhood you are leaning toward and one you have written off. The second
+          one changes people's minds more often than you would expect.
+        </p>
+      </div>
+      <NeighbourhoodGrid />
+    </div>
+  </section>
+</Page>

@@ -1,0 +1,131 @@
+---
+import Page from '../layouts/Page.astro';
+import site from '../data/site.json';
+import { isTodo } from '../lib/format';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Terms', path: '/terms/' },
+];
+const updated = 'September 2026';
+const brokerageMissing = isTodo(site.brokerage.legalName);
+---
+
+<Page
+  title="Terms of Use"
+  description="Terms of use for kirbychanmarkham.com, including market data disclaimers, the limits of the information published here and brokerage registration details."
+  eyebrow="Legal"
+  h1="Terms of use"
+  accent="Terms"
+  lede={`What this website is, what it is not and the limits of the information on it. Last updated ${updated}.`}
+  crumbs={crumbs}
+  tone="sand"
+>
+  <section class="section">
+    <div class="wrap-narrow prose">
+      <div class="notice">
+        <p>
+          <strong>Have a lawyer review this before launch.</strong> These terms describe how this
+          website works and the disclaimers that apply to it. They are not legal advice and they
+          have not been reviewed by counsel.
+        </p>
+      </div>
+
+      <h2>Who publishes this site</h2>
+      <p>
+        This website is published by Kirby Chan &amp; Co. Real Estate Inc.
+        {brokerageMissing ? ' [TODO: brokerage legal name]' : `, ${site.brokerage.legalName}`}.
+        Registered office: {site.office.street}, {site.office.city}, {site.office.region}{' '}
+        {site.office.postalCode}.
+      </p>
+      {
+        !brokerageMissing && (
+          <p>{site.brokerage.disclosure}</p>
+        )
+      }
+      <p>
+        Real estate services in Ontario are regulated under the Trust in Real Estate Services Act
+        and administered by the Real Estate Council of Ontario.
+      </p>
+
+      <h2>General information only</h2>
+      <p>
+        Everything on this site is general information about real estate in Markham. It is not
+        legal advice, not tax advice, not mortgage advice, not accounting advice and not investment
+        advice. It is not a substitute for professional advice about your own circumstances and
+        you should not act on it without getting that advice.
+      </p>
+
+      <h2>Market data</h2>
+      <p>
+        Price figures, medians, averages and market commentary published on this site are general
+        information drawn from Toronto Regional Real Estate Board data for the periods stated. They
+        are compiled from sources believed to be reliable and they are not guaranteed.
+      </p>
+      <p>
+        These figures are not an appraisal and not an opinion of value for any particular property.
+        A neighbourhood median says nothing about the value of a specific home, its lot, its
+        condition or its layout. Monthly neighbourhood figures in particular are volatile and
+        should be read as direction rather than as value.
+      </p>
+
+      <h2>No agency relationship</h2>
+      <p>
+        Reading this site, sending an enquiry or receiving a reply does not create a client
+        relationship or an agency relationship. A representation relationship is created only by a
+        written agreement signed by both of us.
+      </p>
+
+      <h2>Property listings and search</h2>
+      <p>
+        Where this site links to a property search, that search is operated by a third party
+        provider and the listing information in it belongs to the real estate board and the listing
+        brokerages. We do not control that data and we do not warrant its accuracy or availability.
+      </p>
+
+      <h2>Links to other sites</h2>
+      <p>
+        We link to third party websites including school boards, transit agencies, the City of
+        Markham and government sources. We do not control those sites and we are not responsible
+        for their content, their accuracy or their privacy practices.
+      </p>
+
+      <h2>Not a solicitation</h2>
+      <p>
+        Nothing on this site is intended to solicit buyers or sellers who are currently under
+        contract with another brokerage.
+      </p>
+
+      <h2>Equal opportunity in housing</h2>
+      <p>
+        We provide services in accordance with the Ontario Human Rights Code. We do not
+        discriminate on the basis of race, ancestry, place of origin, colour, ethnic origin,
+        citizenship, creed, sex, sexual orientation, gender identity, gender expression, age,
+        marital status, family status or disability or any other protected ground.
+      </p>
+
+      <h2>Copyright</h2>
+      <p>
+        The writing, photography, design and code on this site are owned by Kirby Chan &amp; Co.
+        Real Estate Inc. unless stated otherwise. You may link to these pages and quote briefly
+        with attribution. You may not republish substantial portions without written permission.
+      </p>
+      <p>
+        The typefaces used on this site, Fraunces and Inter, are distributed under the SIL Open
+        Font License.
+      </p>
+
+      <h2>Limitation</h2>
+      <p>
+        This site is provided as is. To the extent permitted by law we are not liable for any loss
+        arising from reliance on the information published here. If something on this site is wrong,
+        tell us at {site.contact.email} and we will correct it.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        We may update these terms. The date at the top of this page shows when they last changed.
+      </p>
+    </div>
+  </section>
+</Page>

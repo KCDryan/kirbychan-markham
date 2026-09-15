@@ -1,0 +1,20 @@
+{
+  "source": "",
+  "period": "",
+  "metric": "Median sale price",
+  "note": "Fill source with \"TRREB\" and period with the month and year, for example \"August 2026\". Add a price to each neighbourhood as a plain number with no symbols, for example 1425000. Leave price as null until you have the real figure. Neighbourhoods with a null price are skipped on the ticker and if every price is null the whole ticker section is hidden.",
+  "neighbourhoods": [
+    { "slug": "unionville", "name": "Unionville", "price": null },
+    { "slug": "markham-village", "name": "Markham Village", "price": null },
+    { "slug": "cornell", "name": "Cornell", "price": null },
+    { "slug": "berczy-village", "name": "Berczy Village", "price": null },
+    { "slug": "cathedraltown", "name": "Cathedraltown", "price": null },
+    { "slug": "wismer", "name": "Wismer", "price": null },
+    { "slug": "greensborough", "name": "Greensborough", "price": null },
+    { "slug": "angus-glen", "name": "Angus Glen", "price": null },
+    { "slug": "box-grove", "name": "Box Grove", "price": null },
+    { "slug": "thornhill", "name": "Thornhill", "price": null },
+    { "slug": "milliken-mills", "name": "Milliken Mills", "price": null },
+    { "slug": "downtown", "name": "Downtown Markham", "price": null }
+  ]
+}

@@ -1,0 +1,74 @@
+---
+import site from '../data/site.json';
+import Placeholder from './Placeholder.astro';
+
+const searchHref = site.links.loftySearch || '/contact/';
+const searchExternal = searchHref.startsWith('http');
+---
+
+<section class="hero">
+  <div class="wrap hero__inner">
+    <div class="hero__copy">
+      <p class="eyebrow">Markham, Ontario</p>
+      <h1>Twelve neighbourhoods, <em>one</em> honest read on each</h1>
+      <p class="lede">
+        Markham is not one market. What a house costs, how long it sits and who wants it changes
+        street by street, so this site covers each neighbourhood on its own terms.
+      </p>
+      <div class="hero__actions">
+        <a
+          class="btn btn--primary"
+          href={searchHref}
+          rel={searchExternal ? 'noopener' : undefined}
+          target={searchExternal ? '_blank' : undefined}
+        >
+          Search Homes{
+            searchExternal && <span class="visually-hidden"> (opens in a new tab)</span>
+          }
+        </a>
+        <a class="btn btn--ghost" href="/neighbourhoods/">Explore Neighbourhoods</a>
+      </div>
+    </div>
+    <div class="hero__media">
+      <Placeholder label="Hero image: a recognisable Markham street or streetscape" ratio="4 / 5" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    background:
+      radial-gradient(120% 90% at 85% 10%, rgba(179, 139, 89, 0.1), transparent 60%),
+      var(--cream);
+    border-bottom: 1px solid var(--rule);
+  }
+  .hero__inner {
+    display: grid;
+    gap: var(--sp-7);
+    align-items: center;
+    padding-block: clamp(3rem, 1.8rem + 6vw, 6rem);
+  }
+  .hero h1 {
+    max-width: 16ch;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    margin-top: var(--sp-6);
+  }
+  .hero__media {
+    max-width: 440px;
+    width: 100%;
+  }
+
+  @media (min-width: 900px) {
+    .hero__inner {
+      grid-template-columns: 1.25fr 0.85fr;
+      gap: var(--sp-8);
+    }
+    .hero__media {
+      justify-self: end;
+    }
+  }
+</style>

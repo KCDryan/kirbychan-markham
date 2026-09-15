@@ -1,0 +1,253 @@
+---
+import Page from '../layouts/Page.astro';
+import LeadForm from '../components/LeadForm.astro';
+import site from '../data/site.json';
+import { isTodo } from '../lib/format';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Contact', path: '/contact/' },
+];
+
+const bookingHref = site.links.booking || '';
+const brokerageMissing = isTodo(site.brokerage.legalName);
+---
+
+<Page
+  title="Contact Kirby Chan & Co. | Markham"
+  description="Talk to us about buying or selling in Markham. Phone, email and a short enquiry form, plus our registered office address and brokerage details."
+  eyebrow="Get in touch"
+  h1="Tell us the situation"
+  accent="situation"
+  lede="We answer our own phone and we reply to our own email. Tell us what you are trying to do and we will tell you plainly whether we are the right people for it."
+  crumbs={crumbs}
+  tone="sand"
+>
+  <section class="section">
+    <div class="wrap contact-grid">
+      <div class="contact-form">
+        <LeadForm heading="Send us a note" source="contact-page" />
+      </div>
+
+      <aside class="contact-side">
+        <div class="side-block">
+          <h2>Direct</h2>
+          <ul>
+            <li>
+              <span>Phone</span>
+              <a href={site.contact.phoneHref}>{site.contact.phone}</a>
+            </li>
+            <li>
+              <span>Email</span>
+              <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+            </li>
+            {
+              bookingHref && (
+                <li>
+                  <span>Book a call</span>
+                  <a href={bookingHref} rel="noopener noreferrer" target="_blank">
+                    30-minute conversation
+                  </a>
+                </li>
+              )
+            }
+          </ul>
+          {
+            !bookingHref && (
+              <p class="side-todo">
+                <span class="todo-badge">
+                  TODO: add the booking link in src/data/site.json to show a scheduling option here
+                </span>
+              </p>
+            )
+          }
+        </div>
+
+        <div class="side-block">
+          <h2>Registered office</h2>
+          <address>
+            {site.office.street}<br />
+            {site.office.city}, {site.office.region} {site.office.postalCode}<br />
+            Canada
+          </address>
+          <p class="side-note">
+            This is our registered office address. We work across Markham and meet clients where it
+            suits them.
+          </p>
+        </div>
+
+        <div class="side-block side-block--legal">
+          <h2>Brokerage and registration</h2>
+          <p><strong>Kirby Chan &amp; Co. Real Estate Inc.</strong></p>
+          {
+            brokerageMissing ? (
+              <p>
+                <span class="todo-badge">
+                  TODO: add the brokerage legal name exactly as registered with RECO and the
+                  registrant disclosure text in src/data/site.json. This is required under TRESA
+                  before the site goes live.
+                </span>
+              </p>
+            ) : (
+              <>
+                <p>{site.brokerage.legalName}</p>
+                <p>{site.brokerage.disclosure}</p>
+              </>
+            )
+          }
+          <p class="side-note">
+            Not intended to solicit buyers or sellers currently under contract with another
+            brokerage.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap-narrow">
+      <div class="section-head">
+        <h2>What happens <em>next</em></h2>
+      </div>
+      <ol class="next">
+        <li>
+          <h3>We read it properly</h3>
+          <p>Your message comes to us, not to a call centre or a lead queue.</p>
+        </li>
+        <li>
+          <h3>We reply within one business day</h3>
+          <p>
+            With a real answer where we can give one and with the questions we need answered where
+            we cannot.
+          </p>
+        </li>
+        <li>
+          <h3>We talk for half an hour</h3>
+          <p>
+            No pitch. At the end of it you will know whether we are useful to you and we will both
+            be comfortable saying so if we are not.
+          </p>
+        </li>
+      </ol>
+      <div class="disclaimer">
+        <p>
+          <strong>Your information.</strong> We use what you send us to reply to your enquiry and,
+          with your consent, to contact you about Markham real estate. You can withdraw consent at
+          any time. See our <a href="/privacy/">privacy notice</a> for how we handle personal
+          information under PIPEDA and CASL.
+        </p>
+        <p>
+          <strong>Not advice.</strong> Nothing on this site or in our reply is legal, tax, mortgage
+          or investment advice.
+        </p>
+      </div>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .contact-grid {
+    display: grid;
+    gap: var(--sp-7);
+    align-items: start;
+  }
+  .contact-side {
+    display: grid;
+    gap: var(--sp-5);
+  }
+  .side-block {
+    padding: var(--sp-5);
+    background: var(--sand);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+  .side-block h2 {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brown);
+    margin-bottom: var(--sp-4);
+  }
+  .side-block ul {
+    display: grid;
+    gap: var(--sp-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .side-block li {
+    display: grid;
+    gap: 0.15rem;
+  }
+  .side-block li span {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .side-block li a {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    text-decoration: none;
+  }
+  .side-block address {
+    font-style: normal;
+    line-height: 1.7;
+  }
+  .side-note,
+  .side-todo {
+    margin-top: var(--sp-4);
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+  .side-block--legal p {
+    font-size: 0.85rem;
+    line-height: 1.65;
+  }
+  .side-block--legal p + p {
+    margin-top: var(--sp-3);
+  }
+
+  .next {
+    display: grid;
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: next;
+  }
+  .next li {
+    counter-increment: next;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+  }
+  .next li::before {
+    content: counter(next, decimal-leading-zero);
+    font-family: var(--font-serif);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+  }
+  .next h3 {
+    font-size: var(--step-1);
+    margin: var(--sp-2) 0 var(--sp-2);
+  }
+  .next p {
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  @media (min-width: 940px) {
+    .contact-grid {
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: var(--sp-8);
+    }
+    .next {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-6);
+    }
+  }
+</style>

@@ -1,0 +1,111 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+  category: string;
+  minutes: number;
+  youtubeId: string;
+  summary?: string;
+}
+const { slug, title, category, minutes, youtubeId, summary } = Astro.props;
+---
+
+<a class="vcard" href={`/videos/${slug}/`}>
+  <span class="vcard__media">
+    {
+      youtubeId ? (
+        <img
+          src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
+          alt=""
+          width="480"
+          height="270"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <span class="vcard__empty">Thumbnail once the video is live</span>
+      )
+    }
+    <span class="vcard__time">{minutes} min</span>
+  </span>
+  <span class="vcard__body">
+    <span class="vcard__cat">{category}</span>
+    <h3 class="vcard__title">{title}</h3>
+    {summary && <span class="vcard__sum">{summary}</span>}
+  </span>
+</a>
+
+<style>
+  .vcard {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      border-color 0.2s var(--ease),
+      box-shadow 0.2s var(--ease);
+  }
+  .vcard:hover {
+    border-color: var(--gold);
+    box-shadow: var(--shadow);
+  }
+  .vcard__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    background: var(--sand);
+  }
+  .vcard__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .vcard__empty {
+    display: grid;
+    place-content: center;
+    height: 100%;
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--brown);
+  }
+  .vcard__time {
+    position: absolute;
+    right: 0.6rem;
+    bottom: 0.6rem;
+    padding: 0.15rem 0.5rem;
+    background: rgba(42, 33, 26, 0.88);
+    color: var(--cream);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    border-radius: 2px;
+  }
+  .vcard__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: var(--sp-5);
+    flex: 1;
+  }
+  .vcard__cat {
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .vcard__title {
+    font-size: var(--step-1);
+    margin: 0;
+  }
+  .vcard__sum {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+</style>

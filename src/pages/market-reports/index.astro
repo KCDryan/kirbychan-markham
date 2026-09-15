@@ -1,0 +1,171 @@
+---
+import { getCollection } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import Cta from '../../components/Cta.astro';
+import { longDate } from '../../lib/format';
+
+const reports = (await getCollection('market-reports', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.published.valueOf() - a.data.published.valueOf()
+);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Market reports', path: '/market-reports/' },
+];
+
+const faq = [
+  {
+    q: 'Where do these figures come from?',
+    a: 'Toronto Regional Real Estate Board releases for the month stated. We name the source and the period on every report and we do not publish a figure we cannot point to.',
+  },
+  {
+    q: 'Can I use a neighbourhood median to value my house?',
+    a: 'No. A median is the middle of a mixed set of sales and it says nothing about your specific property, its lot, its condition or its layout. Use it to read direction, not value.',
+  },
+  {
+    q: 'Why do some neighbourhoods not appear every month?',
+    a: 'Because the sample was too small to be meaningful. In a month with a handful of sales, one large transaction can move a median several percent. We leave those out rather than publish noise.',
+  },
+  {
+    q: 'How often do you publish?',
+    a: 'Monthly, once the board figures for the previous month are released and we have had time to read them properly.',
+  },
+];
+---
+
+<Page
+  title="Markham Market Reports, Month by Month"
+  description="Monthly Markham real estate market reports. Prices, sales, new listings and days on market, with the source and the period named on every figure."
+  eyebrow="The numbers"
+  h1="Markham market reports, month by month"
+  accent="month by month"
+  lede="Published once the board figures are out and we have read them properly. Every number names its source and its period and anything too thin to be meaningful is left out rather than dressed up."
+  crumbs={crumbs}
+  faq={faq}
+>
+  <section class="section">
+    <div class="wrap">
+      {
+        reports.length > 0 ? (
+          <ul class="reports" role="list">
+            {reports.map((r) => (
+              <li>
+                <a class="report" href={`/market-reports/${r.id}/`}>
+                  <span class="report__period">{r.data.period}</span>
+                  <h2>{r.data.h1}</h2>
+                  <span class="report__sum">{r.data.summary}</span>
+                  <time datetime={r.data.published.toISOString()}>
+                    Published {longDate(r.data.published)}
+                  </time>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div class="empty">
+            <h2>
+              The first report is being <em>prepared</em>
+            </h2>
+            <p>
+              Reports are published once the board releases figures for the previous month. If you
+              want the numbers for a specific neighbourhood before then, ask us directly and we
+              will pull them for you.
+            </p>
+            <p>
+              <span class="todo-badge">
+                TODO: copy src/content/market-reports/template.mdx, fill in the TRREB figures,
+                remove the draft flag and publish
+              </span>
+            </p>
+            <a class="btn btn--primary" href="/contact/">Ask for the current numbers</a>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap-narrow">
+      <div class="section-head">
+        <h2>How to read a market <em>report</em></h2>
+      </div>
+      <p>
+        A monthly figure for a single neighbourhood is volatile. In an area with twelve sales in a
+        month, two large transactions can move the median by a noticeable margin while nothing at
+        all has changed underneath.
+      </p>
+      <p>
+        Read the direction across several months instead. Look at new listings alongside sales,
+        because supply tells you more about where prices are heading than price does. And never use
+        a neighbourhood median as a valuation for a specific property.
+      </p>
+      <div class="disclaimer">
+        <p>
+          <strong>Market data.</strong> Figures on these pages are general information drawn from
+          Toronto Regional Real Estate Board data for the periods stated. They are not an
+          appraisal, not an opinion of value for any specific property and not guaranteed.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Cta />
+</Page>
+
+<style>
+  .reports {
+    display: grid;
+    gap: var(--sp-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .report {
+    display: grid;
+    gap: 0.4rem;
+    padding: var(--sp-5);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--gold);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+  }
+  .report:hover {
+    border-color: var(--gold);
+    box-shadow: var(--shadow);
+  }
+  .report__period {
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .report h2 {
+    font-size: var(--step-1);
+    margin: 0;
+  }
+  .report__sum {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .report time {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .empty {
+    max-width: 60ch;
+  }
+  .empty p {
+    margin-top: var(--sp-4);
+  }
+  .empty .btn {
+    margin-top: var(--sp-6);
+  }
+  p + p {
+    margin-top: var(--sp-4);
+  }
+</style>

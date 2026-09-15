@@ -1,0 +1,172 @@
+---
+import Accent from '../../components/Accent.astro';
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FaqAccordion from '../../components/FaqAccordion.astro';
+import CaseStudyCard from '../../components/CaseStudyCard.astro';
+import ServiceGrid from '../../components/ServiceGrid.astro';
+import Cta from '../../components/Cta.astro';
+import { breadcrumbList, faqPage } from '../../lib/schema';
+
+export const getStaticPaths = (async () => {
+  const services = await getCollection('services', ({ data }) => !data.draft);
+  return services.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { entry } = Astro.props as Props;
+const d = entry.data;
+const { Content } = await render(entry);
+const path = `/services/${entry.id}/`;
+
+const caseStudies = await getCollection('case-studies', ({ data }) => !data.draft);
+const related = d.caseStudy
+  ? caseStudies.find((c) => c.id === d.caseStudy)
+  : caseStudies.find((c) => c.data.service === entry.id);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Services', path: '/services/' },
+  { name: d.name, path },
+];
+
+const jsonLd = [breadcrumbList(crumbs), faqPage(d.faq)].filter(Boolean);
+---
+
+<Base title={d.title} description={d.description} noindex={d.noindex} jsonLd={jsonLd}>
+  <Breadcrumbs crumbs={crumbs} />
+
+  <section class="svc-hero">
+    <div class="wrap">
+      <p class="eyebrow">How we help</p>
+      <h1>
+        <Accent text={d.h1} accent={d.accent} />
+      </h1>
+      <p class="lede">{d.summary}</p>
+      <div class="page-hero__actions">
+        <a class="btn btn--primary" href="/contact/">Start a conversation</a>
+        <a class="btn btn--ghost" href="/neighbourhoods/">Explore neighbourhoods</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap svc-grid-2">
+      <div>
+        <h2>The problem</h2>
+      </div>
+      <p class="svc-problem">{d.problem}</p>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Our approach</p>
+        <h2>How we <em>handle</em> it</h2>
+      </div>
+      <ol class="steps">
+        {
+          d.steps.map((step, i) => (
+            <li class="step">
+              <span class="step__num">Step {String(i + 1).padStart(2, '0')}</span>
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap-narrow prose">
+      <Content />
+    </div>
+  </section>
+
+  {
+    related && (
+      <section class="section section--alt">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">From my side of the table</p>
+            <h2>
+              A <em>real</em> file, including the part that went wrong
+            </h2>
+          </div>
+          <CaseStudyCard
+            slug={related.id}
+            title={related.data.h1}
+            situation={related.data.situation}
+            result={related.data.result}
+            placeholder={related.data.placeholder}
+            feature
+          />
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section">
+    <div class="wrap-narrow">
+      <FaqAccordion faq={d.faq} heading={`${d.name} questions`} accent="questions" />
+      <div class="disclaimer">
+        <p>
+          <strong>Not advice.</strong> This page is general information about how we work. It is
+          not legal, tax, mortgage or investment advice. Speak to a qualified professional about
+          your own circumstances before acting.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Also relevant</p>
+        <h2>Other <em>situations</em> we handle</h2>
+      </div>
+      <ServiceGrid exclude={entry.id} limit={4} />
+    </div>
+  </section>
+
+  <Cta />
+</Base>
+
+<style>
+  .svc-hero {
+    background:
+      radial-gradient(110% 80% at 90% 0%, rgba(179, 139, 89, 0.1), transparent 60%),
+      var(--cream);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem);
+  }
+  .svc-hero h1 {
+    max-width: 18ch;
+  }
+  .svc-hero .lede {
+    margin-top: var(--sp-5);
+    max-width: 56ch;
+  }
+  .svc-grid-2 {
+    display: grid;
+    gap: var(--sp-5);
+  }
+  .svc-grid-2 h2 {
+    font-size: var(--step-3);
+  }
+  .svc-problem {
+    font-size: var(--step-1);
+    line-height: 1.65;
+    color: var(--text-muted);
+    max-width: 62ch;
+  }
+  @media (min-width: 860px) {
+    .svc-grid-2 {
+      grid-template-columns: 0.6fr 1.4fr;
+      gap: var(--sp-7);
+    }
+  }
+</style>

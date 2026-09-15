@@ -1,0 +1,370 @@
+---
+import { getCollection } from 'astro:content';
+import Logo from './Logo.astro';
+import site from '../data/site.json';
+import nav from '../data/nav.json';
+import { neighbourhoodPath } from '../lib/format';
+
+const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const searchHref = site.links.loftySearch || '/contact/';
+const searchExternal = searchHref.startsWith('http');
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+---
+
+<div class="utility">
+  <div class="wrap utility__inner">
+    <a href={site.contact.phoneHref}>{site.contact.phone}</a>
+    <span aria-hidden="true">&middot;</span>
+    <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="wrap header__inner">
+    <a href="/" class="header__brand" aria-label={`${site.shortName} home`}>
+      <Logo variant="dark" />
+    </a>
+
+    <nav class="nav-desktop" aria-label="Primary">
+      <ul>
+        {
+          nav.primary.map((item) => (
+            <li class:list={[item.mega && 'has-mega']}>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+                {item.mega && <span class="caret" aria-hidden="true" />}
+              </a>
+              {item.mega && (
+                <div class="mega">
+                  <div class="mega__inner wrap">
+                    <div class="mega__head">
+                      <p class="eyebrow">Twelve neighbourhoods</p>
+                      <p class="mega__note">
+                        Every pillar page covers prices, property types, schools, transit and the
+                        commute downtown.
+                      </p>
+                      <a class="mega__all" href="/neighbourhoods/">
+                        See all neighbourhoods
+                      </a>
+                    </div>
+                    <ul class="mega__grid">
+                      {hoods.map((h) => (
+                        <li>
+                          <a href={neighbourhoodPath(h.id)}>
+                            <span class="numeral">{String(h.data.order).padStart(2, '0')}</span>
+                            <span class="mega__name">{h.data.name}</span>
+                            <span class="mega__line">{h.data.personality}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="header__actions">
+      <a
+        class="btn btn--ghost btn--sm"
+        href={searchHref}
+        rel={searchExternal ? 'noopener' : undefined}
+        target={searchExternal ? '_blank' : undefined}
+      >
+        Search Homes{
+          searchExternal && <span class="visually-hidden"> (opens in a new tab)</span>
+        }
+      </a>
+      <a class="btn btn--primary btn--sm" href="/contact/">Contact</a>
+    </div>
+
+    <details class="nav-mobile">
+      <summary aria-label="Open menu">
+        <span class="bars" aria-hidden="true"><i /><i /><i /></span>
+        <span class="summary-text">Menu</span>
+      </summary>
+      <div class="nav-mobile__panel">
+        <ul class="nav-mobile__list">
+          <li><a href="/">Home</a></li>
+          {nav.primary.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+          <li><a href="/market-reports/">Market reports</a></li>
+          <li><a href="/case-studies/">Case studies</a></li>
+          <li><a href="/contact/">Contact</a></li>
+        </ul>
+        <p class="nav-mobile__sub">Neighbourhoods</p>
+        <ul class="nav-mobile__hoods">
+          {hoods.map((h) => <li><a href={neighbourhoodPath(h.id)}>{h.data.name}</a></li>)}
+        </ul>
+        <a
+          class="btn btn--gold nav-mobile__cta"
+          href={searchHref}
+          rel={searchExternal ? 'noopener' : undefined}
+          target={searchExternal ? '_blank' : undefined}>Search Homes</a
+        >
+      </div>
+    </details>
+  </div>
+</header>
+
+<style>
+  .utility {
+    background: var(--espresso);
+    color: var(--text-on-dark-muted);
+  }
+  .utility__inner {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    justify-content: flex-end;
+    padding-block: 0.45rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+  }
+  .utility a {
+    color: var(--text-on-dark-muted);
+    text-decoration: none;
+  }
+  .utility a:hover {
+    color: var(--gold);
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(250, 247, 242, 0.94);
+    backdrop-filter: saturate(140%) blur(8px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .header__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    min-height: 72px;
+  }
+  .header__brand {
+    text-decoration: none;
+    margin-right: auto;
+  }
+
+  .nav-desktop {
+    display: none;
+  }
+  .nav-desktop > ul {
+    display: flex;
+    gap: 1.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-desktop > ul > li {
+    position: static;
+  }
+  .nav-desktop a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 1.4rem 0;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+  }
+  .nav-desktop a:hover,
+  .nav-desktop a[aria-current='page'] {
+    color: var(--brown);
+    border-bottom-color: var(--gold);
+  }
+  .caret {
+    width: 5px;
+    height: 5px;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: rotate(45deg) translateY(-2px);
+  }
+
+  .mega {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: var(--cream);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    box-shadow: var(--shadow-lift);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition:
+      opacity 0.16s var(--ease),
+      transform 0.16s var(--ease),
+      visibility 0.16s;
+  }
+  .has-mega:hover .mega,
+  .has-mega:focus-within .mega {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .mega__inner {
+    display: grid;
+    grid-template-columns: minmax(200px, 250px) 1fr;
+    gap: 2.5rem;
+    padding-block: 2rem;
+  }
+  .mega__note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+  .mega__all {
+    padding: 0 !important;
+    text-transform: none !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0 !important;
+    border-bottom: 1px solid var(--gold) !important;
+    color: var(--brown) !important;
+  }
+  .mega__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.2rem 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .mega__grid a {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.6rem;
+    align-items: baseline;
+    padding: 0.5rem 0.6rem !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    font-size: 0.9rem !important;
+    border-bottom: 0 !important;
+    border-radius: var(--radius);
+  }
+  .mega__grid a:hover {
+    background: var(--sand);
+  }
+  .mega__name {
+    font-weight: 500;
+  }
+  .mega__line {
+    grid-column: 2;
+    font-size: 0.74rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-transform: none;
+  }
+
+  .header__actions {
+    display: none;
+    gap: 0.6rem;
+  }
+
+  .nav-mobile {
+    position: relative;
+  }
+  .nav-mobile summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+    cursor: pointer;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .nav-mobile summary::-webkit-details-marker {
+    display: none;
+  }
+  .bars {
+    display: grid;
+    gap: 3px;
+  }
+  .bars i {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background: var(--ink);
+  }
+  .nav-mobile[open] summary {
+    background: var(--sand);
+    border-color: var(--gold);
+  }
+  .nav-mobile__panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.6rem);
+    width: min(88vw, 340px);
+    max-height: min(74vh, 640px);
+    overflow-y: auto;
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lift);
+    padding: 1.1rem;
+  }
+  .nav-mobile__list,
+  .nav-mobile__hoods {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-mobile__list a {
+    display: block;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .nav-mobile__sub {
+    margin: 1.1rem 0 0.5rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brown);
+  }
+  .nav-mobile__hoods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.1rem 0.8rem;
+  }
+  .nav-mobile__hoods a {
+    display: block;
+    padding: 0.35rem 0;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--text-muted);
+  }
+  .nav-mobile__cta {
+    width: 100%;
+    margin-top: 1.1rem;
+  }
+
+  @media (min-width: 1040px) {
+    .nav-desktop,
+    .header__actions {
+      display: flex;
+    }
+    .nav-mobile {
+      display: none;
+    }
+  }
+</style>

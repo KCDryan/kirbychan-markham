@@ -1,0 +1,60 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+const { headings } = Astro.props;
+
+// Only H2s. A two level table of contents on a long article is noise.
+const items = headings.filter((h) => h.depth === 2);
+---
+
+{
+  items.length > 2 && (
+    <nav class="toc" aria-labelledby="toc-heading">
+      <h2 id="toc-heading">On this page</h2>
+      <ol>
+        {items.map((h) => (
+          <li>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    padding: var(--sp-5);
+    background: var(--sand);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+  .toc h2 {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brown);
+    margin-bottom: var(--sp-3);
+  }
+  .toc ol {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding-left: 1.2em;
+    font-size: 0.88rem;
+  }
+  .toc a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .toc a:hover {
+    color: var(--brown);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

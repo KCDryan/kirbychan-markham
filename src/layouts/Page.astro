@@ -1,0 +1,64 @@
+---
+import Accent from '../components/Accent.astro';
+import Base from './Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import type { Crumb } from '../lib/schema';
+import { breadcrumbList, faqPage } from '../lib/schema';
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow?: string;
+  h1: string;
+  accent?: string;
+  lede?: string;
+  crumbs: Crumb[];
+  faq?: { q: string; a: string }[];
+  extraJsonLd?: unknown[];
+  noindex?: boolean;
+  tone?: 'cream' | 'sand';
+}
+
+const {
+  title,
+  description,
+  eyebrow,
+  h1,
+  accent,
+  lede,
+  crumbs,
+  faq = [],
+  extraJsonLd = [],
+  noindex = false,
+  tone = 'cream',
+} = Astro.props;
+
+const jsonLd = [breadcrumbList(crumbs), faqPage(faq), ...extraJsonLd].filter(Boolean);
+---
+
+<Base title={title} description={description} noindex={noindex} jsonLd={jsonLd}>
+  <Breadcrumbs crumbs={crumbs} />
+  <section class:list={['page-hero', tone === 'sand' && 'page-hero--sand']}>
+    <div class="wrap">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1>
+        <Accent text={h1} accent={accent} />
+      </h1>
+      {lede && <p class="lede">{lede}</p>}
+      <slot name="hero-actions" />
+    </div>
+  </section>
+  <slot />
+</Base>
+
+<style>
+  .page-hero {
+    background:
+      radial-gradient(110% 80% at 90% 0%, rgba(179, 139, 89, 0.1), transparent 60%),
+      var(--cream);
+  }
+  .page-hero--sand {
+    background: var(--sand);
+    border-bottom: 1px solid var(--rule);
+  }
+</style>

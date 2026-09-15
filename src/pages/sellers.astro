@@ -1,0 +1,171 @@
+---
+import Page from '../layouts/Page.astro';
+import FaqAccordion from '../components/FaqAccordion.astro';
+import ServiceGrid from '../components/ServiceGrid.astro';
+import Cta from '../components/Cta.astro';
+import site from '../data/site.json';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Sellers', path: '/sellers/' },
+];
+
+const steps = [
+  {
+    title: 'Price from evidence',
+    body: 'We build the number from comparable sales, current competition and the specific features of your property and we show you the working. If we disagree with the number you had in mind, you will hear it before we take the listing.',
+  },
+  {
+    title: 'Decide what is worth doing',
+    body: 'Some preparation returns more than it costs and most does not. We go room by room and tell you which is which, including the items a buyer will simply discount for rather than pay you to fix.',
+  },
+  {
+    title: 'Present the property properly',
+    body: 'Photography, video, floor plans and staging matched to the house and the buyer it is aimed at. In a neighbourhood full of similar homes, presentation is frequently the whole difference.',
+  },
+  {
+    title: 'Market where the buyer actually looks',
+    body: 'The board listing does most of the work. Everything else exists to get the right people to open it and we will tell you plainly which marketing does that and which is for the agent rather than for you.',
+  },
+  {
+    title: 'Report every week, in writing',
+    body: 'Showings, feedback, what comparable properties did and what we recommend. Silence during a slow listing is the most common complaint we hear from sellers who come to us second.',
+  },
+  {
+    title: 'Negotiate and close',
+    body: 'We present every offer with the terms explained, not just the price. Closing date, conditions, deposit and what each one is worth to you in practice.',
+  },
+];
+
+const faq = [
+  {
+    q: 'How do you decide on a list price?',
+    a: 'From comparable sales, the properties currently competing with yours and the specific features of your home. We show you the evidence rather than asking you to trust a number.',
+  },
+  {
+    q: 'An agent quoted me a much higher price. Why?',
+    a: 'Sometimes they see something we do not and sometimes they are buying the listing with the intention of asking for a reduction in three weeks. Ask all three agents for the comparable sales behind their number. The evidence will tell you which is which.',
+  },
+  {
+    q: 'Should I renovate before selling?',
+    a: 'Usually far less than people expect. Paint, decluttering and small repairs generally return more than they cost. Kitchens and bathrooms usually do not, particularly on older stock where a buyer intends to renovate anyway.',
+  },
+  {
+    q: 'How long will it take to sell?',
+    a: 'It depends on price, condition, property type and the competition at that moment. We will give you a realistic range at the listing appointment and we will revise it in writing if conditions change.',
+  },
+  {
+    q: 'What happens if it does not sell?',
+    a: 'We tell you why, with the feedback and the numbers, then we recommend a course correction early rather than waiting for the listing to go stale. A property that sits accumulates a story that follows it.',
+  },
+  {
+    q: 'What does it cost to sell?',
+    a: 'Commission as set out in the listing agreement, legal fees, any preparation you choose to do and moving costs, plus a mortgage discharge if one applies. We put the estimate in writing before you list.',
+  },
+];
+---
+
+<Page
+  title="Selling Your Markham Home"
+  description="How we sell homes in Markham. Pricing from evidence, preparation that actually returns money, marketing that reaches buyers and weekly written reporting."
+  eyebrow="For sellers"
+  h1="Priced from evidence, not from ambition"
+  accent="evidence"
+  lede="The most expensive mistake a seller makes is listing high to test the market. The market does not get tested. The listing does and it loses."
+  crumbs={crumbs}
+  faq={faq}
+>
+  <Fragment slot="hero-actions">
+    <div class="page-hero__actions">
+      <a class="btn btn--primary" href="/contact/">Request a valuation</a>
+      <a class="btn btn--ghost" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
+    </div>
+  </Fragment>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">The process</p>
+        <h2>Six steps and the <em>reporting</em> that goes with them</h2>
+      </div>
+      <ol class="steps">
+        {
+          steps.map((s, i) => (
+            <li class="step">
+              <span class="step__num">Step {String(i + 1).padStart(2, '0')}</span>
+              <h3>{s.title}</h3>
+              <p>{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--dark on-dark">
+    <div class="wrap-narrow">
+      <div class="section-head">
+        <p class="eyebrow">The thing nobody says out loud</p>
+        <h2>What a stale listing actually <em>costs</em></h2>
+      </div>
+      <p class="dark-p">
+        Most of the buyers who will ever see your house see it in the first two or three weeks.
+        They are the people actively searching in your price range right now and there is a finite
+        number of them.
+      </p>
+      <p class="dark-p">
+        If the price is wrong, those buyers do not disappear. They watch. They see the days on
+        market climb, they see the first reduction and by the time the price is right they are
+        waiting for the second reduction rather than writing an offer.
+      </p>
+      <p class="dark-p">
+        That is why we would rather lose a listing appointment than take a listing at a number we
+        cannot defend. Starting at the right price is not caution. It is the strategy.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Selling in a particular situation?</p>
+        <h2>Some sales need <em>more</em> than a listing</h2>
+      </div>
+      <ServiceGrid only={['estate-sales', 'downsizing', 'luxury', 'upsizing']} />
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap-narrow">
+      <FaqAccordion faq={faq} heading="Seller questions" accent="questions" />
+      <div class="disclaimer">
+        <p>
+          <strong>Not advice.</strong> This page is general information about how we work with
+          sellers. It is not legal, tax or financial advice. Speak to a lawyer and an accountant
+          about your own circumstances.
+        </p>
+        <p>
+          <strong>Agreements.</strong> Commission, term and the services included are all set out
+          in the written listing agreement. Ask us to go through it line by line before you sign.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Cta
+    heading="Book a 30-minute valuation conversation"
+    accent="30-minute"
+    body="We will bring the comparable sales and tell you what we think your property is worth, whether or not you decide to list with us."
+  />
+</Page>
+
+<style>
+  .dark-p {
+    color: var(--text-on-dark-muted);
+    line-height: 1.75;
+    max-width: 62ch;
+  }
+  .dark-p + .dark-p {
+    margin-top: var(--sp-4);
+  }
+</style>

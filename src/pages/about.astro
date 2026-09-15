@@ -1,0 +1,173 @@
+---
+import Page from '../layouts/Page.astro';
+import Placeholder from '../components/Placeholder.astro';
+import Cta from '../components/Cta.astro';
+import stats from '../data/stats.json';
+import site from '../data/site.json';
+import { isTodo } from '../lib/format';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'About', path: '/about/' },
+];
+
+const faq = [
+  {
+    q: 'Do you only work in Markham?',
+    a: 'Markham is what we know street by street and it is where we do almost all of our work. If your search genuinely belongs in another city we will refer you to someone who knows that market rather than pretending to.',
+  },
+  {
+    q: 'Who will I actually be dealing with?',
+    a: 'The person you speak to is the person who handles your file. We do not hand clients to an assistant after the first meeting.',
+  },
+  {
+    q: 'What is your brokerage?',
+    a: 'Our brokerage details and registrant disclosure appear in the footer of every page on this site and on the contact page, exactly as registered.',
+  },
+  {
+    q: 'Do you charge for a valuation conversation?',
+    a: 'No. We will bring the comparable sales and give you our honest read on what your property is worth, whether or not you list with us.',
+  },
+];
+---
+
+<Page
+  title="About Kirby Chan & Co. | Markham"
+  description="Who we are and how we work. One city, twelve neighbourhood guides and a plain commitment to say no to listings we cannot price honestly."
+  eyebrow="The team"
+  h1="One city, known properly"
+  accent="properly"
+  lede="Most agents cover the whole GTA and learn a neighbourhood on the drive over. We work Markham, which is why we can tell you why a Berczy semi and a Wismer semi do not trade at the same number."
+  crumbs={crumbs}
+  faq={faq}
+>
+  <section class="section">
+    <div class="wrap about-grid">
+      <div class="about-media">
+        <Placeholder label="Portrait of Kirby Chan" ratio="3 / 4" />
+        <p class="about-todo">
+          <span class="todo-badge">TODO: add team photography to /public/images/team/</span>
+        </p>
+      </div>
+      <div class="about-copy prose">
+        <h2>Why we work this way</h2>
+        <p>
+          The useful part of this job is not opening doors. It is knowing which street floods, which
+          school boundary is under review, which listing has already been through two failed offers
+          and which builder is quietly buying every deep lot in the older core.
+        </p>
+        <p>
+          You cannot know that about nine cities at once. You can know it about one. That is the
+          whole reason this business is built the way it is.
+        </p>
+        <h2>What we will not do</h2>
+        <p>
+          We will not take a listing at a price we cannot defend with comparable sales. We will not
+          tell a buyer a house is right when it is not. We will not publish a client story we do
+          not have written permission for and we will not put a number on this website that we
+          cannot point to a source for.
+        </p>
+        <p>
+          That costs us listings and it costs us transactions. It is still the only way we know how
+          to work.
+        </p>
+        <h2>Where we are</h2>
+        <p>
+          Our registered office is at {site.office.street}, {site.office.city}, {site.office.region}{' '}
+          {site.office.postalCode}. We work across Markham and the surrounding York Region
+          communities and we meet clients where it suits them.
+        </p>
+        <p class="about-todo">
+          <span class="todo-badge">
+            TODO: replace this section with Kirby's own biography, background and credentials
+          </span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark on-dark">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">By the numbers</p>
+        <h2>Only figures we can <em>support</em></h2>
+        <p class="lede">
+          Every number on this site has to be checkable. Anything not yet verified is marked rather
+          than estimated.
+        </p>
+      </div>
+      <dl class="about-stats">
+        {
+          stats.map((s) => (
+            <div>
+              <dt>{s.label}</dt>
+              <dd>{isTodo(s.value) ? <span class="about-todo-pill">TODO</span> : s.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <Cta />
+</Page>
+
+<style>
+  .about-grid {
+    display: grid;
+    gap: var(--sp-7);
+    align-items: start;
+  }
+  .about-media {
+    max-width: 380px;
+  }
+  .about-todo {
+    margin-top: var(--sp-4);
+    font-size: 0.8rem;
+  }
+  .about-copy h2 {
+    font-size: var(--step-2);
+  }
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    gap: var(--sp-6);
+    margin: 0;
+  }
+  .about-stats > div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.4rem;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule-dark);
+  }
+  .about-stats dd {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 1.5rem + 2vw, 2.8rem);
+    line-height: 1;
+    color: var(--gold);
+  }
+  .about-stats dt {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-on-dark-muted);
+  }
+  .about-todo-pill {
+    display: inline-block;
+    padding: 0.1rem 0.7rem;
+    border: 1px dashed var(--gold);
+    border-radius: 2px;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+  }
+
+  @media (min-width: 900px) {
+    .about-grid {
+      grid-template-columns: 0.7fr 1.3fr;
+      gap: var(--sp-8);
+    }
+  }
+</style>

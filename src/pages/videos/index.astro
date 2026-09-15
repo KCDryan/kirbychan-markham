@@ -1,0 +1,167 @@
+---
+import { getCollection } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import VideoCard from '../../components/VideoCard.astro';
+import Cta from '../../components/Cta.astro';
+import site from '../../data/site.json';
+
+const videos = (await getCollection('videos', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.published.valueOf() - a.data.published.valueOf()
+);
+
+const categories = [...new Set(videos.map((v) => v.data.category))];
+const featured = videos[0];
+const rest = videos.slice(1);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Videos', path: '/videos/' },
+];
+---
+
+<Page
+  title="Markham Neighbourhood Video Tours"
+  description="Video tours and guides for Markham. Neighbourhood walkthroughs, comparisons, buyer and seller guides and market updates, with the trade-offs said out loud."
+  eyebrow="Watch"
+  h1="See it before you drive it"
+  accent="drive"
+  lede="Reading about a neighbourhood tells you what it costs. Watching one tells you whether you want to live there. New videos are added as they are recorded."
+  crumbs={crumbs}
+>
+  {
+    featured && (
+      <section class="section">
+        <div class="wrap">
+          <div class="featured">
+            <div class="featured__card">
+              <VideoCard
+                slug={featured.id}
+                title={featured.data.h1}
+                category={featured.data.category}
+                minutes={featured.data.durationMinutes}
+                youtubeId={featured.data.youtubeId}
+              />
+            </div>
+            <div class="featured__copy">
+              <p class="eyebrow">Latest</p>
+              <h2>{featured.data.h1}</h2>
+              <p class="lede">{featured.data.summary}</p>
+              {featured.data.takeaways.length > 0 && (
+                <ul class="featured__takeaways">
+                  {featured.data.takeaways.slice(0, 3).map((t) => (
+                    <li>{t}</li>
+                  ))}
+                </ul>
+              )}
+              <a class="btn btn--primary" href={`/videos/${featured.id}/`}>
+                Watch and read the notes
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    categories.length > 0 && (
+      <section class="section section--alt">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">The library</p>
+            <h2>
+              Every video, by <em>type</em>
+            </h2>
+            <p class="lede">
+              Categories in the library so far: {categories.join(', ')}.
+            </p>
+          </div>
+          {rest.length > 0 ? (
+            <ul class="lib" role="list">
+              {rest.map((v) => (
+                <li>
+                  <VideoCard
+                    slug={v.id}
+                    title={v.data.h1}
+                    category={v.data.category}
+                    minutes={v.data.durationMinutes}
+                    youtubeId={v.data.youtubeId}
+                    summary={v.data.summary}
+                  />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>More videos are on the way.</p>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    site.social.youtube && (
+      <section class="section">
+        <div class="wrap-narrow subscribe">
+          <h2>
+            New videos as they are <em>recorded</em>
+          </h2>
+          <a
+            class="btn btn--ghost"
+            href={site.social.youtube}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Subscribe on YouTube
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  <Cta
+    heading="Watched a video? Now let us talk"
+    accent="talk"
+    body="If a neighbourhood looked right on screen, the next step is standing on the street. We will tell you what the video could not."
+  />
+</Page>
+
+<style>
+  .featured {
+    display: grid;
+    gap: var(--sp-6);
+    align-items: center;
+  }
+  .featured__copy h2 {
+    font-size: var(--step-3);
+    margin-block: var(--sp-2) var(--sp-4);
+  }
+  .featured__takeaways {
+    display: grid;
+    gap: 0.5rem;
+    margin: var(--sp-5) 0;
+    padding-left: 1.1em;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+  .lib {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .subscribe {
+    text-align: center;
+  }
+  .subscribe h2 {
+    margin-bottom: var(--sp-5);
+  }
+  @media (min-width: 900px) {
+    .featured {
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: var(--sp-7);
+    }
+  }
+</style>

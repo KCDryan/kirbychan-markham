@@ -1,0 +1,21 @@
+---
+/**
+ * Renders a heading with one italic accent word.
+ *
+ * The three pieces MUST stay on a single line below. Astro follows JSX
+ * whitespace rules, so putting the expressions on separate lines inserts a
+ * space between them and produces output such as "Living in Unionville ,
+ * Markham". Keep it on one line.
+ */
+interface Props {
+  text: string;
+  accent?: string;
+}
+const { text, accent } = Astro.props;
+
+const at = accent ? text.indexOf(accent) : -1;
+const before = at >= 0 ? text.slice(0, at) : '';
+const after = at >= 0 ? text.slice(at + (accent as string).length) : '';
+---
+
+{at >= 0 ? <Fragment>{before}<em>{accent}</em>{after}</Fragment> : text}

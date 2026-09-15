@@ -1,0 +1,28 @@
+# Cloudflare Pages redirects. One rule per line, first match wins.
+# Format: /source /destination [status]
+
+# Neighbourhood pillar pages live at /[name]-markham/. These catch the URL
+# shapes people type or that older links may point at.
+/unionville/ /unionville-markham/ 301
+/markham-village/ /markham-village-markham/ 301
+/cornell/ /cornell-markham/ 301
+/berczy-village/ /berczy-village-markham/ 301
+/berczy/ /berczy-village-markham/ 301
+/cathedraltown/ /cathedraltown-markham/ 301
+/wismer/ /wismer-markham/ 301
+/greensborough/ /greensborough-markham/ 301
+/angus-glen/ /angus-glen-markham/ 301
+/box-grove/ /box-grove-markham/ 301
+/thornhill/ /thornhill-markham/ 301
+/milliken-mills/ /milliken-mills-markham/ 301
+/milliken/ /milliken-mills-markham/ 301
+/downtown/ /downtown-markham/ 301
+/neighbourhoods/unionville/ /unionville-markham/ 301
+/neighborhoods/ /neighbourhoods/ 301
+
+# Common alternates
+/blog/ /articles/ 301
+/map/ /map-of-markham/ 301
+/team/ /about/ 301
+/listings/ /contact/ 301
+/search/ /contact/ 302

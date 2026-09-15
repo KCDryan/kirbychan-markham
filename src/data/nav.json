@@ -1,0 +1,26 @@
+{
+  "primary": [
+    { "label": "Neighbourhoods", "href": "/neighbourhoods/", "mega": true },
+    { "label": "Map", "href": "/map-of-markham/" },
+    { "label": "Buyers", "href": "/buyers/" },
+    { "label": "Sellers", "href": "/sellers/" },
+    { "label": "About", "href": "/about/" },
+    { "label": "Videos", "href": "/videos/" },
+    { "label": "Articles", "href": "/articles/" }
+  ],
+  "footer": {
+    "connect": [
+      { "label": "Contact", "href": "/contact/" },
+      { "label": "About the team", "href": "/about/" },
+      { "label": "Market reports", "href": "/market-reports/" },
+      { "label": "Case studies", "href": "/case-studies/" },
+      { "label": "Videos", "href": "/videos/" },
+      { "label": "Articles", "href": "/articles/" }
+    ],
+    "legal": [
+      { "label": "Privacy", "href": "/privacy/" },
+      { "label": "Terms", "href": "/terms/" },
+      { "label": "Accessibility", "href": "/accessibility/" }
+    ]
+  }
+}

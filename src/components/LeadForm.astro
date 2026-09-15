@@ -1,0 +1,299 @@
+---
+import { getCollection } from 'astro:content';
+import site from '../data/site.json';
+
+interface Props {
+  heading?: string;
+  source?: string;
+  compact?: boolean;
+}
+const { heading = 'Tell us what you are working on', source = 'contact', compact = false } =
+  Astro.props;
+
+// The site key is public by design. The secret key is never referenced in src/.
+const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY ?? '';
+
+const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<form class:list={['lead', compact && 'lead--compact']} method="post" action="/api/lead" novalidate>
+  <h2 class="lead__heading">{heading}</h2>
+
+  <input type="hidden" name="source" value={source} />
+  <input type="hidden" name="page" value={Astro.url.pathname} />
+  <input type="hidden" name="started" value="" data-started />
+
+  {/* Honeypot. Hidden from people, irresistible to naive bots. */}
+  <div class="lead__hp" aria-hidden="true">
+    <label for="company-website">Company website</label>
+    <input type="text" id="company-website" name="company_website" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="lead__row">
+    <p class="field">
+      <label for="lead-name">Name <span aria-hidden="true">*</span></label>
+      <input type="text" id="lead-name" name="name" required autocomplete="name" />
+    </p>
+    <p class="field">
+      <label for="lead-email">Email <span aria-hidden="true">*</span></label>
+      <input type="email" id="lead-email" name="email" required autocomplete="email" />
+    </p>
+  </div>
+
+  <div class="lead__row">
+    <p class="field">
+      <label for="lead-phone">Phone</label>
+      <input type="tel" id="lead-phone" name="phone" autocomplete="tel" />
+    </p>
+    <p class="field">
+      <label for="lead-hood">Neighbourhood of interest</label>
+      <select id="lead-hood" name="neighbourhood">
+        <option value="">Not sure yet</option>
+        {hoods.map((h) => <option value={h.data.name}>{h.data.name}</option>)}
+        <option value="Elsewhere in Markham">Elsewhere in Markham</option>
+      </select>
+    </p>
+  </div>
+
+  <div class="lead__row">
+    <p class="field">
+      <label for="lead-intent">I am</label>
+      <select id="lead-intent" name="intent">
+        <option value="Buying">Buying</option>
+        <option value="Selling">Selling</option>
+        <option value="Both">Buying and selling</option>
+        <option value="Researching">Just researching</option>
+      </select>
+    </p>
+    <p class="field">
+      <label for="lead-timeline">Timeline</label>
+      <select id="lead-timeline" name="timeline">
+        <option value="0-3 months">Next 3 months</option>
+        <option value="3-6 months">3 to 6 months</option>
+        <option value="6-12 months">6 to 12 months</option>
+        <option value="12+ months">More than a year</option>
+      </select>
+    </p>
+  </div>
+
+  <p class="field">
+    <label for="lead-message">What should we know?</label>
+    <textarea id="lead-message" name="message" rows="4"></textarea>
+  </p>
+
+  <p class="field field--check">
+    <input type="checkbox" id="lead-consent" name="consent" value="yes" required />
+    <label for="lead-consent">
+      I agree that {site.shortName} may contact me by email, phone or text about my enquiry and
+      about Markham real estate. I can withdraw consent at any time using the unsubscribe link in
+      any email or by replying to any message. See the <a href="/privacy/">privacy notice</a>.
+      <span aria-hidden="true">*</span>
+    </label>
+  </p>
+
+  {
+    turnstileSiteKey ? (
+      <div class="cf-turnstile lead__turnstile" data-sitekey={turnstileSiteKey} data-theme="light" />
+    ) : (
+      <p class="lead__todo">
+        <span class="todo-badge">
+          TODO: add TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY in Cloudflare so spam filtering
+          turns on
+        </span>
+      </p>
+    )
+  }
+
+  <div class="lead__actions">
+    <button class="btn btn--primary" type="submit">Send</button>
+    <span class="lead__status" role="status" aria-live="polite" data-status />
+  </div>
+
+  <p class="lead__fine">
+    We reply to every message ourselves. Nothing here is legal, tax, mortgage or investment
+    advice.
+  </p>
+</form>
+
+{turnstileSiteKey && (
+  <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
+)}
+
+<script>
+  // Progressive enhancement. With JavaScript off the form still posts normally
+  // and the Pages Function redirects to the thank you page.
+  document.querySelectorAll<HTMLFormElement>('form.lead').forEach((form) => {
+    const started = form.querySelector<HTMLInputElement>('[data-started]');
+    if (started) started.value = String(Date.now());
+
+    const status = form.querySelector<HTMLElement>('[data-status]');
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+    form.addEventListener('submit', async (event) => {
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      event.preventDefault();
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Sending';
+      }
+      if (status) {
+        status.textContent = '';
+        status.classList.remove('is-error');
+      }
+
+      try {
+        const response = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const payload = (await response.json()) as { ok?: boolean; error?: string };
+
+        if (response.ok && payload.ok) {
+          form.reset();
+          if (status) status.textContent = 'Thank you. We will be in touch shortly.';
+          if (button) button.textContent = 'Sent';
+          return;
+        }
+        throw new Error(payload.error ?? 'Something went wrong');
+      } catch (error) {
+        if (status) {
+          status.classList.add('is-error');
+          status.textContent =
+            error instanceof Error
+              ? `${error.message}. You can also call 416-305-8008.`
+              : 'Something went wrong. You can also call 416-305-8008.';
+        }
+        if (button) {
+          button.disabled = false;
+          button.textContent = 'Send';
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  .lead {
+    display: grid;
+    gap: var(--sp-4);
+    padding: var(--sp-6);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--gold);
+    border-radius: var(--radius-lg);
+  }
+  .lead--compact {
+    padding: var(--sp-5);
+  }
+  .lead__heading {
+    font-size: var(--step-2);
+    margin-bottom: var(--sp-2);
+  }
+  .lead__row {
+    display: grid;
+    gap: var(--sp-4);
+  }
+  .field {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+  }
+  .field label {
+    font-size: 0.74rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .field label span {
+    color: var(--brown);
+  }
+  input[type='text'],
+  input[type='email'],
+  input[type='tel'],
+  select,
+  textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.6rem 0.8rem;
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    font-size: 1rem;
+  }
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    border-color: var(--brown);
+    background: #fff;
+  }
+  .field--check {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0.7rem;
+    margin-top: var(--sp-2);
+  }
+  .field--check input {
+    width: 20px;
+    height: 20px;
+    margin-top: 0.2rem;
+    accent-color: var(--brown);
+  }
+  .field--check label {
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+  .lead__hp {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .lead__turnstile {
+    margin-top: var(--sp-2);
+  }
+  .lead__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-4);
+    margin-top: var(--sp-2);
+  }
+  .lead__status {
+    font-size: 0.85rem;
+    color: var(--brown-dark);
+  }
+  .lead__status.is-error {
+    color: #9a2b2b;
+  }
+  .lead__fine {
+    font-size: 0.74rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+  .lead__todo {
+    font-size: 0.8rem;
+  }
+
+  @media (min-width: 640px) {
+    .lead__row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

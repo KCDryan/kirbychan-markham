@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import NeighbourhoodGrid from '../components/NeighbourhoodGrid.astro';
+import site from '../data/site.json';
+---
+
+<Base
+  title="Page Not Found"
+  description="That page does not exist on kirbychanmarkham.com. Here are the twelve Markham neighbourhood guides and the quickest ways to reach us instead."
+  noindex={true}
+>
+  <section class="nf">
+    <div class="wrap-narrow">
+      <p class="eyebrow">404</p>
+      <h1>That page is not <em>here</em></h1>
+      <p class="lede">
+        The link may be old or we may have moved something. The neighbourhood guides are below. If you were looking for something
+        specific, ask us and we will point you at it.
+      </p>
+      <div class="page-hero__actions">
+        <a class="btn btn--primary" href="/neighbourhoods/">Neighbourhood guides</a>
+        <a class="btn btn--ghost" href="/contact/">Contact us</a>
+      </div>
+      <p class="nf__phone">
+        Or call <a href={site.contact.phoneHref}>{site.contact.phone}</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <NeighbourhoodGrid />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    padding-block: clamp(3rem, 2rem + 5vw, 6rem);
+    background:
+      radial-gradient(110% 80% at 90% 0%, rgba(179, 139, 89, 0.1), transparent 60%),
+      var(--cream);
+  }
+  .nf h1 {
+    max-width: 16ch;
+  }
+  .nf .lede {
+    margin-top: var(--sp-5);
+    max-width: 54ch;
+  }
+  .nf__phone {
+    margin-top: var(--sp-6);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+</style>

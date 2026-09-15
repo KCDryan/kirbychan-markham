@@ -1,0 +1,188 @@
+---
+import market from '../data/market.json';
+import { cad, isTodo } from '../lib/format';
+
+// Only neighbourhoods with a real figure appear. If nothing has been supplied
+// yet the whole band is skipped, so the homepage never shows an empty ticker
+// or an invented number.
+const rows = market.neighbourhoods
+  .filter((n) => typeof n.price === 'number')
+  .map((n) => ({ ...n, display: cad(n.price)! }));
+
+const show = rows.length > 0;
+const sourceMissing = isTodo(market.source) || isTodo(market.period);
+const sourceLine = sourceMissing ? null : `Source: ${market.source} ${market.period}`;
+---
+
+{
+  show && (
+    <section class="ticker" aria-labelledby="ticker-heading">
+      <div class="wrap ticker__head">
+        <h2 id="ticker-heading">
+          {market.metric} by neighbourhood
+        </h2>
+        {sourceLine ? (
+          <p class="ticker__source">{sourceLine}</p>
+        ) : (
+          <p class="ticker__source">
+            <span class="todo-badge">TODO: set source and period in src/data/market.json</span>
+          </p>
+        )}
+      </div>
+
+      {/* Visual marquee. Hidden from assistive tech because the same figures
+          are listed in reading order immediately below. */}
+      <div class="ticker__viewport" aria-hidden="true">
+        <div class="ticker__track">
+          {[0, 1].map(() => (
+            <ul class="ticker__list">
+              {rows.map((n) => (
+                <li>
+                  <span class="ticker__name">{n.name}</span>
+                  <span class="ticker__price">{n.display}</span>
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      </div>
+
+      <div class="wrap">
+        {/* Plain text, never focusable, so hiding it visually cannot strand a
+            keyboard user on an invisible link. The neighbourhood links live in
+            the grid directly below this band. */}
+        <ul class="ticker__static">
+          {rows.map((n) => (
+            <li>
+              <span class="ticker__name">{n.name}</span>
+              <span class="ticker__price">{n.display}</span>
+            </li>
+          ))}
+        </ul>
+        <p class="ticker__note">
+          Figures are general information for the period stated. They are not an appraisal and not
+          a guarantee of value for any specific property.
+        </p>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .ticker {
+    background: var(--sand);
+    border-block: 1px solid var(--rule);
+    padding-block: var(--sp-6);
+    overflow: hidden;
+  }
+  .ticker__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: var(--sp-5);
+  }
+  .ticker__head h2 {
+    font-size: var(--step-1);
+  }
+  .ticker__source {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .ticker__viewport {
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+  .ticker__track {
+    display: flex;
+    width: max-content;
+    animation: ticker-scroll 46s linear infinite;
+  }
+  .ticker__viewport:hover .ticker__track {
+    animation-play-state: paused;
+  }
+  .ticker__list {
+    display: flex;
+    gap: var(--sp-6);
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--sp-3);
+  }
+  .ticker__list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    white-space: nowrap;
+    padding-right: var(--sp-6);
+    border-right: 1px solid var(--rule);
+  }
+  .ticker__name {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .ticker__price {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: var(--brown-dark);
+  }
+
+  @keyframes ticker-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Accessible list. Visible whenever motion is reduced, otherwise available
+     to screen readers and keyboard users through normal document order. */
+  .ticker__static {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 0.2rem 1.5rem;
+    list-style: none;
+    margin: var(--sp-5) 0 0;
+    padding: 0;
+  }
+  .ticker__static li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .ticker__note {
+    margin-top: var(--sp-5);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    max-width: 70ch;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ticker__viewport {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) and (min-width: 700px) {
+    .ticker__static {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  }
+</style>

@@ -1,0 +1,274 @@
+---
+import { getCollection } from 'astro:content';
+import Page from '../layouts/Page.astro';
+import Cta from '../components/Cta.astro';
+import { neighbourhoodPath } from '../lib/format';
+
+const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+const byId = new Map(hoods.map((h) => [h.id, h]));
+
+// Schematic positions only. This is a relative position diagram, not a survey
+// and not a boundary map. Coordinates are hand placed on a 1000 x 700 canvas
+// where north is up and east is right.
+const spots: { id: string; x: number; y: number }[] = [
+  { id: 'cathedraltown', x: 395, y: 96 },
+  { id: 'angus-glen', x: 570, y: 96 },
+  { id: 'greensborough', x: 810, y: 130 },
+  { id: 'berczy-village', x: 600, y: 238 },
+  { id: 'wismer', x: 755, y: 238 },
+  { id: 'unionville', x: 530, y: 372 },
+  { id: 'markham-village', x: 790, y: 396 },
+  { id: 'cornell', x: 905, y: 432 },
+  { id: 'downtown', x: 480, y: 452 },
+  { id: 'thornhill', x: 112, y: 556 },
+  { id: 'milliken-mills', x: 560, y: 596 },
+  { id: 'box-grove', x: 900, y: 570 },
+];
+
+const roadsH = [
+  { y: 150, label: 'Major Mackenzie Dr' },
+  { y: 330, label: '16th Ave' },
+  { y: 482, label: 'Highway 7' },
+  { y: 645, label: 'Steeles Ave' },
+];
+
+const roadsV = [
+  { x: 62, label: 'Yonge St' },
+  { x: 250, label: 'Hwy 404' },
+  { x: 365, label: 'Woodbine' },
+  { x: 472, label: 'Warden' },
+  { x: 572, label: 'Kennedy' },
+  { x: 672, label: 'McCowan' },
+  { x: 782, label: 'Hwy 48' },
+  { x: 902, label: '9th Line' },
+];
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Map of Markham', path: '/map-of-markham/' },
+];
+
+const faq = [
+  {
+    q: 'Is this an official boundary map?',
+    a: 'No. It is a schematic showing roughly where each neighbourhood sits relative to the main roads. Official community boundaries are set by the City of Markham and do not match this diagram exactly.',
+  },
+  {
+    q: 'Which neighbourhoods are in north Markham?',
+    a: 'Cathedraltown, Angus Glen, Berczy Village, Wismer and Greensborough all sit north of 16th Avenue. They share newer housing, family buyers and a drive rather than a walk to a GO station.',
+  },
+  {
+    q: 'Which neighbourhoods are closest to Toronto?',
+    a: 'Thornhill on the Markham side and Milliken Mills both sit on the Steeles Avenue border, which is why they have the best transit access in the city.',
+  },
+  {
+    q: 'Where does the GO train run?',
+    a: 'The Stouffville line runs roughly south to north through the middle and east of the city, with stations at or beside Milliken Mills, Unionville, Markham Village and Greensborough.',
+  },
+];
+---
+
+<Page
+  title="Map of Markham Neighbourhoods"
+  description="Where each Markham neighbourhood sits relative to the main roads and the GO line, with a link to the full guide for all twelve communities."
+  eyebrow="Orientation"
+  h1="Where everything actually is"
+  accent="actually"
+  lede="Twelve neighbourhoods, placed against the roads you already know. Tap any name to open its guide. This is a schematic for orientation rather than a boundary map."
+  crumbs={crumbs}
+  faq={faq}
+>
+  <section class="section">
+    <div class="wrap">
+      <div class="map-scroll">
+        <svg
+          class="map"
+          viewBox="0 0 1000 700"
+          role="group"
+          aria-labelledby="map-title map-desc"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <title id="map-title">Schematic map of Markham neighbourhoods</title>
+          <desc id="map-desc">
+            A diagram placing twelve Markham neighbourhoods relative to the main east to west and
+            north to south roads. North is at the top. A text list of the same neighbourhoods
+            follows below the diagram.
+          </desc>
+
+          <rect x="0" y="0" width="1000" height="700" fill="#f6efe6" />
+
+          {
+            roadsH.map((r) => (
+              <>
+                <line x1="20" y1={r.y} x2="980" y2={r.y} stroke="#e4d9c9" stroke-width="10" />
+                <text x="28" y={r.y - 12} class="road">
+                  {r.label}
+                </text>
+              </>
+            ))
+          }
+          {
+            roadsV.map((r) => (
+              <>
+                <line x1={r.x} y1="20" x2={r.x} y2="680" stroke="#e4d9c9" stroke-width="8" />
+                <text x={r.x + 6} y="686" class="road">
+                  {r.label}
+                </text>
+              </>
+            ))
+          }
+
+          {/* The GO Stouffville line, drawn schematically */}
+          <polyline
+            points="540,690 552,520 586,360 660,220 700,60"
+            fill="none"
+            stroke="#7b5d3c"
+            stroke-width="3"
+            stroke-dasharray="10 7"
+          />
+          <text x="706" y="56" class="road road--go">GO Stouffville line</text>
+
+          {
+            spots.map((s) => {
+              const hood = byId.get(s.id);
+              if (!hood) return null;
+              const label = hood.data.name;
+              const width = Math.max(110, label.length * 9.2 + 34);
+              return (
+                <a href={neighbourhoodPath(hood.id)} class="pin">
+                  <rect
+                    x={s.x - width / 2}
+                    y={s.y - 17}
+                    width={width}
+                    height="34"
+                    rx="3"
+                    class="pin__box"
+                  />
+                  <text x={s.x} y={s.y + 5} text-anchor="middle" class="pin__text">
+                    {label}
+                  </text>
+                </a>
+              );
+            })
+          }
+
+          <text x="978" y="34" text-anchor="end" class="compass">N &uarr;</text>
+        </svg>
+      </div>
+      <p class="map-note">
+        Schematic only. Positions are approximate and this is not a survey, not a boundary map and
+        not to scale. Official community boundaries are set by the City of Markham.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">In words</p>
+        <h2>The same twelve, <em>listed</em></h2>
+      </div>
+      <ul class="text-map" role="list">
+        {
+          hoods.map((h) => (
+            <li>
+              <a href={neighbourhoodPath(h.id)}>{h.data.name}</a>
+              <span>{h.data.personality}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Cta />
+</Page>
+
+<style>
+  .map-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    background: var(--sand);
+  }
+  .map {
+    display: block;
+    min-width: 720px;
+    width: 100%;
+    height: auto;
+  }
+  .map :global(.road) {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    fill: #9a8b78;
+  }
+  .map :global(.road--go) {
+    fill: var(--brown);
+  }
+  .map :global(.compass) {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    fill: var(--brown);
+  }
+  .map :global(.pin__box) {
+    fill: #ffffff;
+    stroke: var(--rule);
+    stroke-width: 1;
+    transition:
+      fill 0.15s ease,
+      stroke 0.15s ease;
+  }
+  .map :global(.pin__text) {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    fill: var(--ink);
+  }
+  .map :global(.pin:hover .pin__box),
+  .map :global(.pin:focus-visible .pin__box) {
+    fill: var(--gold);
+    stroke: var(--brown);
+  }
+  .map :global(.pin:hover .pin__text),
+  .map :global(.pin:focus-visible .pin__text) {
+    fill: var(--espresso);
+  }
+  .map :global(.pin) {
+    cursor: pointer;
+  }
+
+  .map-note {
+    margin-top: var(--sp-4);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    max-width: 72ch;
+  }
+
+  .text-map {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: var(--sp-4) var(--sp-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .text-map li {
+    display: grid;
+    gap: 0.2rem;
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+  }
+  .text-map a {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    text-decoration: none;
+  }
+  .text-map span {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+</style>

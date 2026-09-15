@@ -1,0 +1,234 @@
+---
+import { getCollection } from 'astro:content';
+import Logo from './Logo.astro';
+import site from '../data/site.json';
+import nav from '../data/nav.json';
+import { neighbourhoodPath, isTodo } from '../lib/format';
+
+const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+const services = (await getCollection('services', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const socials = (
+  [
+    ['Instagram', site.social.instagram],
+    ['Facebook', site.social.facebook],
+    ['YouTube', site.social.youtube],
+    ['LinkedIn', site.social.linkedin],
+  ] as const
+).filter(([, url]) => url && url.length > 0);
+
+const year = new Date().getFullYear();
+const brokerageMissing = isTodo(site.brokerage.legalName);
+---
+
+<footer class="site-footer on-dark">
+  <div class="wrap">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <Logo variant="light" />
+        <p class="footer__tag">
+          Markham, neighbourhood by neighbourhood. Twelve pillar guides, honest numbers and one
+          agent who answers the phone.
+        </p>
+        {
+          socials.length > 0 && (
+            <ul class="footer__social">
+              {socials.map(([label, url]) => (
+                <li>
+                  <a href={url} rel="noopener noreferrer" target="_blank">
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+
+      <nav class="footer__col" aria-label="Neighbourhoods">
+        <h2>Neighbourhoods</h2>
+        <ul>
+          {hoods.map((h) => <li><a href={neighbourhoodPath(h.id)}>{h.data.name}</a></li>)}
+          <li><a href="/map-of-markham/">Map of Markham</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer__col" aria-label="Services">
+        <h2>Services</h2>
+        <ul>
+          <li><a href="/buyers/">Buyers</a></li>
+          <li><a href="/sellers/">Sellers</a></li>
+          {services.map((s) => <li><a href={`/services/${s.id}/`}>{s.data.name}</a></li>)}
+        </ul>
+      </nav>
+
+      <nav class="footer__col" aria-label="Connect">
+        <h2>Connect</h2>
+        <ul>
+          {nav.footer.connect.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+          <li><a href={site.contact.phoneHref}>{site.contact.phone}</a></li>
+          <li><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></li>
+          <li>
+            <a href={site.parentSite} rel="noopener noreferrer" target="_blank">
+              kirbychanandco.com
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer__legal">
+      <div class="footer__disclosure">
+        <p class="footer__brokerage">
+          <strong>Kirby Chan &amp; Co. Real Estate Inc.</strong>
+          {
+            brokerageMissing ? (
+              <span class="todo">
+                TODO: add the brokerage legal name exactly as registered with RECO, plus the
+                registrant disclosure text, in src/data/site.json
+              </span>
+            ) : (
+              <span> &middot; {site.brokerage.legalName}</span>
+            )
+          }
+        </p>
+        {!brokerageMissing && <p>{site.brokerage.disclosure}</p>}
+        <p>
+          Office: {site.office.street}, {site.office.city}, {site.office.region}{' '}
+          {site.office.postalCode}. Serving Markham and the surrounding York Region communities.
+        </p>
+        <p>
+          Market figures shown on this site are general information drawn from Toronto Regional
+          Real Estate Board data for the stated period. They are not an appraisal, not an opinion
+          of value for any specific property and not guaranteed. Nothing here is legal, tax,
+          mortgage or investment advice. Speak to a qualified professional before you act.
+        </p>
+        <p>
+          Not intended to solicit buyers or sellers currently under contract with another
+          brokerage.
+        </p>
+      </div>
+      <div class="footer__meta">
+        <p>&copy; {year} Kirby Chan &amp; Co. Real Estate Inc.</p>
+        <ul>
+          {nav.footer.legal.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--espresso);
+    color: var(--text-on-dark-muted);
+    padding-block: var(--sp-8) var(--sp-6);
+    font-size: 0.88rem;
+  }
+  .footer__top {
+    display: grid;
+    gap: var(--sp-7);
+    grid-template-columns: 1fr;
+    padding-bottom: var(--sp-7);
+    border-bottom: 1px solid var(--rule-dark);
+  }
+  .footer__tag {
+    margin-top: var(--sp-4);
+    max-width: 34ch;
+    color: var(--text-on-dark-muted);
+    line-height: 1.6;
+  }
+  .footer__social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    list-style: none;
+    margin: var(--sp-5) 0 0;
+    padding: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .footer__col h2 {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: var(--sp-4);
+  }
+  .footer__col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.45rem;
+  }
+  .site-footer a {
+    color: var(--text-on-dark-muted);
+    text-decoration: none;
+  }
+  .site-footer a:hover {
+    color: var(--gold);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .footer__legal {
+    padding-top: var(--sp-6);
+    font-size: 0.75rem;
+    line-height: 1.7;
+    color: #9d9184;
+  }
+  .footer__disclosure {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 90ch;
+  }
+  .footer__brokerage strong {
+    color: var(--text-on-dark);
+    font-weight: 500;
+  }
+  .todo {
+    display: inline-block;
+    margin-left: 0.4rem;
+    padding: 0.1rem 0.5rem;
+    border: 1px dashed var(--gold);
+    border-radius: 2px;
+    color: var(--gold);
+  }
+  .footer__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--sp-6);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule-dark);
+  }
+  .footer__meta ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 620px) {
+    .footer__top {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1000px) {
+    .footer__top {
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    }
+  }
+</style>

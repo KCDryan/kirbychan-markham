@@ -1,0 +1,49 @@
+---
+/**
+ * Stand in for a photo that has not been supplied yet. Renders a warm block
+ * with the intended subject so nothing looks broken and every gap is visible.
+ * Replace with an <Image /> from astro:assets once the real file exists.
+ */
+interface Props { label: string; ratio?: string; class?: string }
+const { label, ratio = '4 / 3', class: cls = '' } = Astro.props;
+---
+<div class:list={['ph', cls]} style={`aspect-ratio:${ratio}`} role="img" aria-label={`Photo placeholder: ${label}`}>
+  <span class="ph__pill">Photo to come</span>
+  <span class="ph__label">{label}</span>
+</div>
+
+<style>
+  .ph {
+    position: relative;
+    display: grid;
+    place-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+    background:
+      repeating-linear-gradient(135deg, transparent 0 14px, rgba(179, 139, 89, 0.06) 14px 28px),
+      linear-gradient(160deg, var(--sand), #ece0cf);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .ph__pill {
+    justify-self: center;
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brown-dark);
+    border: 1px solid var(--gold);
+    border-radius: 999px;
+    padding: 0.2rem 0.7rem;
+    background: rgba(255, 255, 255, 0.55);
+  }
+  .ph__label {
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--brown);
+    max-width: 24ch;
+  }
+</style>

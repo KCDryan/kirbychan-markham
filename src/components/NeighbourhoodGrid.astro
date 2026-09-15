@@ -1,0 +1,95 @@
+---
+import { getCollection } from 'astro:content';
+import { neighbourhoodPath } from '../lib/format';
+
+interface Props {
+  limit?: number;
+  exclude?: string;
+  heading?: boolean;
+}
+const { limit, exclude, heading = true } = Astro.props;
+
+let hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+if (exclude) hoods = hoods.filter((h) => h.id !== exclude);
+if (limit) hoods = hoods.slice(0, limit);
+---
+
+<ul class="hood-grid" role="list">
+  {
+    hoods.map((h) => (
+      <li>
+        <a class="hood" href={neighbourhoodPath(h.id)}>
+          <span class="hood__num">N&deg; {String(h.data.order).padStart(2, '0')}</span>
+          {heading ? <h3 class="hood__name">{h.data.name}</h3> : <span class="hood__name">{h.data.name}</span>}
+          <span class="hood__line">{h.data.personality}</span>
+          <span class="hood__cta">Explore {h.data.name}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .hood-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+    gap: var(--sp-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .hood {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    height: 100%;
+    padding: var(--sp-5);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      border-color 0.2s var(--ease),
+      box-shadow 0.2s var(--ease),
+      transform 0.2s var(--ease);
+  }
+  .hood:hover {
+    border-color: var(--gold);
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+  .hood__num {
+    font-family: var(--font-serif);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+  }
+  .hood__name {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    font-weight: 400;
+    line-height: 1.15;
+    margin: 0;
+  }
+  .hood__line {
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    flex: 1;
+  }
+  .hood__cta {
+    margin-top: var(--sp-3);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brown);
+  }
+  .hood:hover .hood__cta {
+    color: var(--brown-dark);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+</style>

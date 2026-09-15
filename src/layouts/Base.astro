@@ -1,0 +1,100 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import site from '../data/site.json';
+import { canonical, absolute, DEFAULT_OG } from '../lib/seo';
+import { realEstateAgent } from '../lib/schema';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  noindex?: boolean;
+  ogType?: 'website' | 'article' | 'video.other';
+  jsonLd?: unknown[];
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description,
+  ogImage = DEFAULT_OG,
+  noindex = false,
+  ogType = 'website',
+  jsonLd = [],
+  bodyClass = '',
+} = Astro.props;
+
+const url = canonical(Astro.url.pathname);
+const image = absolute(ogImage);
+
+// Sitewide agent graph. areaServed lists Markham and every neighbourhood.
+const agent = realEstateAgent([
+  'Markham',
+  'Unionville',
+  'Markham Village',
+  'Cornell',
+  'Berczy Village',
+  'Cathedraltown',
+  'Wismer',
+  'Greensborough',
+  'Angus Glen',
+  'Box Grove',
+  'Thornhill',
+  'Milliken Mills',
+  'Downtown Markham',
+]);
+
+const graphs = [agent, ...jsonLd].filter(Boolean);
+---
+
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={url} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={site.locale} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+
+    <meta name="theme-color" content="#2a211a" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {
+      graphs.map((graph) => (
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(graph)} />
+      ))
+    }
+  </head>
+  <body class={bodyClass}>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,151 @@
+---
+import Page from '../layouts/Page.astro';
+import site from '../data/site.json';
+import { isTodo } from '../lib/format';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Privacy', path: '/privacy/' },
+];
+const updated = 'September 2026';
+const brokerageMissing = isTodo(site.brokerage.legalName);
+---
+
+<Page
+  title="Privacy Notice"
+  description="How Kirby Chan and Co. collects, uses and protects personal information under PIPEDA and how consent works for electronic messages under CASL."
+  eyebrow="Legal"
+  h1="Privacy notice"
+  accent="Privacy"
+  lede={`How we collect, use and protect personal information and how you can withdraw consent at any time. Last updated ${updated}.`}
+  crumbs={crumbs}
+  tone="sand"
+>
+  <section class="section">
+    <div class="wrap-narrow prose">
+      <div class="notice">
+        <p>
+          <strong>Have a lawyer review this before launch.</strong> This notice is written to align
+          with the Personal Information Protection and Electronic Documents Act and Canada's
+          Anti-Spam Legislation and it describes how this website works. It is not legal advice
+          and it has not been reviewed by counsel.
+        </p>
+      </div>
+
+      <h2>Who we are</h2>
+      <p>
+        Kirby Chan &amp; Co. Real Estate Inc.
+        {brokerageMissing ? ' [TODO: brokerage legal name]' : `, ${site.brokerage.legalName}`}.
+        Registered office: {site.office.street}, {site.office.city}, {site.office.region}{' '}
+        {site.office.postalCode}. Phone {site.contact.phone}. Email {site.contact.email}.
+      </p>
+      <p>
+        We are responsible for the personal information under our control. If you have a question
+        about this notice or about how we handle your information, contact us using the details
+        above.
+      </p>
+
+      <h2>What we collect</h2>
+      <ul>
+        <li>
+          <strong>Information you give us.</strong> Your name, email address, phone number, the
+          neighbourhood and timeline you select and anything you write in the message field of an
+          enquiry form.
+        </li>
+        <li>
+          <strong>Information about your enquiry.</strong> The page you submitted from, the date and
+          time, the country your request came from and your browser user agent string. We use this
+          to reply in context and to identify automated submissions.
+        </li>
+        <li>
+          <strong>Spam prevention.</strong> Our enquiry form uses Cloudflare Turnstile to
+          distinguish people from automated scripts. Cloudflare processes a challenge token for
+          this purpose.
+        </li>
+      </ul>
+      <p>
+        This site does not use advertising cookies, analytics cookies or third party tracking
+        scripts. No cookie consent banner appears because no non-essential cookies are set.
+      </p>
+
+      <h2>Why we collect it</h2>
+      <p>
+        To answer your enquiry, to provide real estate services you have asked us about and, where
+        you have consented, to send you information about Markham real estate. We do not use your
+        information for any other purpose without asking you first.
+      </p>
+
+      <h2>Consent and how to withdraw it</h2>
+      <p>
+        We ask for express consent on our enquiry form before we contact you with commercial
+        electronic messages. That consent is recorded with your submission.
+      </p>
+      <p>
+        You can withdraw consent at any time. Use the unsubscribe link in any email we send, reply
+        to any message asking us to stop or write to {site.contact.email}. We will action it
+        promptly. Withdrawing consent to marketing messages does not prevent us from replying to a
+        transaction you have engaged us on.
+      </p>
+
+      <h2>Who we share it with</h2>
+      <p>
+        Your enquiry is forwarded to our customer relationship system so we can track and answer
+        it. We use service providers to host this website, to filter spam and to manage client
+        records and those providers process information on our behalf under contract.
+      </p>
+      <p>
+        We do not sell personal information. We do not share it with third parties for their own
+        marketing.
+      </p>
+      <p>
+        If you engage us for a transaction, information may be shared with the parties needed to
+        complete it, such as lawyers, lenders, the brokerage and the real estate board and may be
+        subject to the rules of the Toronto Regional Real Estate Board and applicable legislation.
+      </p>
+
+      <h2>Where information is stored</h2>
+      <p>
+        Our service providers may store or process information outside Canada, including in the
+        United States. Where that happens, the information may be accessible to courts and law
+        enforcement in that jurisdiction under its laws.
+      </p>
+      <p>
+        <span class="todo-badge">
+          TODO: confirm and list the actual processors used, including the customer relationship
+          system and the webhook provider
+        </span>
+      </p>
+
+      <h2>How long we keep it</h2>
+      <p>
+        We keep enquiry records for as long as needed to answer you and to meet our record keeping
+        obligations as a registrant, then we delete or de-identify them. Records connected to a
+        completed transaction are retained for the period required by law.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>
+        You can ask us what personal information we hold about you, ask us to correct it or ask us
+        to delete it where we are not required to keep it. Write to {site.contact.email} and we
+        will respond within a reasonable time, normally within thirty days.
+      </p>
+      <p>
+        If you are not satisfied with our response, you may contact the Office of the Privacy
+        Commissioner of Canada.
+      </p>
+
+      <h2>Security</h2>
+      <p>
+        This site is served over HTTPS. Enquiries are validated and filtered server side and
+        secrets such as webhook addresses and spam filtering keys are held in server configuration
+        and are never exposed in the pages you load.
+      </p>
+
+      <h2>Changes to this notice</h2>
+      <p>
+        If we change how we handle personal information we will update this page and change the
+        date at the top.
+      </p>
+    </div>
+  </section>
+</Page>

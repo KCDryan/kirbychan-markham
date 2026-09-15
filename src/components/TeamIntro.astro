@@ -1,0 +1,80 @@
+---
+import Placeholder from './Placeholder.astro';
+import stats from '../data/stats.json';
+import { isTodo } from '../lib/format';
+
+const years = stats.find((s) => s.label === 'Years in business');
+const yearsKnown = years && !isTodo(years.value);
+---
+
+<section class="team section section--alt">
+  <div class="wrap team__inner">
+    <div class="team__media">
+      <Placeholder label="Portrait of Kirby Chan" ratio="3 / 4" />
+    </div>
+    <div class="team__copy">
+      <p class="eyebrow">The team</p>
+      <h2>Local is not a slogan. It is the <em>whole</em> method.</h2>
+      <p class="lede">
+        Most agents sell across the GTA and learn a neighbourhood on the drive over. We work one
+        city, which is why we can tell you what a Berczy semi trades for against a Wismer one and
+        why the gap is what it is.
+      </p>
+      <p>
+        {
+          yearsKnown ? (
+            <>
+              {years!.value} years in this business have taught us that the useful part of the job
+              is not opening doors. It is knowing which street floods, which school boundary is
+              under review and which listing has already been through two failed offers.
+            </>
+          ) : (
+            <>
+              Years in this business have taught us that the useful part of the job is not opening
+              doors. It is knowing which street floods, which school boundary is under review and
+              which listing has already been through two failed offers.{' '}
+              <span class="todo-badge">TODO: years in business, src/data/stats.json</span>
+            </>
+          )
+        }
+      </p>
+      <p>
+        We say no to listings we cannot price honestly. We tell buyers when a house is wrong for
+        them even when it costs us the deal. That is a slower way to build a business and it is the
+        only way we know how to work.
+      </p>
+      <p class="team__todo">
+        <span class="todo-badge">TODO: replace this section with Kirby's own words</span>
+      </p>
+      <a class="btn btn--ghost" href="/about/">Meet the Team</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .team__inner {
+    display: grid;
+    gap: var(--sp-7);
+    align-items: center;
+  }
+  .team__media {
+    max-width: 380px;
+    width: 100%;
+  }
+  .team__copy > p {
+    margin-top: var(--sp-4);
+  }
+  .team__copy .btn {
+    margin-top: var(--sp-6);
+  }
+  .team__todo {
+    font-size: 0.8rem;
+  }
+
+  @media (min-width: 880px) {
+    .team__inner {
+      grid-template-columns: 0.75fr 1.25fr;
+      gap: var(--sp-8);
+    }
+  }
+</style>

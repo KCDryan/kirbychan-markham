@@ -1,0 +1,81 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+  limit?: number;
+  exclude?: string;
+  only?: string[];
+}
+const { limit, exclude, only } = Astro.props;
+
+let services = (await getCollection('services', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+if (only) services = services.filter((s) => only.includes(s.id));
+if (exclude) services = services.filter((s) => s.id !== exclude);
+if (limit) services = services.slice(0, limit);
+---
+
+<ul class="svc-grid" role="list">
+  {
+    services.map((s) => (
+      <li>
+        <a class="svc" href={`/services/${s.id}/`}>
+          <h3 class="svc__name">{s.data.name}</h3>
+          <p class="svc__line">{s.data.summary}</p>
+          <span class="svc__cta" aria-hidden="true">
+            Read more
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .svc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: var(--sp-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .svc {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 100%;
+    padding: var(--sp-5);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--gold);
+    border-radius: var(--radius-lg);
+    background: var(--cream);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      background 0.2s var(--ease),
+      border-color 0.2s var(--ease);
+  }
+  .svc:hover {
+    background: #fff;
+    border-color: var(--gold);
+    border-top-color: var(--brown);
+  }
+  .svc__name {
+    font-size: var(--step-1);
+    margin: 0;
+  }
+  .svc__line {
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    flex: 1;
+  }
+  .svc__cta {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brown);
+  }
+</style>

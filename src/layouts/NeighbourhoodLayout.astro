@@ -1,0 +1,373 @@
+---
+import Accent from '../components/Accent.astro';
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import Base from './Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import FaqAccordion from '../components/FaqAccordion.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import VideoCard from '../components/VideoCard.astro';
+import Cta from '../components/Cta.astro';
+import Placeholder from '../components/Placeholder.astro';
+import site from '../data/site.json';
+import { neighbourhoodPath } from '../lib/format';
+import { breadcrumbList, faqPage, place } from '../lib/schema';
+
+interface Props {
+  entry: CollectionEntry<'neighbourhoods'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const path = neighbourhoodPath(entry.id);
+
+const allHoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
+const nearby = d.nearby
+  .map((slug) => allHoods.find((h) => h.id === slug))
+  .filter((h): h is CollectionEntry<'neighbourhoods'> => Boolean(h));
+
+const allServices = await getCollection('services', ({ data }) => !data.draft);
+const services = d.relatedServices
+  .map((slug) => allServices.find((s) => s.id === slug))
+  .filter((s): s is CollectionEntry<'services'> => Boolean(s));
+
+const videos = (await getCollection('videos', ({ data }) => !data.draft))
+  .filter((v) => v.data.neighbourhood === entry.id)
+  .slice(0, 2);
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .filter((a) => a.data.neighbourhood === entry.id || a.data.related.includes(entry.id))
+  .slice(0, 3);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Neighbourhoods', path: '/neighbourhoods/' },
+  { name: d.name, path },
+];
+
+const searchHref = site.links.loftySearch || '/contact/';
+const searchExternal = searchHref.startsWith('http');
+
+const jsonLd = [
+  breadcrumbList(crumbs),
+  place({ name: d.name, description: d.intro, path }),
+  faqPage(d.faq),
+].filter(Boolean);
+
+---
+
+<Base title={d.title} description={d.description} noindex={d.noindex} jsonLd={jsonLd}>
+  <Breadcrumbs crumbs={crumbs} />
+
+  <section class="hood-hero">
+    <div class="wrap hood-hero__inner">
+      <div>
+        <p class="eyebrow">{d.heroEyebrow}</p>
+        <h1>
+          <Accent text={d.h1} accent={d.accent} />
+        </h1>
+        <p class="lede">{d.intro}</p>
+        <div class="page-hero__actions">
+          <a
+            class="btn btn--primary"
+            href={searchHref}
+            rel={searchExternal ? 'noopener' : undefined}
+            target={searchExternal ? '_blank' : undefined}
+          >
+            Search {d.name} Homes{
+              searchExternal && <span class="visually-hidden"> (opens in a new tab)</span>
+            }
+          </a>
+          <a class="btn btn--ghost" href="/contact/">Ask us about {d.name}</a>
+        </div>
+      </div>
+      <Placeholder label={`${d.name} streetscape photo`} ratio="4 / 3" />
+    </div>
+  </section>
+
+  <div class="wrap hood-body">
+    <div class="hood-main">
+      <section class="quick" aria-labelledby="quick-heading">
+        <h2 id="quick-heading">{d.name} at a glance</h2>
+        <div class="table-scroll">
+          <table class="stat-table">
+            <tbody>
+              <tr><th scope="row">Price range</th><td>{d.quickStats.priceRange}</td></tr>
+              <tr><th scope="row">Property types</th><td>{d.quickStats.propertyTypes}</td></tr>
+              <tr><th scope="row">Schools</th><td>{d.quickStats.schools}</td></tr>
+              <tr><th scope="row">Transit</th><td>{d.quickStats.transit}</td></tr>
+              <tr><th scope="row">Commute downtown</th><td>{d.quickStats.commute}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {
+        d.priceBands.length > 0 && (
+          <section class="bands" aria-labelledby="bands-heading">
+            <h2 id="bands-heading">Price bands in {d.name}</h2>
+            <div class="table-scroll">
+              <table class="stat-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Band</th>
+                    <th scope="col">Range</th>
+                    <th scope="col">What it buys</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {d.priceBands.map((b) => (
+                    <tr>
+                      <th scope="row">{b.band}</th>
+                      <td>{b.range}</td>
+                      <td>{b.what}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p class="bands__note">
+              Figures are general information for the period stated and are not an appraisal of any
+              specific property.
+            </p>
+          </section>
+        )
+      }
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      <FaqAccordion faq={d.faq} heading={`${d.name} questions`} accent="questions" />
+
+      <div class="disclaimer">
+        <p>
+          <strong>Market data.</strong> Price information on this page is general information drawn
+          from Toronto Regional Real Estate Board data for the period stated. It is not an
+          appraisal, not an opinion of value for any specific property and not guaranteed.
+        </p>
+        <p>
+          <strong>Not advice.</strong> Nothing here is legal, tax, mortgage or investment advice.
+          School catchments are set by the school boards and are reviewed periodically. Confirm the
+          boundary for any specific address with the board directly.
+        </p>
+      </div>
+    </div>
+
+    <aside class="hood-aside">
+      <div class="aside-card">
+        <h2>Nearby neighbourhoods</h2>
+        <ul>
+          {nearby.map((h) => (
+            <li>
+              <a href={neighbourhoodPath(h.id)}>{h.data.name}</a>
+              <span>{h.data.personality}</span>
+            </li>
+          ))}
+        </ul>
+        <a class="aside-card__all" href="/neighbourhoods/">All twelve neighbourhoods</a>
+      </div>
+
+      {
+        services.length > 0 && (
+          <div class="aside-card">
+            <h2>Relevant to {d.name}</h2>
+            <ul>
+              {services.map((s) => (
+                <li>
+                  <a href={`/services/${s.id}/`}>{s.data.name}</a>
+                  <span>{s.data.summary}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      <div class="aside-card aside-card--dark on-dark">
+        <h2>Thinking about {d.name}?</h2>
+        <p>Tell us the situation and we will tell you plainly whether it fits.</p>
+        <a class="btn btn--gold btn--sm btn--wide" href="/contact/">Start a conversation</a>
+        <a class="aside-card__phone" href={site.contact.phoneHref}>{site.contact.phone}</a>
+      </div>
+    </aside>
+  </div>
+
+  {
+    (videos.length > 0 || articles.length > 0) && (
+      <section class="section section--alt">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Keep reading</p>
+            <h2>
+              More on <em>{d.name}</em>
+            </h2>
+          </div>
+          <ul class="related-row" role="list">
+            {videos.map((v) => (
+              <li>
+                <VideoCard
+                  slug={v.id}
+                  title={v.data.h1}
+                  category={v.data.category}
+                  minutes={v.data.durationMinutes}
+                  youtubeId={v.data.youtubeId}
+                  summary={v.data.summary}
+                />
+              </li>
+            ))}
+            {articles.map((a) => (
+              <li>
+                <ArticleCard
+                  slug={a.id}
+                  title={a.data.h1}
+                  subtitle={a.data.subtitle}
+                  published={a.data.published}
+                  minutes={a.data.readMinutes}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <Cta
+    heading={`Book a 30-minute conversation about ${d.name}`}
+    accent="30-minute"
+    body="No pitch and no pressure. We will tell you what your budget reaches here and whether this is the right neighbourhood for what you actually need."
+  />
+</Base>
+
+<style>
+  .hood-hero {
+    background:
+      radial-gradient(110% 80% at 90% 0%, rgba(179, 139, 89, 0.1), transparent 60%),
+      var(--cream);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem);
+  }
+  .hood-hero__inner {
+    display: grid;
+    gap: var(--sp-6);
+    align-items: center;
+  }
+  .hood-hero h1 {
+    max-width: 18ch;
+  }
+  .hood-hero .lede {
+    margin-top: var(--sp-5);
+    max-width: 56ch;
+  }
+
+  .hood-body {
+    display: grid;
+    gap: var(--sp-7);
+    padding-block: var(--section-y);
+  }
+  .hood-main > * + * {
+    margin-top: var(--sp-8);
+  }
+  .quick h2,
+  .bands h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--sp-4);
+  }
+  .bands__note {
+    margin-top: var(--sp-3);
+    font-size: 0.76rem;
+    color: var(--text-muted);
+  }
+
+  .hood-aside {
+    display: grid;
+    gap: var(--sp-5);
+    align-content: start;
+  }
+  .aside-card {
+    padding: var(--sp-5);
+    background: var(--sand);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+  .aside-card h2 {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brown);
+    margin-bottom: var(--sp-4);
+  }
+  .aside-card ul {
+    display: grid;
+    gap: var(--sp-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .aside-card li {
+    display: grid;
+    gap: 0.2rem;
+  }
+  .aside-card li a {
+    font-family: var(--font-serif);
+    font-size: var(--step-0);
+    text-decoration: none;
+  }
+  .aside-card li span {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+  .aside-card__all {
+    display: inline-block;
+    margin-top: var(--sp-5);
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .aside-card--dark {
+    background: var(--espresso);
+    border-color: var(--espresso);
+    color: var(--text-on-dark-muted);
+  }
+  .aside-card--dark h2 {
+    color: var(--gold);
+  }
+  .aside-card--dark p {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin-bottom: var(--sp-5);
+  }
+  .aside-card__phone {
+    display: block;
+    margin-top: var(--sp-4);
+    text-align: center;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    color: var(--text-on-dark-muted);
+  }
+
+  .related-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 860px) {
+    .hood-hero__inner {
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: var(--sp-7);
+    }
+  }
+  @media (min-width: 1000px) {
+    .hood-body {
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: var(--sp-8);
+      align-items: start;
+    }
+  }
+</style>

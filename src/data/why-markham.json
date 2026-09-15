@@ -1,0 +1,33 @@
+{
+  "note": "Every figure here must be checkable against a public source before it goes live. Fill the value field with the number and put the source in the source field. Leave value as \"TODO\" until you have verified it. Nothing on this band may be an estimate.",
+  "points": [
+    {
+      "value": "TODO",
+      "unit": "",
+      "label": "GO stations inside Markham",
+      "body": "The Stouffville line runs the length of the city, so most neighbourhoods sit within a short drive of a train to Union Station.",
+      "source": "Verify against Metrolinx station list"
+    },
+    {
+      "value": "TODO",
+      "unit": "min",
+      "label": "Unionville GO to Union Station",
+      "body": "Scheduled weekday train time, not a drive estimate. Use the posted timetable, not an average.",
+      "source": "Verify against the current GO Transit schedule"
+    },
+    {
+      "value": "2",
+      "unit": "",
+      "label": "Public school boards",
+      "body": "York Region District School Board and York Catholic District School Board both serve Markham and boundaries are reviewed periodically. Always confirm the catchment for a specific address before you buy.",
+      "source": "YRDSB and YCDSB"
+    },
+    {
+      "value": "TODO",
+      "unit": "",
+      "label": "Community centres and libraries",
+      "body": "City run recreation and library branches are spread across the neighbourhoods rather than concentrated in one core.",
+      "source": "Verify against the City of Markham facility list"
+    }
+  ]
+}

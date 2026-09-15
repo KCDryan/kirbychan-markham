@@ -1,0 +1,133 @@
+---
+interface Props {
+  id: string;
+  title: string;
+}
+const { id, title } = Astro.props;
+const hasVideo = id.trim().length > 0;
+---
+
+{
+  hasVideo ? (
+    <lite-yt class="lyt" data-id={id} data-title={title}>
+      <button class="lyt__btn" type="button">
+        <img
+          class="lyt__thumb"
+          src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
+          alt=""
+          width="480"
+          height="270"
+          loading="lazy"
+          decoding="async"
+        />
+        <span class="lyt__play" aria-hidden="true">
+          <svg viewBox="0 0 68 48" width="68" height="48" focusable="false">
+            <path
+              d="M66.5 7.7a8.6 8.6 0 0 0-6-6C55.2 0 34 0 34 0S12.8 0 7.5 1.7a8.6 8.6 0 0 0-6 6A90 90 0 0 0 0 24a90 90 0 0 0 1.5 16.3 8.6 8.6 0 0 0 6 6C12.8 48 34 48 34 48s21.2 0 26.5-1.7a8.6 8.6 0 0 0 6-6A90 90 0 0 0 68 24a90 90 0 0 0-1.5-16.3z"
+              fill="#2a211a"
+              opacity="0.85"
+            />
+            <path d="M27 34V14l18 10-18 10z" fill="#fff" />
+          </svg>
+        </span>
+        <span class="visually-hidden">Play video: {title}</span>
+      </button>
+    </lite-yt>
+  ) : (
+    <div class="lyt lyt--empty" role="img" aria-label={`Video placeholder: ${title}`}>
+      <span class="todo-badge">TODO: add the YouTube ID in this file's frontmatter</span>
+      <p>{title}</p>
+    </div>
+  )
+}
+
+<script>
+  // Facade player. Nothing from YouTube loads until someone presses play, which
+  // keeps the page weight and the third party requests at zero on first paint.
+  class LiteYt extends HTMLElement {
+    connectedCallback() {
+      const button = this.querySelector('button');
+      if (!button) return;
+      button.addEventListener(
+        'click',
+        () => {
+          const id = this.dataset.id;
+          const title = this.dataset.title ?? 'Video';
+          if (!id) return;
+          const frame = document.createElement('iframe');
+          frame.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+          frame.title = title;
+          frame.loading = 'lazy';
+          frame.allow =
+            'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+          frame.setAttribute('allowfullscreen', '');
+          frame.width = '560';
+          frame.height = '315';
+          this.replaceChildren(frame);
+          frame.focus();
+        },
+        { once: true }
+      );
+    }
+  }
+  if (!customElements.get('lite-yt')) customElements.define('lite-yt', LiteYt);
+</script>
+
+<style>
+  .lyt {
+    display: block;
+    position: relative;
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    background: var(--espresso);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .lyt__btn {
+    all: unset;
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+  .lyt__thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.2s var(--ease);
+  }
+  .lyt__btn:hover .lyt__thumb {
+    opacity: 0.82;
+  }
+  .lyt__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+  .lyt__btn:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: -3px;
+  }
+  .lyt :global(iframe) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+  .lyt--empty {
+    display: grid;
+    place-content: center;
+    gap: 0.75rem;
+    text-align: center;
+    padding: 1.5rem;
+    background: linear-gradient(160deg, var(--sand), #ece0cf);
+    border: 1px solid var(--rule);
+  }
+  .lyt--empty p {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--brown);
+  }
+</style>

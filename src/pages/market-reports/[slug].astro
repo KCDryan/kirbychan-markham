@@ -1,0 +1,112 @@
+---
+import Accent from '../../components/Accent.astro';
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Cta from '../../components/Cta.astro';
+import { blogPosting, breadcrumbList } from '../../lib/schema';
+import { longDate } from '../../lib/format';
+
+export const getStaticPaths = (async () => {
+  const reports = await getCollection('market-reports', ({ data }) => !data.draft);
+  return reports.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { entry } = Astro.props as Props;
+const d = entry.data;
+const { Content } = await render(entry);
+const path = `/market-reports/${entry.id}/`;
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Market reports', path: '/market-reports/' },
+  { name: d.period, path },
+];
+
+const jsonLd = [
+  breadcrumbList(crumbs),
+  blogPosting({
+    headline: d.h1,
+    description: d.description,
+    path,
+    published: d.published,
+  }),
+];
+
+---
+
+<Base
+  title={d.title}
+  description={d.description}
+  noindex={d.noindex}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <Breadcrumbs crumbs={crumbs} />
+
+  <article>
+    <header class="mr-hero">
+      <div class="wrap-narrow">
+        <p class="eyebrow">{d.period}</p>
+        <h1>
+          <Accent text={d.h1} accent={d.accent} />
+        </h1>
+        <p class="lede">{d.summary}</p>
+        <p class="mr-date">
+          <time datetime={d.published.toISOString()}>Published {longDate(d.published)}</time>
+        </p>
+      </div>
+    </header>
+
+    <div class="wrap-narrow mr-body">
+      <div class="prose">
+        <Content />
+      </div>
+
+      <div class="disclaimer">
+        <p>
+          <strong>Market data.</strong> Figures in this report are general information drawn from
+          Toronto Regional Real Estate Board data for the period stated. They are not an appraisal,
+          not an opinion of value for any specific property and not guaranteed. Monthly
+          neighbourhood figures are volatile and should be read as direction rather than as value.
+        </p>
+        <p>
+          <strong>Not advice.</strong> Nothing in this report is legal, tax, mortgage or investment
+          advice.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <Cta
+    heading="Want the numbers for your street?"
+    accent="your street"
+    body="A neighbourhood median will not tell you what your house is worth. We will pull the comparable sales that actually apply to it."
+  />
+</Base>
+
+<style>
+  .mr-hero {
+    background: var(--sand);
+    border-bottom: 1px solid var(--rule);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+  }
+  .mr-hero .lede {
+    margin-top: var(--sp-4);
+    max-width: 58ch;
+  }
+  .mr-date {
+    margin-top: var(--sp-4);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brown);
+  }
+  .mr-body {
+    display: grid;
+    gap: var(--sp-6);
+    padding-block: var(--section-y);
+  }
+</style>

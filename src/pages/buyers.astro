@@ -1,0 +1,196 @@
+---
+import Page from '../layouts/Page.astro';
+import NeighbourhoodGrid from '../components/NeighbourhoodGrid.astro';
+import FaqAccordion from '../components/FaqAccordion.astro';
+import Cta from '../components/Cta.astro';
+import site from '../data/site.json';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Buyers', path: '/buyers/' },
+];
+
+const steps = [
+  {
+    title: 'Work out the real number',
+    body: 'A pre-approval is the most a lender will give you, which is not the same as what you should spend. We start from the monthly payment you are comfortable with and work backwards, then add closing costs, taxes and the first year of repairs.',
+  },
+  {
+    title: 'Narrow to two or three neighbourhoods',
+    body: 'Not twelve. Where you work, how you will get there, who is in school and what you do on a Saturday will cut the list fast. We will tell you honestly which parts of Markham your budget reaches.',
+  },
+  {
+    title: 'See enough to calibrate, then stop looking',
+    body: 'Most buyers need to walk through six to ten properties before they can judge value. After that, more viewings usually make the decision harder rather than clearer.',
+  },
+  {
+    title: 'Check the things photographs hide',
+    body: 'Grading and drainage, the age of the roof and furnace, wiring in older stock, what the street sounds like at rush hour and on a Saturday. We look at these before you fall in love, not after.',
+  },
+  {
+    title: 'Write an offer that fits the situation',
+    body: 'A single offer and a competing offer situation are different games. We will tell you which one you are in, what conditions are realistic and when to walk away.',
+  },
+  {
+    title: 'Get to closing without surprises',
+    body: 'We coordinate with your lawyer and lender, track the conditions and confirm the property is in the state you agreed on before the keys change hands.',
+  },
+];
+
+const faq = [
+  {
+    q: 'Does it cost me anything to work with a buyer agent?',
+    a: 'In most Ontario residential transactions the compensation arrangement is set out in a written buyer representation agreement and the amounts involved are disclosed to you. Ask us to walk you through the agreement line by line before you sign it.',
+  },
+  {
+    q: 'How many houses should I see before I buy?',
+    a: 'Usually six to ten. Fewer and you cannot judge value. Many more and you are usually avoiding a decision rather than gathering information.',
+  },
+  {
+    q: 'Should I waive the inspection to win?',
+    a: 'We will tell you what the risk actually is on that specific property rather than giving you a blanket rule. On older Markham stock the risk is real and there are often ways to get comfort without waiving outright.',
+  },
+  {
+    q: 'What does a home actually cost beyond the price?',
+    a: 'Land transfer tax, legal fees, title insurance, adjustments, moving costs and the first year of repairs and furnishing. We give you a written list of these at the start so the number in your head is the real one.',
+  },
+  {
+    q: 'Can you help me if I am buying from a builder?',
+    a: 'Yes and you should bring us on the first visit to the presentation centre. Many builders will not register your representation afterwards and the sales representative there works for the builder.',
+  },
+  {
+    q: 'What if I want to look outside Markham?',
+    a: 'We will say so if another city genuinely suits you better and we will refer you to someone who knows that market. We would rather refer you than pretend to know Oakville.',
+  },
+];
+---
+
+<Page
+  title="Buying a Home in Markham"
+  description="How we work with buyers in Markham. Setting a real budget, narrowing neighbourhoods, checking what photographs hide and writing offers that fit the situation."
+  eyebrow="For buyers"
+  h1="Buying in Markham without guessing"
+  accent="without guessing"
+  lede="The neighbourhood decision is the expensive one and it is the hardest to reverse. We spend most of our time there and the rest making sure the house you choose has no surprises in it."
+  crumbs={crumbs}
+  faq={faq}
+>
+  <Fragment slot="hero-actions">
+    <div class="page-hero__actions">
+      <a class="btn btn--primary" href="/contact/">Start a conversation</a>
+      <a class="btn btn--ghost" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
+    </div>
+  </Fragment>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">The process</p>
+        <h2>Six steps, in <em>order</em></h2>
+        <p class="lede">
+          Most of what goes wrong for buyers is a step taken out of sequence. Looking at houses
+          before the budget is real. Writing an offer before understanding the competition.
+        </p>
+      </div>
+      <ol class="steps">
+        {
+          steps.map((s, i) => (
+            <li class="step">
+              <span class="step__num">Step {String(i + 1).padStart(2, '0')}</span>
+              <h3>{s.title}</h3>
+              <p>{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--dark on-dark">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">What you can expect</p>
+        <h2>Three things we will always <em>do</em></h2>
+      </div>
+      <div class="promises">
+        <div class="promise">
+          <h3>Tell you when a house is wrong</h3>
+          <p>
+            Even when it costs us the transaction. A buyer who is talked into the wrong house is a
+            client we lose permanently and deserve to.
+          </p>
+        </div>
+        <div class="promise">
+          <h3>Say what we do not know</h3>
+          <p>
+            We know Markham. If you ask us about a market we do not work in, you will get a referral
+            rather than a guess dressed up as expertise.
+          </p>
+        </div>
+        <div class="promise">
+          <h3>Put the numbers in writing</h3>
+          <p>
+            Budget, closing costs and the comparable sales behind any price we recommend. Nothing
+            important should live only in a conversation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Start here</p>
+        <h2>Which <em>neighbourhood</em>?</h2>
+        <p class="lede">
+          Twelve guides, each with price bands, property types, schools, transit and the honest
+          trade-offs. Read two or three before we speak and the first conversation goes much
+          further.
+        </p>
+      </div>
+      <NeighbourhoodGrid />
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap-narrow">
+      <FaqAccordion faq={faq} heading="Buyer questions" accent="questions" />
+      <div class="disclaimer">
+        <p>
+          <strong>Not advice.</strong> This page is general information about how we work with
+          buyers. It is not legal, tax, mortgage or investment advice. Speak to a lawyer, an
+          accountant and a mortgage professional about your own circumstances.
+        </p>
+        <p>
+          <strong>Representation.</strong> Ask us to explain the written representation agreement
+          and how compensation works before you sign anything.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Cta />
+</Page>
+
+<style>
+  .promises {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: var(--sp-6);
+  }
+  .promise {
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule-dark);
+  }
+  .promise h3 {
+    font-size: var(--step-1);
+    color: var(--text-on-dark);
+    margin-bottom: var(--sp-3);
+  }
+  .promise p {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--text-on-dark-muted);
+  }
+</style>

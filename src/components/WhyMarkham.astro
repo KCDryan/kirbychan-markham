@@ -1,0 +1,89 @@
+---
+import why from '../data/why-markham.json';
+import { isTodo } from '../lib/format';
+---
+
+<section class="why section section--dark on-dark">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Why Markham</p>
+      <h2>A city that works on <em>weekdays</em>, not just on tour days</h2>
+      <p class="lede">
+        Four things people actually weigh when they choose Markham over Richmond Hill, Vaughan or
+        staying in the city. Every figure below is checked against a public source.
+      </p>
+    </div>
+
+    <ul class="why__grid" role="list">
+      {
+        why.points.map((p) => (
+          <li class="why__item">
+            <p class="why__value">
+              {isTodo(p.value) ? (
+                <span class="why__todo" title={p.source}>
+                  TODO
+                </span>
+              ) : (
+                <>
+                  {p.value}
+                  {p.unit && <span class="why__unit"> {p.unit}</span>}
+                </>
+              )}
+            </p>
+            <h3>{p.label}</h3>
+            <p class="why__body">{p.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .why__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: var(--sp-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .why__item {
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule-dark);
+  }
+  .why__value {
+    font-family: var(--font-serif);
+    font-size: clamp(2.2rem, 1.6rem + 2.6vw, 3.2rem);
+    line-height: 1;
+    color: var(--gold);
+  }
+  .why__unit {
+    font-size: 0.4em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .why__todo {
+    display: inline-block;
+    padding: 0.1rem 0.7rem;
+    border: 1px dashed var(--gold);
+    border-radius: 2px;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+  }
+  .why__item h3 {
+    margin-top: var(--sp-3);
+    font-size: var(--step-0);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-on-dark);
+  }
+  .why__body {
+    margin-top: var(--sp-3);
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--text-on-dark-muted);
+  }
+</style>

@@ -1,0 +1,30 @@
+---
+import Accent from './Accent.astro';
+interface Props {
+  eyebrow?: string;
+  title: string;
+  accent?: string;
+  lede?: string;
+  level?: 2 | 3;
+  center?: boolean;
+}
+const { eyebrow, title, accent, lede, level = 2, center = false } = Astro.props;
+const Tag = `h${level}` as 'h2' | 'h3';
+
+// The accent word is rendered in italic serif, matching the editorial voice.
+---
+
+<div class:list={['section-head', center && 'section-head--center']}>
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <Tag>
+    <Accent text={title} accent={accent} />
+  </Tag>
+  {lede && <p class="lede">{lede}</p>}
+</div>
+
+<style>
+  .section-head--center {
+    margin-inline: auto;
+    text-align: center;
+  }
+</style>

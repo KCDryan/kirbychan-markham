@@ -1,0 +1,40 @@
+---
+import type { Crumb } from '../lib/schema';
+interface Props { crumbs: Crumb[] }
+const { crumbs } = Astro.props;
+---
+<nav class="crumbs" aria-label="Breadcrumb">
+  <div class="wrap">
+    <ol>
+      {crumbs.map((c, i) => (
+        <li>
+          {i < crumbs.length - 1 ? (
+            <a href={c.path}>{c.name}</a>
+          ) : (
+            <span aria-current="page">{c.name}</span>
+          )}
+          {i < crumbs.length - 1 && <span class="sep" aria-hidden="true">/</span>}
+        </li>
+      ))}
+    </ol>
+  </div>
+</nav>
+
+<style>
+  .crumbs { background: var(--sand); border-bottom: 1px solid var(--rule); }
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0; padding: 0.7rem 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  li { display: flex; align-items: center; gap: 0.4rem; }
+  a { color: var(--brown); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .sep { color: var(--gold); }
+  [aria-current='page'] { color: var(--text-muted); }
+</style>

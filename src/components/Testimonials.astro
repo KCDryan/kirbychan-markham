@@ -1,0 +1,90 @@
+---
+import testimonials from '../data/testimonials.json';
+
+// Empty by design. Nothing renders until Kirby supplies real, permitted quotes.
+// Adding an invented quote here would breach both the brief and RECO advertising
+// rules, so the section simply does not exist while the file is empty.
+interface Testimonial {
+  quote: string;
+  name: string;
+  context?: string;
+  neighbourhood?: string;
+}
+const items = testimonials as Testimonial[];
+---
+
+{
+  items.length > 0 && (
+    <section class="quotes section section--alt">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">In their words</p>
+          <h2>
+            What clients say when the deal is <em>done</em>
+          </h2>
+        </div>
+        <ul class="quotes__grid" role="list">
+          {items.map((t) => (
+            <li>
+              <figure class="quote">
+                <blockquote>
+                  <p>{t.quote}</p>
+                </blockquote>
+                <figcaption>
+                  <span class="quote__name">{t.name}</span>
+                  {t.context && <span class="quote__ctx">{t.context}</span>}
+                  {t.neighbourhood && <span class="quote__ctx">{t.neighbourhood}</span>}
+                </figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .quotes__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .quote {
+    height: 100%;
+    margin: 0;
+    padding: var(--sp-6);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--gold);
+    border-radius: var(--radius-lg);
+  }
+  .quote blockquote {
+    margin: 0;
+  }
+  .quote blockquote p {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .quote figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.8rem;
+    margin-top: var(--sp-5);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+    font-size: 0.78rem;
+  }
+  .quote__name {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .quote__ctx {
+    color: var(--text-muted);
+  }
+</style>
