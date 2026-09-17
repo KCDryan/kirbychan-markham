@@ -217,9 +217,19 @@ const jsonLd = [
 
   <section class="section" id="guide-contact">
     <div class="wrap-narrow">
-      <LeadForm heading={`Talk to Kirby about ${guide.short.toLowerCase()} in Markham`} source={`guide-${slug}`} />
+      <LeadForm
+        heading={slug === 'downsizing-markham' ? 'Get your free downsizing plan' : `Talk to Kirby about ${guide.short.toLowerCase()} in Markham`}
+        intro="Tell us a little about your home and your plans. Kirby will reply personally, with no pressure and no obligation."
+        source={`guide-${slug}`}
+        defaultIntent="Both"
+        submitLabel="Send my request"
+      />
     </div>
   </section>
+  <div class="guide-bar" aria-label="Quick contact">
+    <a class="btn btn--ghost btn--sm" href={site.contact.phoneHref}>Call</a>
+    <a class="btn btn--primary btn--sm" href="#guide-contact">Get a free plan</a>
+  </div>
 </Base>
 
 <style>
@@ -408,6 +418,31 @@ const jsonLd = [
     color: var(--text-on-dark-muted);
   }
 
+  /* Phones: contact stays one tap away while reading. */
+  .guide-bar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 90;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--paper);
+    border-top: 1px solid var(--rule);
+    box-shadow: 0 -6px 20px rgba(16, 37, 31, 0.08);
+  }
+  :global(body:has(.guide-bar)) {
+    padding-bottom: 4.5rem;
+  }
+  @media (min-width: 900px) {
+    .guide-bar {
+      display: none;
+    }
+    :global(body:has(.guide-bar)) {
+      padding-bottom: 0;
+    }
+  }
   @media (min-width: 900px) {
     .guide-hero__inner {
       grid-template-columns: 1.4fr 0.6fr;

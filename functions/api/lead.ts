@@ -129,6 +129,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     name,
     email,
     phone: clean(form.get('phone'), 40),
+    address: clean(form.get('address'), 200),
     neighbourhood: clean(form.get('neighbourhood'), 80),
     intent: clean(form.get('intent'), 40),
     timeline: clean(form.get('timeline'), 40),

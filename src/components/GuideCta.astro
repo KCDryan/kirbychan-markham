@@ -1,0 +1,76 @@
+---
+import site from '../data/site.json';
+
+// Inline call to action for long guides and posts, used inside MDX:
+//   <GuideCta variant="valuation" />
+interface Props {
+  variant?: 'valuation' | 'plan' | 'call';
+}
+const { variant = 'plan' } = Astro.props;
+
+const copy = {
+  valuation: {
+    title: 'What would your Markham home sell for today?',
+    body: 'Kirby will prepare a free, no-obligation estimate based on recent comparable sales near you.',
+    href: '/home-valuation/',
+    button: 'Get a free home valuation',
+  },
+  plan: {
+    title: 'Want a downsizing plan for your situation?',
+    body: 'Tell us where you are now and where you might go. We will map out timing, costs and the order of the sale and purchase with you.',
+    href: '#guide-contact',
+    button: 'Request a free downsizing plan',
+  },
+  call: {
+    title: 'Rather talk it through?',
+    body: 'Call Kirby Chan & Co. Real Estate Team. The team speaks ten languages and there is no pressure to decide anything.',
+    href: site.contact.phoneHref,
+    button: `Call ${site.contact.phone}`,
+  },
+}[variant];
+---
+
+<aside class="gcta">
+  <div>
+    <p class="gcta__title">{copy.title}</p>
+    <p class="gcta__body">{copy.body}</p>
+  </div>
+  <a class="btn btn--primary" href={copy.href}>{copy.button}</a>
+</aside>
+
+<style>
+  .gcta {
+    display: grid;
+    gap: var(--sp-4);
+    align-items: center;
+    margin-block: var(--sp-7);
+    padding: var(--sp-5) var(--sp-6);
+    background: var(--mist);
+    border: 1px solid var(--rule);
+    border-inline-start: 4px solid var(--brass);
+    border-radius: var(--radius-lg);
+  }
+  .gcta p {
+    margin: 0;
+  }
+  .gcta__title {
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .gcta__body {
+    margin-top: 0.35rem !important;
+    color: var(--text-muted);
+  }
+  .gcta .btn {
+    justify-self: start;
+    text-decoration: none;
+  }
+  @media (min-width: 760px) {
+    .gcta {
+      grid-template-columns: 1fr auto;
+      gap: var(--sp-6);
+    }
+  }
+</style>

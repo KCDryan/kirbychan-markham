@@ -1,0 +1,157 @@
+---
+import Page from '../layouts/Page.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Testimonials from '../components/Testimonials.astro';
+import site from '../data/site.json';
+import stories from '../data/client-stories.json';
+import { cad } from '../lib/format';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Free Home Valuation', path: '/home-valuation/' },
+];
+
+const faq = [
+  {
+    q: 'Is the home valuation really free?',
+    a: 'Yes. There is no cost and no obligation to list with us.',
+  },
+  {
+    q: 'Is this an automated online estimate?',
+    a: 'No. Kirby Chan and the team look at recent comparable sales near your home, its size, condition and features, then give you a price range and explain how they reached it.',
+  },
+  {
+    q: 'Is a home valuation the same as an appraisal?',
+    a: 'No. A valuation from a real estate team is an opinion of market value based on comparable sales, prepared to help you plan a sale. A lender or court may require a formal appraisal from a certified appraiser.',
+  },
+  {
+    q: 'What happens after I send the form?',
+    a: 'We contact you to confirm a few details about the home, then share the valuation with you. If you are planning a move, we can also talk through timing and next steps.',
+  },
+];
+---
+
+<Page
+  title="Free Home Valuation in Markham | Kirby Chan & Co."
+  description="Find out what your Markham home could sell for. A free, no-obligation home valuation from Kirby Chan & Co. Real Estate Team based on recent comparable sales."
+  eyebrow="Markham, Ontario"
+  h1="What is your Markham home worth?"
+  lede="Get a free, no-obligation valuation prepared by Kirby Chan and the team from recent comparable sales near you. Useful if you are selling soon, downsizing or simply planning ahead."
+  crumbs={crumbs}
+  faq={faq}
+  tone="sand"
+>
+  <section class="section">
+    <div class="wrap val-grid">
+      <div>
+        <LeadForm
+          heading="Request your free home valuation"
+          intro="It takes about a minute. Your details stay private and are used only to prepare your valuation."
+          source="home-valuation"
+          askAddress
+          defaultIntent="Selling"
+          submitLabel="Get my free valuation"
+        />
+      </div>
+      <aside class="val-side">
+        <h2>What you will receive</h2>
+        <ol>
+          <li>A price range based on recent sales of comparable homes near yours</li>
+          <li>An explanation of the sales used and how your home compares</li>
+          <li>Advice on what, if anything, is worth doing before listing</li>
+          <li>If you are downsizing, a first look at timing and next steps</li>
+        </ol>
+        <p class="val-side__note">
+          Prefer to talk? Call <a href={site.contact.phoneHref}>{site.contact.phone}</a>. The team serves
+          clients in ten languages.
+        </p>
+        <p class="val-side__note">
+          Thinking about a smaller home? Read our <a href="/downsizing-markham/">Markham downsizing guide</a>.
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Recent sales by the team</p>
+        <h2>Homes the team has sold</h2>
+        <p class="lede">List and sale prices as published by the team on kirbychanandco.com. Every home and market is different, so past results do not predict the sale price of any other property.</p>
+      </div>
+      <ul class="val-stories" role="list">
+        {
+          stories.stories.map((s) => (
+            <li>
+              <p class="val-stories__area">{s.area}</p>
+              <p class="val-stories__prices">Listed {cad(s.listed)} <span aria-hidden="true">&middot;</span> Sold {cad(s.sold)}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Testimonials />
+</Page>
+
+<style>
+  .val-grid {
+    display: grid;
+    gap: var(--sp-7);
+    align-items: start;
+  }
+  .val-side {
+    padding: var(--sp-6);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--brass);
+    border-radius: var(--radius-lg);
+  }
+  .val-side h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--sp-4);
+  }
+  .val-side ol {
+    display: grid;
+    gap: var(--sp-3);
+    margin: 0;
+    padding-inline-start: 1.2em;
+  }
+  .val-side__note {
+    margin-top: var(--sp-5);
+    font-size: 0.92rem;
+    color: var(--text-muted);
+  }
+  .val-stories {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+    gap: var(--sp-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .val-stories li {
+    padding: var(--sp-5);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+  .val-stories__area {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brand);
+  }
+  .val-stories__prices {
+    margin-top: var(--sp-2);
+    font-weight: 700;
+  }
+  @media (min-width: 900px) {
+    .val-grid {
+      grid-template-columns: 1.3fr 1fr;
+      gap: var(--sp-8);
+    }
+  }
+</style>

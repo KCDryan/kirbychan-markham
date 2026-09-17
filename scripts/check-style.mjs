@@ -20,6 +20,10 @@ const RULES = [
   { name: 'en dash', re: /–/g },
   { name: 'comma before and/or', re: /,\s+(and|or)\b/g },
   {
+    name: 'machine-sounding contrast phrase',
+    re: /\b(not just|isn't just|is not just|not only|not simply|more than just|isn't about|is not about|it's not about)\b/gi,
+  },
+  {
     name: 'American spelling',
     // Whole words only, so CSS keywords such as "color:" or "center" in style
     // blocks are not affected: those are stripped before checking.

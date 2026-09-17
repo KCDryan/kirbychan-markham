@@ -97,7 +97,7 @@
     },
     "hoods": {
       "eyebrow": "The neighbourhoods",
-      "h2": "Markham is not one market. It is twelve.",
+      "h2": "Twelve neighbourhoods, each with its own market",
       "lede": "Each neighbourhood has its own housing, schools, transit and price level. Start with the one you are considering.",
       "viewAll": "All neighbourhoods"
     },
@@ -114,7 +114,7 @@
     "photoAlt": "Portrait of Kirby Chan",
     "teamPhotoAlt": "Kirby Chan with a member of the Kirby Chan & Co. Real Estate Team",
     "bio": [
-      "Most people only sell a home a few times in their lives. That is not just a transaction. It is one of the biggest financial decisions they will ever make and Kirby Chan has built his career around making sure it goes right.",
+      "Most people only sell a home a few times in their lives. It is one of the biggest financial decisions they will ever make and Kirby Chan has built his career around helping it go right.",
       "Kirby is a Broker and the co-founder of Kirby Chan & Co. Real Estate Team, working across Markham, Richmond Hill and the Greater Toronto Area. The team started with a simple commitment to honest, client-first real estate.",
       "His approach is straightforward. He does not push. He listens, he advises and he helps you make the decision that is right for you, not the one that is convenient for him. That is why referrals and returning clients are the foundation of the business.",
       "Kirby runs the team with co-founder Carrie Szeto and a group of dedicated specialists. Together they bring local market knowledge, modern digital marketing and a real understanding of what Markham and Richmond Hill homeowners need when it is time to move."
@@ -213,7 +213,7 @@
   "neighbourhoods": {
     "eyebrow": "Markham, Ontario",
     "h1": "Twelve Markham neighbourhoods",
-    "lede": "Markham is not one market. Each neighbourhood has its own character, housing, schools and transit. Here is a short introduction to each one.",
+    "lede": "Each Markham neighbourhood has its own character, housing, schools and transit. Here is a short introduction to each one.",
     "items": {
       "unionville": {
         "tagline": "Heritage main street, mature trees and the best-known name in the city.",
@@ -260,7 +260,7 @@
         "body": "Markham's south end along Steeles Avenue. Older housing, strong transit connections and often the most accessible price for a detached home in the city."
       },
       "downtown": {
-        "tagline": "The part of Markham built to be walked rather than driven.",
+        "tagline": "The most walkable part of Markham.",
         "body": "Downtown Markham was designed to be urban, with condo towers, restaurants, a cinema and the York University Markham Campus close together."
       }
     }

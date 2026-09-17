@@ -122,7 +122,11 @@ const contactHref = localePath(lang, '/contact/');
           searchExternal && <span class="visually-hidden"> ({dict.ui.opensNewTab})</span>
         }
       </a>
-      <a class="btn btn--primary btn--sm" href={contactHref}>{dict.ui.nav.contact}</a>
+      {lang === 'en' ? (
+        <a class="btn btn--primary btn--sm" href="/home-valuation/">Free Home Valuation</a>
+      ) : (
+        <a class="btn btn--primary btn--sm" href={contactHref}>{dict.ui.nav.contact}</a>
+      )}
     </div>
 
     <LangSwitcher />
