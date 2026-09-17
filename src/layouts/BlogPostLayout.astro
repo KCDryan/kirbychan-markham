@@ -8,6 +8,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import FaqAccordion from '../components/FaqAccordion.astro';
 import BlogCard from '../components/BlogCard.astro';
 import Toc from '../components/Toc.astro';
+import DownsizingPromo from '../components/DownsizingPromo.astro';
 import Cta from '../components/Cta.astro';
 import site from '../data/site.json';
 import { longDate, neighbourhoodPath } from '../lib/format';
@@ -131,6 +132,8 @@ const jsonLd = [
           <div class="prose">
             <slot />
           </div>
+
+          <DownsizingPromo />
 
           <FaqAccordion faq={d.faq} />
 

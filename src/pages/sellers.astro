@@ -2,6 +2,7 @@
 import Page from '../layouts/Page.astro';
 import FaqAccordion from '../components/FaqAccordion.astro';
 import ServiceGrid from '../components/ServiceGrid.astro';
+import DownsizingPromo from '../components/DownsizingPromo.astro';
 import Cta from '../components/Cta.astro';
 import site from '../data/site.json';
 
@@ -137,6 +138,7 @@ const faq = [
 
   <section class="section section--alt">
     <div class="wrap-narrow">
+      <div class="sellers-dpromo"><DownsizingPromo /></div>
       <FaqAccordion faq={faq} heading="Seller questions" accent="questions" />
       <div class="disclaimer">
         <p>
@@ -160,6 +162,9 @@ const faq = [
 </Page>
 
 <style>
+  .sellers-dpromo {
+    margin-bottom: var(--sp-7);
+  }
   .dark-p {
     color: var(--text-on-dark-muted);
     line-height: 1.75;

@@ -7,6 +7,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import FaqAccordion from '../components/FaqAccordion.astro';
 import BlogCard from '../components/BlogCard.astro';
 import VideoCard from '../components/VideoCard.astro';
+import DownsizingPromo from '../components/DownsizingPromo.astro';
 import Cta from '../components/Cta.astro';
 import Photo from '../components/Photo.astro';
 import { getImage } from 'astro:assets';
@@ -185,6 +186,8 @@ const jsonLd = [
           </section>
         )
       }
+
+      <DownsizingPromo context={d.name} />
 
       <FaqAccordion faq={d.faq} heading={`${d.name} questions`} accent="questions" />
 

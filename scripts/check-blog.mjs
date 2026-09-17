@@ -99,6 +99,12 @@ for (const name of files) {
     if (seen[key].has(value)) fail(file, `${key} duplicates ${seen[key].get(value)}`);
     else seen[key].set(value, file);
   }
+  const lengths = { h1: [20, 90], subtitle: [40, 200], description: [140, 168] };
+  for (const [key, [min, max]] of Object.entries(lengths)) {
+    const n = String(data[key] ?? '').length;
+    if (n < min || n > max) fail(file, `${key} is ${n} characters, keep it between ${min} and ${max}`);
+  }
+  if (String(data.takeaway ?? '').length < 120) fail(file, 'takeaway must be at least 120 characters');
   const title = String(data.title ?? '');
   if (title.length < 30 || title.length > 60) fail(file, `title is ${title.length} characters, keep it between 30 and 60`);
 

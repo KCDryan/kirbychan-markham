@@ -6,6 +6,11 @@ add the slug. New ideas go at the bottom.
 
 ## Published
 
+- [x] What it costs to downsize in Markham | downsizing | markham downsizing costs | markham-downsizing-costs
+- [x] Markham neighbourhoods downsizers consider | downsizing | downsizing neighbourhoods markham | markham-neighbourhoods-for-downsizing
+- [x] Bungalow, condo or townhouse for downsizing | downsizing | bungalow vs condo downsizing | bungalow-condo-or-townhouse-downsizing
+- [x] Senior downsizing checklist for Markham homeowners | downsizing | senior downsizing checklist markham | senior-downsizing-checklist-markham
+
 - [x] Unionville or Markham Village | neighbourhoods | unionville vs markham village | unionville-vs-markham-village
 - [x] Land transfer tax on a Markham home and the first-time buyer refund | costs-and-taxes | land transfer tax markham | land-transfer-tax-markham
 - [x] Closing costs when you buy a home in Markham | costs-and-taxes | closing costs ontario home buyer | closing-costs-buying-home-markham
@@ -18,13 +23,19 @@ add the slug. New ideas go at the bottom.
 
 Priority: the downsizing cluster. Posts marked (guide: downsizing-markham) must set `guide: downsizing-markham` in frontmatter and link to /downsizing-markham/ in the body.
 
-- [ ] What it costs to downsize in Markham | downsizing | markham downsizing costs (guide: downsizing-markham)
-- [ ] Markham neighbourhoods downsizers consider, with prices by property type | downsizing | downsizing neighbourhoods markham (guide: downsizing-markham)
-- [ ] Bungalow, condo or townhouse: choosing your downsizing home in Markham | downsizing | bungalow vs condo downsizing (guide: downsizing-markham)
-- [ ] Senior downsizing checklist for Markham homeowners | downsizing | senior downsizing checklist markham (guide: downsizing-markham)
 - [ ] Selling and buying at the same time when you downsize | downsizing | sell and buy at the same time ontario (guide: downsizing-markham)
 - [ ] How long downsizing takes and what sets the timeline | downsizing | downsizing timeline (guide: downsizing-markham)
 - [ ] Real estate agent or move manager: who does what when you downsize | downsizing | downsizing move manager markham (guide: downsizing-markham)
+- [ ] Downsizing to a condo in Downtown Markham: what to check | downsizing | downsize to condo markham (guide: downsizing-markham)
+- [ ] Downsizing from a Thornhill detached home on the Markham side | downsizing | downsizing thornhill markham (guide: downsizing-markham)
+- [ ] Downsizing in Unionville: smaller homes near Main Street | downsizing | downsizing unionville (guide: downsizing-markham)
+- [ ] Selling an older Markham Village home when you downsize | downsizing | sell older home markham village (guide: downsizing-markham)
+- [ ] Selling a parent's home in Markham under a power of attorney | downsizing | sell parents house power of attorney ontario (guide: downsizing-markham)
+- [ ] Retirement residence or condo: what Ontario rules say before you choose | downsizing | retirement residence vs condo ontario (guide: downsizing-markham)
+- [ ] Capital gains and the principal residence exemption when you downsize | downsizing | principal residence exemption downsizing (guide: downsizing-markham)
+- [ ] Pricing a long-time family home in Markham | downsizing | how to price family home markham (guide: downsizing-markham)
+- [ ] Downsizing in Milliken Mills and south Markham | downsizing | downsizing milliken mills (guide: downsizing-markham)
+- [ ] Downsizing from north Markham: Berczy, Wismer, Cathedraltown and Angus Glen | downsizing | downsizing north markham (guide: downsizing-markham)
 - [ ] The mortgage stress test explained for Markham buyers | buying | mortgage stress test canada
 - [ ] What happens on closing day when you buy a home in Ontario | buying | closing day ontario
 - [ ] Home inspections in Markham: what they cover and what they miss | buying | home inspection markham
@@ -35,7 +46,6 @@ Priority: the downsizing cluster. Posts marked (guide: downsizing-markham) must 
 - [ ] Condo fees in Markham: what they pay for | condos | condo fees markham
 - [ ] Selling your Markham home: a step by step timeline | selling | selling a house in markham
 - [ ] How real estate commission works in Ontario | selling | real estate commission ontario
-- [ ] Capital gains and the principal residence exemption when you sell | costs-and-taxes | principal residence exemption canada
 - [ ] Pricing a home in Markham: how comparable sales work | selling | how to price a home markham
 - [ ] Preparing a Markham home for sale: what is worth spending on | selling | prepare house for sale
 - [ ] Bridge financing explained for move-up buyers | buying | bridge financing ontario
@@ -50,7 +60,7 @@ Priority: the downsizing cluster. Posts marked (guide: downsizing-markham) must 
 - [ ] Secondary suites and basement apartments in Markham | investing | basement apartment markham
 - [ ] Renting out a condo in Markham: rules landlords must follow | investing | landlord rules ontario
 - [ ] The Ontario standard lease for landlords and tenants | investing | ontario standard lease
-- [ ] Selling a family home after decades: a planning checklist | downsizing | selling family home ontario
+- [ ] Selling a family home after decades: a planning checklist | downsizing | selling family home ontario (guide: downsizing-markham)
 - [ ] Selling a house during probate in Ontario | selling | selling house in probate ontario
 - [ ] Title insurance in Ontario: what it covers | costs-and-taxes | title insurance ontario
 - [ ] Buying a home with family members on title in Ontario | buying | joint tenancy tenants in common ontario

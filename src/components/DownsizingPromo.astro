@@ -1,0 +1,66 @@
+---
+import site from '../data/site.json';
+
+interface Props {
+  /** Short line tailored to the page, for example a neighbourhood name. */
+  context?: string;
+}
+const { context } = Astro.props;
+---
+
+<aside class="dpromo on-dark" aria-labelledby="dpromo-heading">
+  <div class="dpromo__text">
+    <p class="dpromo__eyebrow">Markham Downsizing Guide</p>
+    <h2 id="dpromo-heading">{context ? `Downsizing from ${context}?` : 'Thinking about downsizing in Markham?'}</h2>
+    <p>
+      Timing, costs, where people move in Markham and how to sell a long-time family home without
+      rushing. Read the guide, then talk it through with Kirby. No pressure and no obligation.
+    </p>
+  </div>
+  <div class="dpromo__actions">
+    <a class="btn btn--brass" href="/downsizing-markham/">Read the downsizing guide</a>
+    <a class="btn btn--ghost" href="/downsizing-markham/#guide-contact">Book a downsizing consultation</a>
+    <a class="dpromo__phone" href={site.contact.phoneHref}>Or call {site.contact.phone}</a>
+  </div>
+</aside>
+
+<style>
+  .dpromo {
+    display: grid;
+    gap: var(--sp-5);
+    padding: var(--sp-6);
+    background: var(--ground);
+    border-radius: var(--radius-lg);
+    border-top: 3px solid var(--brass);
+    color: var(--text-on-dark-muted);
+  }
+  .dpromo__eyebrow {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brass);
+  }
+  .dpromo h2 {
+    margin: var(--sp-2) 0 var(--sp-3);
+    font-size: var(--step-2);
+    color: var(--text-on-dark);
+  }
+  .dpromo__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    align-self: center;
+  }
+  .dpromo__phone {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-on-dark-muted);
+  }
+  @media (min-width: 760px) {
+    .dpromo {
+      grid-template-columns: 1.5fr 1fr;
+      gap: var(--sp-7);
+    }
+  }
+</style>
