@@ -32,9 +32,10 @@ const searchExternal = searchHref.startsWith('http');
     <div class="hero__media">
       <Photo
         name="home-hero"
-        alt="A Markham streetscape"
-        label="Hero image: a recognisable Markham street or streetscape"
-        ratio="4 / 5"
+        alt="Kirby Chan with a member of the Kirby Chan & Co. team"
+        label="Team photo"
+        ratio="3 / 2"
+        sizes="(min-width: 900px) 560px, 100vw"
         priority
       />
     </div>
@@ -44,8 +45,8 @@ const searchExternal = searchHref.startsWith('http');
 <style>
   .hero {
     background:
-      radial-gradient(120% 90% at 85% 10%, rgba(179, 139, 89, 0.1), transparent 60%),
-      var(--cream);
+      radial-gradient(120% 90% at 85% 10%, rgba(31, 80, 69, 0.1), transparent 60%),
+      var(--paper);
     border-bottom: 1px solid var(--rule);
   }
   .hero__inner {
@@ -53,6 +54,10 @@ const searchExternal = searchHref.startsWith('http');
     gap: var(--sp-7);
     align-items: center;
     padding-block: clamp(3rem, 1.8rem + 6vw, 6rem);
+  }
+  .hero .lede {
+    margin-top: var(--sp-5);
+    max-width: 52ch;
   }
   .hero h1 {
     max-width: 16ch;
@@ -64,13 +69,13 @@ const searchExternal = searchHref.startsWith('http');
     margin-top: var(--sp-6);
   }
   .hero__media {
-    max-width: 440px;
+    max-width: 580px;
     width: 100%;
   }
 
   @media (min-width: 900px) {
     .hero__inner {
-      grid-template-columns: 1.25fr 0.85fr;
+      grid-template-columns: 1.05fr 0.95fr;
       gap: var(--sp-8);
     }
     .hero__media {

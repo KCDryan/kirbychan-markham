@@ -208,12 +208,24 @@ it changes everywhere.
 
 Contrast rules that matter:
 
+The palette is an evergreen sister to the crimson kirbychanandco.com brand. The logo is the same
+Kirby Chan & Co. mark, recoloured: evergreen on light backgrounds, brass on the dark footer.
+
+| Token | Hex | Use |
+| --- | --- | --- |
+| `--brand` | `#1F5045` | Primary buttons, links, italic accents, logo panel |
+| `--ground` | `#10251F` | Utility bar, footer, dark bands |
+| `--brass` | `#C2A06A` | Small accents, numerals, rules, footer logo |
+| `--paper` / `--mist` | `#F8F8F5` / `#ECF1EE` | Page and alternate section backgrounds |
+| `--ink` | `#1B2320` | Body text |
+
 | Combination | Ratio | Use |
 | --- | --- | --- |
-| `#222` on cream `#faf7f2` | 14.1:1 | Body text |
-| `#7b5d3c` on cream | 5.2:1 | Links and small accents |
-| `#b38b59` on espresso `#2a211a` | 5.1:1 | Gold on the dark header and footer |
-| `#b38b59` on cream | 2.7:1 | **Fails.** Decorative only: rules, numerals, large display type |
+| ink on paper | 15.1:1 | Body text |
+| brand on paper | 8.6:1 | Links and small accents |
+| paper on brand | 8.6:1 | Primary button text |
+| brass on ground | 6.5:1 | Accents on the dark footer |
+| brass on paper | 2.3:1 | **Fails.** Decorative only on light backgrounds: rules, numerals, borders |
 
 Typefaces are Fraunces (serif headings with the italic accent) and Inter (body). Both are
 self hosted from `public/fonts` under the SIL Open Font License. No third party font request is

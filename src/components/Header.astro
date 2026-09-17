@@ -103,7 +103,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
           {hoods.map((h) => <li><a href={neighbourhoodPath(h.id)}>{h.data.name}</a></li>)}
         </ul>
         <a
-          class="btn btn--gold nav-mobile__cta"
+          class="btn btn--brass nav-mobile__cta"
           href={searchHref}
           rel={searchExternal ? 'noopener' : undefined}
           target={searchExternal ? '_blank' : undefined}>Search Homes</a
@@ -115,7 +115,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
 
 <style>
   .utility {
-    background: var(--espresso);
+    background: var(--ground);
     color: var(--text-on-dark-muted);
   }
   .utility__inner {
@@ -132,14 +132,14 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
     text-decoration: none;
   }
   .utility a:hover {
-    color: var(--gold);
+    color: var(--brass);
   }
 
   .site-header {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(250, 247, 242, 0.94);
+    background: rgba(248, 248, 245, 0.94);
     backdrop-filter: saturate(140%) blur(8px);
     border-bottom: 1px solid var(--rule);
   }
@@ -182,8 +182,8 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
   }
   .nav-desktop a:hover,
   .nav-desktop a[aria-current='page'] {
-    color: var(--brown);
-    border-bottom-color: var(--gold);
+    color: var(--brand);
+    border-bottom-color: var(--brass);
   }
   .caret {
     width: 5px;
@@ -198,7 +198,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
     left: 0;
     right: 0;
     top: 100%;
-    background: var(--cream);
+    background: var(--paper);
     border-top: 1px solid var(--rule);
     border-bottom: 1px solid var(--rule);
     box-shadow: var(--shadow-lift);
@@ -232,8 +232,8 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
     text-transform: none !important;
     font-size: 0.85rem !important;
     letter-spacing: 0 !important;
-    border-bottom: 1px solid var(--gold) !important;
-    color: var(--brown) !important;
+    border-bottom: 1px solid var(--brass) !important;
+    color: var(--brand) !important;
   }
   .mega__grid {
     display: grid;
@@ -256,7 +256,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
     border-radius: var(--radius);
   }
   .mega__grid a:hover {
-    background: var(--sand);
+    background: var(--mist);
   }
   .mega__name {
     font-weight: 500;
@@ -304,8 +304,8 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
     background: var(--ink);
   }
   .nav-mobile[open] summary {
-    background: var(--sand);
-    border-color: var(--gold);
+    background: var(--mist);
+    border-color: var(--brass);
   }
   .nav-mobile__panel {
     position: absolute;
@@ -314,7 +314,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
     width: min(88vw, 340px);
     max-height: min(74vh, 640px);
     overflow-y: auto;
-    background: var(--cream);
+    background: var(--paper);
     border: 1px solid var(--rule);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lift);
@@ -339,7 +339,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
     font-size: 0.66rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--brown);
+    color: var(--brand);
   }
   .nav-mobile__hoods {
     display: grid;

@@ -18,7 +18,7 @@ const find = (base: string) =>
 const file = variant === 'light' ? (find('logo-light') ?? find('logo')) : find('logo');
 ---
 {file ? (
-  <Image class:list={['logo-img', cls]} src={file} alt="Kirby Chan & Co. Real Estate Inc." height={44} loading="eager" />
+  <Image class:list={['logo-img', cls]} src={file} alt="Kirby Chan & Co. Real Estate Inc." height={44} densities={[1, 2]} loading="eager" />
 ) : (
 <span class:list={['logo', `logo--${variant}`, cls]}>
   <span class="logo__mark" aria-hidden="true">KC</span>
@@ -37,8 +37,8 @@ const file = variant === 'light' ? (find('logo-light') ?? find('logo')) : find('
     place-items: center;
     width: 38px; height: 38px;
     flex: 0 0 38px;
-    border: 1px solid var(--gold);
-    color: var(--gold);
+    border: 1px solid var(--brass);
+    color: var(--brass);
     font-family: var(--font-serif);
     font-size: 0.85rem;
     letter-spacing: 0.06em;
@@ -51,7 +51,7 @@ const file = variant === 'light' ? (find('logo-light') ?? find('logo')) : find('
     letter-spacing: -0.01em;
     white-space: nowrap;
   }
-  .logo__name em { color: var(--gold); font-style: italic; }
+  .logo__name em { color: var(--brass); font-style: italic; }
   .logo__sub {
     font-size: 0.62rem;
     letter-spacing: 0.14em;

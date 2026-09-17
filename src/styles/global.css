@@ -38,8 +38,8 @@ h1 { font-size: var(--step-5); }
 h2 { font-size: var(--step-4); }
 h3 { font-size: var(--step-2); }
 h4 { font-size: var(--step-1); }
-h2 em, h1 em, h3 em { font-style: italic; color: var(--brown); }
-.on-dark h1 em, .on-dark h2 em, .on-dark h3 em { color: var(--gold); }
+h2 em, h1 em, h3 em { font-style: italic; color: var(--brand); }
+.on-dark h1 em, .on-dark h2 em, .on-dark h3 em { color: var(--brass); }
 
 a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
 a:hover { color: var(--link-hover); }
@@ -48,7 +48,7 @@ a:hover { color: var(--link-hover); }
   outline-offset: 3px;
   border-radius: var(--radius);
 }
-.on-dark :focus-visible { outline-color: var(--gold-soft); }
+.on-dark :focus-visible { outline-color: var(--brass-soft); }
 
 /* utility ---------------------------------------------------------------- */
 .wrap { width: min(100% - (var(--gutter) * 2), var(--wrap)); margin-inline: auto; }
@@ -64,10 +64,10 @@ a:hover { color: var(--link-hover); }
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--brown);
+  color: var(--brand);
   margin-bottom: var(--sp-4);
 }
-.on-dark .eyebrow, .section--dark .eyebrow { color: var(--gold); }
+.on-dark .eyebrow, .section--dark .eyebrow { color: var(--brass); }
 
 .lede { font-size: var(--step-1); line-height: 1.55; color: var(--text-muted); text-wrap: pretty; }
 .section--dark .lede { color: var(--text-on-dark-muted); }
@@ -76,7 +76,7 @@ a:hover { color: var(--link-hover); }
   font-family: var(--font-serif);
   font-size: var(--step--1);
   letter-spacing: 0.08em;
-  color: var(--gold);
+  color: var(--brass);
   font-weight: 600;
 }
 
@@ -95,7 +95,7 @@ a:hover { color: var(--link-hover); }
   left: var(--sp-4);
   top: -100px;
   z-index: 200;
-  background: var(--espresso);
+  background: var(--ground);
   color: var(--text-on-dark);
   padding: var(--sp-3) var(--sp-5);
   border-radius: var(--radius);
@@ -123,20 +123,20 @@ a:hover { color: var(--link-hover); }
     border-color 0.18s var(--ease), transform 0.18s var(--ease);
 }
 .btn:hover { transform: translateY(-1px); }
-.btn--primary { background: var(--espresso); color: var(--text-on-dark); }
-.btn--primary:hover { background: var(--brown-dark); color: #fff; }
-.btn--gold { background: var(--gold); color: var(--espresso); }
-.btn--gold:hover { background: var(--gold-soft); color: var(--espresso); }
-.btn--ghost { background: transparent; color: var(--brown); border-color: var(--rule); }
-.btn--ghost:hover { background: var(--sand); color: var(--brown-dark); border-color: var(--brown); }
+.btn--primary { background: var(--brand); color: var(--paper); }
+.btn--primary:hover { background: var(--ground); color: #fff; }
+.btn--brass { background: var(--brass); color: var(--ground); }
+.btn--brass:hover { background: var(--brass-soft); color: var(--ground); }
+.btn--ghost { background: transparent; color: var(--brand); border-color: var(--rule); }
+.btn--ghost:hover { background: var(--mist); color: var(--brand-dark); border-color: var(--brand); }
 .on-dark .btn--ghost, .section--dark .btn--ghost {
   color: var(--text-on-dark);
   border-color: var(--rule-dark);
 }
 .on-dark .btn--ghost:hover, .section--dark .btn--ghost:hover {
-  background: var(--espresso-lift);
+  background: var(--ground-lift);
   color: #fff;
-  border-color: var(--gold);
+  border-color: var(--brass);
 }
 
 /* cards ------------------------------------------------------------------ */
@@ -148,7 +148,7 @@ a:hover { color: var(--link-hover); }
   transition: box-shadow 0.2s var(--ease), border-color 0.2s var(--ease),
     transform 0.2s var(--ease);
 }
-a.card:hover, .card:hover { border-color: var(--gold); box-shadow: var(--shadow); }
+a.card:hover, .card:hover { border-color: var(--brass); box-shadow: var(--shadow); }
 a.card { text-decoration: none; color: inherit; display: block; }
 
 .grid { display: grid; gap: var(--sp-5); }
@@ -169,16 +169,16 @@ a.card { text-decoration: none; color: inherit; display: block; }
 .prose ul, .prose ol { padding-left: 1.3em; }
 .prose li + li { margin-top: var(--sp-2); }
 .prose blockquote {
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--brass);
   padding: var(--sp-2) 0 var(--sp-2) var(--sp-5);
   font-family: var(--font-serif);
   font-size: var(--step-1);
   font-style: italic;
-  color: var(--brown);
+  color: var(--brand);
 }
 .prose table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
 .prose th, .prose td { text-align: left; padding: var(--sp-3); border-bottom: 1px solid var(--rule); }
-.prose th { font-family: var(--font-sans); font-weight: 600; background: var(--sand); }
+.prose th { font-family: var(--font-sans); font-weight: 600; background: var(--mist); }
 .prose :is(h2, h3) + * { margin-top: var(--sp-4); }
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
@@ -186,7 +186,7 @@ a.card { text-decoration: none; color: inherit; display: block; }
 .rule-gold {
   width: 48px;
   height: 2px;
-  background: var(--gold);
+  background: var(--brass);
   border: 0;
   margin: 0 0 var(--sp-5);
 }
@@ -199,14 +199,14 @@ a.card { text-decoration: none; color: inherit; display: block; }
 .todo-badge {
   display: inline-block;
   padding: 0.1rem 0.5rem;
-  border: 1px dashed var(--gold);
+  border: 1px dashed var(--brass);
   border-radius: 2px;
   font-family: var(--font-sans);
   font-size: 0.7rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--brown-dark);
-  background: rgba(179, 139, 89, 0.08);
+  color: var(--brand-dark);
+  background: rgba(31, 80, 69, 0.08);
 }
 
 /* disclaimers -------------------------------------------------------------- */
@@ -219,7 +219,7 @@ a.card { text-decoration: none; color: inherit; display: block; }
   color: var(--text-muted);
 }
 .disclaimer p + p { margin-top: var(--sp-3); }
-.disclaimer strong { color: var(--brown-dark); font-weight: 600; }
+.disclaimer strong { color: var(--brand-dark); font-weight: 600; }
 
 /* page hero shared by all inner templates ---------------------------------- */
 .page-hero { padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem); }
@@ -230,8 +230,8 @@ a.card { text-decoration: none; color: inherit; display: block; }
 /* notice block, used inside MDX where scoped styles do not reach ------------ */
 .notice {
   padding: var(--sp-5);
-  background: rgba(179, 139, 89, 0.09);
-  border: 1px dashed var(--gold);
+  background: rgba(31, 80, 69, 0.09);
+  border: 1px dashed var(--brass);
   border-radius: var(--radius-lg);
   font-size: 0.9rem;
 }
@@ -241,8 +241,8 @@ a.card { text-decoration: none; color: inherit; display: block; }
 /* takeaway box at the top of an article ----------------------------------- */
 .takeaway {
   padding: var(--sp-5) var(--sp-6);
-  background: var(--sand);
-  border-left: 3px solid var(--gold);
+  background: var(--mist);
+  border-left: 3px solid var(--brass);
   border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
 }
 .takeaway h2 {
@@ -251,7 +251,7 @@ a.card { text-decoration: none; color: inherit; display: block; }
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--brown);
+  color: var(--brand);
   margin-bottom: var(--sp-3);
 }
 .takeaway p { font-size: var(--step-0); line-height: 1.7; margin: 0; }
@@ -271,7 +271,7 @@ a.card { text-decoration: none; color: inherit; display: block; }
   font-size: 0.72rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--brown);
+  color: var(--brand);
 }
 
 /* numbered process steps --------------------------------------------------- */
@@ -281,7 +281,7 @@ a.card { text-decoration: none; color: inherit; display: block; }
   font-family: var(--font-serif);
   font-size: 0.78rem;
   letter-spacing: 0.1em;
-  color: var(--gold);
+  color: var(--brass);
 }
 .step h3 { margin: var(--sp-2) 0 var(--sp-3); font-size: var(--step-1); }
 .step p { color: var(--text-muted); line-height: 1.7; max-width: 60ch; }

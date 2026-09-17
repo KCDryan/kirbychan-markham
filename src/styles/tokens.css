@@ -1,41 +1,44 @@
 /* ==========================================================================
    Kirby Chan & Co. | Markham - design tokens
-   Contrast notes (WCAG 2.1 AA, verified):
-     #222   on cream #faf7f2 = 14.1:1  body text, passes AAA
-     #7b5d3c on cream #faf7f2 =  5.2:1  links and small accents, passes AA
-     #b38b59 on espresso #2A211A = 5.1:1 gold on dark, passes AA
-     #b38b59 on cream #faf7f2 =  2.7:1  FAILS. Gold is decorative only on
-                                        light grounds: rules, numerals, large
-                                        display type at 24px+ bold. Never
-                                        small body text or small links.
+   Evergreen sister palette to the crimson kirbychanandco.com brand.
+
+   Contrast (WCAG 2.1 AA, verified):
+     ink #1B2320 on paper #F8F8F5          15.1:1  body text
+     muted #4F5E58 on paper                 6.4:1  secondary text
+     brand #1F5045 on paper / white     8.6 / 9.2:1  links, eyebrows, italic accents
+     paper on brand                          8.6:1  primary button text
+     brass #C2A06A on ground #10251F         6.5:1  small accents on the dark footer
+     ground on brass                         6.5:1  brass button text
+     brass on paper                          2.3:1  FAILS. Decorative only on light
+                                                    grounds: rules, numerals, borders.
    ========================================================================== */
 
 :root {
   /* brand */
-  --gold: #b38b59;
-  --gold-soft: #d8bf9d;
-  --brown: #7b5d3c;
-  --brown-dark: #5c4429;
-  --espresso: #2a211a;
-  --espresso-lift: #3a2e24;
-  --cream: #faf7f2;
-  --sand: #f6efe6;
-  --ink: #222222;
+  --brand: #1f5045;
+  --brand-dark: #163c34;
+  --brass: #c2a06a;
+  --brass-soft: #e0cda8;
+  --ground: #10251f;
+  --ground-lift: #1b3a32;
+  --paper: #f8f8f5;
+  --mist: #ecf1ee;
+  --ink: #1b2320;
 
   /* semantic */
-  --bg: var(--cream);
-  --bg-alt: var(--sand);
-  --bg-dark: var(--espresso);
+  --bg: var(--paper);
+  --bg-alt: var(--mist);
+  --bg-dark: var(--ground);
   --text: var(--ink);
-  --text-muted: #5d554d;
-  --text-on-dark: #f2ece4;
-  --text-on-dark-muted: #c2b6a7;
-  --link: var(--brown);
-  --link-hover: var(--brown-dark);
-  --accent: var(--gold);
-  --rule: #e4d9c9;
-  --rule-dark: #4a3c30;
-  --focus: #7b5d3c;
+  --text-muted: #4f5e58;
+  --text-on-dark: #eef3f0;
+  --text-on-dark-muted: #a9bbb4;
+  --link: var(--brand);
+  --link-hover: var(--brand-dark);
+  --accent: var(--brass);
+  --rule: #d6dfda;
+  --rule-dark: #2a4a41;
+  --focus: #1f5045;
 
   /* type */
   --font-serif: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Palatino,
@@ -72,8 +75,8 @@
   /* misc */
   --radius: 2px;
   --radius-lg: 4px;
-  --shadow: 0 1px 2px rgba(42, 33, 26, 0.05), 0 8px 24px rgba(42, 33, 26, 0.06);
-  --shadow-lift: 0 2px 4px rgba(42, 33, 26, 0.07), 0 16px 40px rgba(42, 33, 26, 0.1);
+  --shadow: 0 1px 2px rgba(16, 37, 31, 0.05), 0 8px 24px rgba(16, 37, 31, 0.07);
+  --shadow-lift: 0 2px 4px rgba(16, 37, 31, 0.07), 0 16px 40px rgba(16, 37, 31, 0.11);
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 

@@ -53,10 +53,10 @@ Nothing in this section has been guessed. Every one renders as a visible placeho
 
 | # | What | Where |
 | --- | --- | --- |
-| 19 | Logo files | `src/assets/logo/logo.svg` and `logo-light.svg`. Drop them in and they replace the text wordmark automatically |
-| 20 | Kirby portrait | `src/assets/photos/kirby-portrait.jpg`. Used on `/about/` and in the homepage team section |
+| 19 | Done | Logo recoloured from kirbychanandco.com is in `src/assets/logo/`. It is a 533 pixel wide raster, so a vector SVG from your designer would be sharper on large screens |
+| 20 | Done, could be improved | Headshot from kirbychanandco.com is in place but is only 532 pixels square. A larger original would look sharper |
 | 21 | Neighbourhood photography, 12 images | `src/assets/photos/neighbourhoods/<slug>.jpg`. Each replaces that page's placeholder and adds a card thumbnail and share image |
-| 22 | Hero image for the homepage | `src/assets/photos/home-hero.jpg` |
+| 22 | Done | Team photo from kirbychanandco.com. Add the second person's name to the alt text in `src/components/Hero.astro` if you want them named |
 | 23 | Record the three videos, then add each YouTube ID and transcript | `src/content/videos/*.mdx`. Pages render a labelled placeholder until `youtubeId` is filled |
 | 24 | Optional: replace the generated OG image with a designed one, 1200 x 630 | `public/og-default.png` |
 

@@ -38,7 +38,7 @@ const jsonLd = [breadcrumbList(crumbs), faqPage(faq), ...extraJsonLd].filter(Boo
 
 <Base title={title} description={description} noindex={noindex} jsonLd={jsonLd}>
   <Breadcrumbs crumbs={crumbs} />
-  <section class:list={['page-hero', tone === 'sand' && 'page-hero--sand']}>
+  <section class:list={['page-hero', tone === 'sand' && 'page-hero--mist']}>
     <div class="wrap">
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <h1>
@@ -54,11 +54,11 @@ const jsonLd = [breadcrumbList(crumbs), faqPage(faq), ...extraJsonLd].filter(Boo
 <style>
   .page-hero {
     background:
-      radial-gradient(110% 80% at 90% 0%, rgba(179, 139, 89, 0.1), transparent 60%),
-      var(--cream);
+      radial-gradient(110% 80% at 90% 0%, rgba(31, 80, 69, 0.1), transparent 60%),
+      var(--paper);
   }
-  .page-hero--sand {
-    background: var(--sand);
+  .page-hero--mist {
+    background: var(--mist);
     border-bottom: 1px solid var(--rule);
   }
 </style>

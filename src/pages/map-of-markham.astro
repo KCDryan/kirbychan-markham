@@ -97,12 +97,12 @@ const faq = [
             follows below the diagram.
           </desc>
 
-          <rect x="0" y="0" width="1000" height="700" fill="#f6efe6" />
+          <rect x="0" y="0" width="1000" height="700" fill="#ecf1ee" />
 
           {
             roadsH.map((r) => (
               <>
-                <line x1="20" y1={r.y} x2="980" y2={r.y} stroke="#e4d9c9" stroke-width="10" />
+                <line x1="20" y1={r.y} x2="980" y2={r.y} stroke="#d6dfda" stroke-width="10" />
                 <text x="28" y={r.y - 12} class="road">
                   {r.label}
                 </text>
@@ -112,7 +112,7 @@ const faq = [
           {
             roadsV.map((r) => (
               <>
-                <line x1={r.x} y1="20" x2={r.x} y2="680" stroke="#e4d9c9" stroke-width="8" />
+                <line x1={r.x} y1="20" x2={r.x} y2="680" stroke="#d6dfda" stroke-width="8" />
                 <text x={r.x + 6} y="686" class="road">
                   {r.label}
                 </text>
@@ -124,7 +124,7 @@ const faq = [
           <polyline
             points="540,690 552,520 586,360 660,220 700,60"
             fill="none"
-            stroke="#7b5d3c"
+            stroke="#1f5045"
             stroke-width="3"
             stroke-dasharray="10 7"
           />
@@ -192,7 +192,7 @@ const faq = [
     -webkit-overflow-scrolling: touch;
     border: 1px solid var(--rule);
     border-radius: var(--radius-lg);
-    background: var(--sand);
+    background: var(--mist);
   }
   .map {
     display: block;
@@ -205,15 +205,15 @@ const faq = [
     font-size: 13px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    fill: #9a8b78;
+    fill: #4f5e58;
   }
   .map :global(.road--go) {
-    fill: var(--brown);
+    fill: var(--brand);
   }
   .map :global(.compass) {
     font-family: var(--font-serif);
     font-size: 18px;
-    fill: var(--brown);
+    fill: var(--brand);
   }
   .map :global(.pin__box) {
     fill: #ffffff;
@@ -230,12 +230,12 @@ const faq = [
   }
   .map :global(.pin:hover .pin__box),
   .map :global(.pin:focus-visible .pin__box) {
-    fill: var(--gold);
-    stroke: var(--brown);
+    fill: var(--brass);
+    stroke: var(--brand);
   }
   .map :global(.pin:hover .pin__text),
   .map :global(.pin:focus-visible .pin__text) {
-    fill: var(--espresso);
+    fill: var(--ground);
   }
   .map :global(.pin) {
     cursor: pointer;

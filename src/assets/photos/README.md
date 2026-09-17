@@ -6,8 +6,8 @@ creates the small fast versions automatically.
 
 | File | Where it shows |
 | --- | --- |
-| `home-hero.jpg` | Homepage hero, portrait crop (4:5) |
-| `kirby-portrait.jpg` | Homepage team section and /about/, portrait crop (3:4) |
+| `home-hero.jpg` | Homepage hero, landscape crop (3:2). Currently the team photo from kirbychanandco.com |
+| `kirby-portrait.jpg` | Homepage team section and /about/, square crop (1:1). Currently the headshot from kirbychanandco.com (`kirby-portrait.png`). Delete the old file if you add a replacement with a different extension |
 | `neighbourhoods/unionville.jpg` | Unionville page hero, grid card and social share image |
 | `neighbourhoods/markham-village.jpg` | Markham Village |
 | `neighbourhoods/cornell.jpg` | Cornell |
