@@ -40,7 +40,6 @@ const contactHref = localePath(lang, '/contact/');
 
 <div class="utility">
   <div class="wrap utility__inner">
-    <span class="utility__brokerage">{site.brokerage.legalName}</span>
     <ul class="utility__langs" aria-label={dict.ui.lang.button}>
       {
         LANGS.map((l) => (
@@ -176,6 +175,7 @@ const contactHref = localePath(lang, '/contact/');
   }
   .utility__langs {
     display: none;
+    margin-inline-start: 0;
     flex-wrap: wrap;
     gap: 0.15rem;
     list-style: none;
@@ -197,11 +197,6 @@ const contactHref = localePath(lang, '/contact/');
   .utility__langs a[aria-current='true'] {
     color: var(--ground);
     background: var(--brass);
-  }
-  .utility__brokerage {
-    margin-inline-end: auto;
-    color: var(--text-on-dark);
-    letter-spacing: 0.06em;
   }
   .utility a {
     color: var(--text-on-dark-muted);
@@ -439,10 +434,7 @@ const contactHref = localePath(lang, '/contact/');
   }
 
   @media (min-width: 980px) {
-    .utility__brokerage {
-      margin-inline-end: 1rem;
-    }
-    .utility__langs {
+      .utility__langs {
       display: flex;
     }
   }
