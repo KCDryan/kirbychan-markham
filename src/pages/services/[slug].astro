@@ -7,10 +7,12 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import FaqAccordion from '../../components/FaqAccordion.astro';
 import ServiceGrid from '../../components/ServiceGrid.astro';
 import Cta from '../../components/Cta.astro';
-import { breadcrumbList, faqPage } from '../../lib/schema';
+import { breadcrumbList, faqPage, service } from '../../lib/schema';
+import { hasGuide } from '../../lib/guides';
 
 export const getStaticPaths = (async () => {
-  const services = await getCollection('services', ({ data }) => !data.draft);
+  // Services with a pillar guide are served by the guide instead (301 in _redirects).
+  const services = await getCollection('services', (s) => !s.data.draft && !hasGuide(s.id));
   return services.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }) satisfies GetStaticPaths;
 
@@ -27,7 +29,11 @@ const crumbs = [
   { name: d.name, path },
 ];
 
-const jsonLd = [breadcrumbList(crumbs), faqPage(d.faq)].filter(Boolean);
+const jsonLd = [
+  breadcrumbList(crumbs),
+  service({ name: d.name, description: d.description, path }),
+  faqPage(d.faq),
+].filter(Boolean);
 ---
 
 <Base title={d.title} description={d.description} noindex={d.noindex} jsonLd={jsonLd}>

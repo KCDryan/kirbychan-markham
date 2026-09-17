@@ -13,6 +13,7 @@ import site from '../data/site.json';
 import { longDate, neighbourhoodPath } from '../lib/format';
 import { BLOG_CATEGORIES } from '../lib/blog';
 import { neighbourhoodPhoto } from '../lib/photos';
+import { GUIDES, servicePath } from '../lib/guides';
 import { blogPosting, breadcrumbList, faqPage } from '../lib/schema';
 
 interface Props {
@@ -26,6 +27,7 @@ const d = entry.data;
 const path = `/blog/${entry.id}/`;
 const categoryName = BLOG_CATEGORIES[d.category];
 const categoryPath = `/blog/category/${d.category}/`;
+const guide = d.guide ? { path: `/${d.guide}/`, label: GUIDES[d.guide].label } : undefined;
 
 const allHoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
 const linkedHoods = d.related
@@ -118,6 +120,14 @@ const jsonLd = [
             <p>{d.takeaway}</p>
           </div>
 
+          {
+            guide && (
+              <p class="post-guide">
+                Part of the <a href={guide.path}>{guide.label}</a>, our complete guide to this topic.
+              </p>
+            )
+          }
+
           <div class="prose">
             <slot />
           </div>
@@ -137,7 +147,7 @@ const jsonLd = [
                   ))}
                   {linkedServices.map((s) => (
                     <li>
-                      <a href={`/services/${s.id}/`}>{s.data.name}</a>
+                      <a href={servicePath(s.id)}>{s.data.name}</a>
                       <span>{s.data.summary}</span>
                     </li>
                   ))}
@@ -270,6 +280,13 @@ const jsonLd = [
     max-width: 70ch;
   }
 
+  .post-guide {
+    padding: var(--sp-4) var(--sp-5);
+    border: 1px solid var(--brass-soft);
+    border-radius: var(--radius-lg);
+    background: #fff;
+    font-weight: 600;
+  }
   .post-links h2,
   .post-sources h2 {
     font-size: var(--step-2);

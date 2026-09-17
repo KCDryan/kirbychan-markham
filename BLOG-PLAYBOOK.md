@@ -139,6 +139,7 @@ takeaway: "..."             # 2 to 4 sentences that directly answer the search q
 neighbourhood: unionville   # optional, only if the post is mainly about one neighbourhood (sets the share image)
 related:                    # 0 to 3 neighbourhood slugs the post genuinely discusses
   - unionville
+guide: downsizing-markham    # only for posts marked (guide: downsizing-markham) in BLOG-TOPICS.md; the body must then link to /downsizing-markham/
 relatedServices:            # 1 to 3 service slugs that fit the reader's situation
   - first-time-buyers
 faq:                        # 4 to 6 real questions, each ending in ?, each answer 1 to 3 standalone sentences
@@ -171,7 +172,7 @@ existing slug.
 - Use a numbered list for steps and a bulleted list for checklists. Keep list items parallel.
 - **Internal links, at least three, in the body text**, with descriptive anchor text (never "click
   here" or "this page"). At least one must go to a neighbourhood guide (`/unionville-markham/`), a
-  service page (`/services/first-time-buyers/`), `/buyers/` or `/sellers/`. Link to an existing blog
+  service page (`/services/relocation/`), the pillar guide (`/downsizing-markham/`), `/buyers/` or `/sellers/`. Link to an existing blog
   post (`/blog/<slug>/`) when one is genuinely relevant. Other useful pages: `/neighbourhoods/`,
   `/map-of-markham/`, `/market-reports/`, `/contact/`. Every internal link ends with a slash. Only link
   to pages that exist: check `src/content/` and `src/pages/`.

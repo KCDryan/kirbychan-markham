@@ -191,3 +191,21 @@ export function place(input: { name: string; description: string; path: string }
     },
   };
 }
+
+/** A real estate service offered in Markham, provided by the team. */
+export function service(input: { name: string; description: string; path: string }) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: input.name,
+    description: input.description,
+    url: canonical(input.path),
+    serviceType: 'Real estate brokerage',
+    areaServed: {
+      '@type': 'City',
+      name: 'Markham',
+      containedInPlace: { '@type': 'AdministrativeArea', name: 'Ontario, Canada' },
+    },
+    provider: { '@type': 'RealEstateAgent', '@id': AGENT_ID, name: site.name },
+  };
+}

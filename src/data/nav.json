@@ -2,8 +2,8 @@
   "primary": [
     { "label": "Neighbourhoods", "href": "/neighbourhoods/", "mega": true },
     { "label": "Services", "href": "/services/" },
+    { "label": "Downsizing", "href": "/downsizing-markham/" },
     { "label": "Meet Kirby", "href": "/about/" },
-    { "label": "Videos", "href": "/videos/" },
     { "label": "Blog", "href": "/blog/" }
   ],
   "footer": {

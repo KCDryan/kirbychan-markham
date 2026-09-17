@@ -13,6 +13,7 @@ import BlogCard from '../components/BlogCard.astro';
 import Testimonials from '../components/Testimonials.astro';
 import TranslationNotice from '../components/TranslationNotice.astro';
 import Cta from '../components/Cta.astro';
+import GuideFeature from '../components/GuideFeature.astro';
 import { langFromPath, localePath, t } from '../i18n';
 
 const lang = langFromPath(Astro.url.pathname);
@@ -32,6 +33,7 @@ const articles = (await getCollection('blog', ({ data }) => !data.draft))
   <Hero />
   <StatsBand />
   {!en && <TranslationNotice />}
+  {en && <GuideFeature />}
 
   <section class="section">
     <div class="wrap">

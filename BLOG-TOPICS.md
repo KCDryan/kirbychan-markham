@@ -16,6 +16,15 @@ add the slug. New ideas go at the bottom.
 
 ## Next
 
+Priority: the downsizing cluster. Posts marked (guide: downsizing-markham) must set `guide: downsizing-markham` in frontmatter and link to /downsizing-markham/ in the body.
+
+- [ ] What it costs to downsize in Markham | downsizing | markham downsizing costs (guide: downsizing-markham)
+- [ ] Markham neighbourhoods downsizers consider, with prices by property type | downsizing | downsizing neighbourhoods markham (guide: downsizing-markham)
+- [ ] Bungalow, condo or townhouse: choosing your downsizing home in Markham | downsizing | bungalow vs condo downsizing (guide: downsizing-markham)
+- [ ] Senior downsizing checklist for Markham homeowners | downsizing | senior downsizing checklist markham (guide: downsizing-markham)
+- [ ] Selling and buying at the same time when you downsize | downsizing | sell and buy at the same time ontario (guide: downsizing-markham)
+- [ ] How long downsizing takes and what sets the timeline | downsizing | downsizing timeline (guide: downsizing-markham)
+- [ ] Real estate agent or move manager: who does what when you downsize | downsizing | downsizing move manager markham (guide: downsizing-markham)
 - [ ] The mortgage stress test explained for Markham buyers | buying | mortgage stress test canada
 - [ ] What happens on closing day when you buy a home in Ontario | buying | closing day ontario
 - [ ] Home inspections in Markham: what they cover and what they miss | buying | home inspection markham
@@ -29,7 +38,6 @@ add the slug. New ideas go at the bottom.
 - [ ] Capital gains and the principal residence exemption when you sell | costs-and-taxes | principal residence exemption canada
 - [ ] Pricing a home in Markham: how comparable sales work | selling | how to price a home markham
 - [ ] Preparing a Markham home for sale: what is worth spending on | selling | prepare house for sale
-- [ ] Buying and selling at the same time in Markham | buying | buy and sell at the same time ontario
 - [ ] Bridge financing explained for move-up buyers | buying | bridge financing ontario
 - [ ] What the Markham TRREB numbers mean: average vs median price | market | markham average home price
 - [ ] Markham housing market by property type | market | markham real estate market
@@ -42,7 +50,6 @@ add the slug. New ideas go at the bottom.
 - [ ] Secondary suites and basement apartments in Markham | investing | basement apartment markham
 - [ ] Renting out a condo in Markham: rules landlords must follow | investing | landlord rules ontario
 - [ ] The Ontario standard lease for landlords and tenants | investing | ontario standard lease
-- [ ] Downsizing in Markham: condo, bungalow or townhouse | downsizing | downsizing markham
 - [ ] Selling a family home after decades: a planning checklist | downsizing | selling family home ontario
 - [ ] Selling a house during probate in Ontario | selling | selling house in probate ontario
 - [ ] Title insurance in Ontario: what it covers | costs-and-taxes | title insurance ontario

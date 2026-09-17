@@ -4,6 +4,7 @@ import Logo from './Logo.astro';
 import site from '../data/site.json';
 import nav from '../data/nav.json';
 import { neighbourhoodPath, isTodo } from '../lib/format';
+import { servicePath } from '../lib/guides';
 import { LANGS, LOCALES, langFromPath, localePath, switchHref, t } from '../i18n';
 
 const path = Astro.url.pathname;
@@ -82,7 +83,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
             <ul>
               <li><a href="/buyers/">Buyers</a></li>
               <li><a href="/sellers/">Sellers</a></li>
-              {services.map((s) => <li><a href={`/services/${s.id}/`}>{s.data.name}</a></li>)}
+              {services.map((s) => <li><a href={servicePath(s.id)}>{s.data.name}</a></li>)}
             </ul>
           </nav>
         ) : (

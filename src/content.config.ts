@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { CATEGORY_SLUGS } from './lib/blog';
+import { GUIDE_SLUGS } from './lib/guides';
 
 const seo = {
   title: z.string().max(60, 'Keep titles under 60 characters'),
@@ -95,6 +96,7 @@ const blog = defineCollection({
     neighbourhood: z.string().optional().describe('Main neighbourhood slug, used for the share image'),
     related: z.array(z.string()).default([]).describe('Neighbourhood slugs linked at the end'),
     relatedServices: z.array(z.string()).default([]),
+    guide: z.enum(GUIDE_SLUGS).optional().describe('The pillar guide this post supports'),
     faq: z
       .array(z.object({ q: z.string(), a: z.string() }))
       .min(3)
@@ -181,7 +183,30 @@ const news = defineCollection({
   }),
 });
 
+/**
+ * Pillar guides at /<slug>/, one per topic cluster. See src/lib/guides.ts.
+ */
+const guides = defineCollection({
+  loader: glob({ base: './src/content/guides', pattern: '**/[^_]*.mdx' }),
+  schema: z.object({
+    ...seo,
+    h1: z.string().min(20).max(90),
+    eyebrow: z.string(),
+    lede: z.string().min(60).max(320),
+    takeaway: z.string().min(120),
+    updated: z.coerce.date(),
+    related: z.array(z.string()).default([]),
+    relatedServices: z.array(z.string()).default([]),
+    faq: z.array(z.object({ q: z.string(), a: z.string() })).min(6).max(12),
+    sources: z
+      .array(z.object({ name: z.string().min(2), url: z.string().url() }))
+      .min(3, 'A pillar guide must cite its sources'),
+    draft: z.boolean().default(false),
+  }),
+});
+
 export const collections = {
+  guides,
   neighbourhoods,
   services,
   blog,

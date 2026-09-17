@@ -62,6 +62,7 @@ const moneyPages = new Set([
   ...serviceSlugs.map((s) => `/services/${s}/`),
   '/buyers/',
   '/sellers/',
+  '/downsizing-markham/',
   '/neighbourhoods/',
   '/services/',
 ]);
@@ -139,6 +140,9 @@ for (const name of files) {
     if (!String(item.q ?? '').trim().endsWith('?')) fail(file, `FAQ question "${item.q}" must end with a question mark`);
   }
 
+  const guideSlugs = ['downsizing-markham'];
+  if (data.guide && !guideSlugs.includes(data.guide)) fail(file, `guide "${data.guide}" is not a guide slug`);
+  if (data.guide && !uniqueInternal.has(`/${data.guide}/`)) fail(file, `a post in the ${data.guide} cluster must link to /${data.guide}/ in the body`);
   if (data.neighbourhood && !hoodSlugs.includes(data.neighbourhood)) fail(file, `neighbourhood "${data.neighbourhood}" is not a neighbourhood slug`);
   for (const r of data.related ?? []) if (!hoodSlugs.includes(r)) fail(file, `related "${r}" is not a neighbourhood slug`);
   for (const r of data.relatedServices ?? []) if (!serviceSlugs.includes(r)) fail(file, `relatedServices "${r}" is not a service slug`);

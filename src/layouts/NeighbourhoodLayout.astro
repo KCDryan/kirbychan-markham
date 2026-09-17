@@ -15,6 +15,7 @@ import site from '../data/site.json';
 import NewsItems from '../components/NewsItems.astro';
 import credits from '../data/photo-credits.json';
 import { longDate, neighbourhoodPath } from '../lib/format';
+import { servicePath } from '../lib/guides';
 import { breadcrumbList, faqPage, place } from '../lib/schema';
 
 interface Props {
@@ -246,7 +247,7 @@ const jsonLd = [
             <ul>
               {services.map((s) => (
                 <li>
-                  <a href={`/services/${s.id}/`}>{s.data.name}</a>
+                  <a href={servicePath(s.id)}>{s.data.name}</a>
                   <span>{s.data.summary}</span>
                 </li>
               ))}

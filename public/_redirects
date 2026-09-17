@@ -31,3 +31,6 @@
 /search/ /contact/ 302
 /case-studies/ /client-stories/ 301
 /case-studies/* /client-stories/ 301
+/services/downsizing/ /downsizing-markham/ 301
+/first-time-buyers/ /services/first-time-buyers/ 301
+/downsizing/ /downsizing-markham/ 301

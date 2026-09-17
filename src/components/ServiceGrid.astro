@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { servicePath } from '../lib/guides';
 import { langFromPath, localePath, t } from '../i18n';
 
 interface Props {
@@ -33,7 +34,7 @@ const keys = ['buying', 'selling', ...collection.map((s) => s.id)];
 let cards: Card[] = keys.map((key) => {
   const tr = (dict.services.items as Record<string, { name: string; summary: string; body: string }>)[key];
   const entry = collection.find((s) => s.id === key);
-  const englishHref = key === 'buying' ? '/buyers/' : key === 'selling' ? '/sellers/' : `/services/${key}/`;
+  const englishHref = key === 'buying' ? '/buyers/' : key === 'selling' ? '/sellers/' : servicePath(key);
   return {
     key,
     name: lang === 'en' ? (entry?.data.name ?? tr?.name ?? key) : (tr?.name ?? entry?.data.name ?? key),
