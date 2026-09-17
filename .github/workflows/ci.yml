@@ -49,6 +49,9 @@ jobs:
       - name: Check internal links
         run: node scripts/check-links.mjs
 
+      - name: Check for thin pages
+        run: npm run check:thin
+
       - name: Check house style
         # Em dashes, en dashes, commas before and/or, American spellings.
         run: npm run check:style

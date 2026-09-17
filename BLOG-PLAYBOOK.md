@@ -39,9 +39,10 @@ record the failure under "Needs owner attention" in `BLOG-LOG.md`, then commit a
 
 1. List what already exists: `grep -h "^title:\|^h1:" src/content/blog/*.mdx`.
 2. Take the first unticked topic in `BLOG-TOPICS.md`.
-3. Skip it (leave it unticked and note why in the log) if an existing post already targets the same
+3. Before writing, answer the test in `SEO-PLAYBOOK.md` section 1: what would be missing from the index if this post did not exist? If the honest answer is "very little", skip the topic and note why. Each post must be more specific than the ones already published, not another pass at the same ground.
+4. Skip it (leave it unticked and note why in the log) if an existing post already targets the same
    search intent, or if the facts it needs cannot be verified from the sources in section 4.
-4. If every topic is ticked or skipped, write five new topic ideas at the bottom of
+5. If every topic is ticked or skipped, write five new topic ideas at the bottom of
    `BLOG-TOPICS.md` in the same format, then use the first. Good topics answer one specific question
    a Markham buyer, seller, owner or newcomer would type into Google. Mix the categories over a week.
    Never write a topic that duplicates a neighbourhood guide or a service page. Link to those instead.

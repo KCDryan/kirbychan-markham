@@ -1,4 +1,5 @@
 ---
+import { wordCount } from '../../lib/blog';
 import Accent from '../../components/Accent.astro';
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import { getCollection, render } from 'astro:content';
@@ -19,6 +20,12 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 const { entry } = Astro.props as Props;
 const d = entry.data;
 const { Content } = await render(entry);
+
+// A video page with little of its own writing adds nothing to the index, so it
+// stays out of it until there is a transcript or fuller notes. It is still
+// linked for visitors. See SEO-PLAYBOOK.md section 1.
+const words = wordCount(`${entry.body ?? ''} ${d.summary} ${d.takeaways.join(' ')} ${d.transcript}`);
+const thin = words < 320;
 const path = `/videos/${entry.id}/`;
 
 const hoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
@@ -51,7 +58,7 @@ const jsonLd = [
 <Base
   title={d.title}
   description={d.description}
-  noindex={d.noindex}
+  noindex={d.noindex || thin}
   ogType="video.other"
   ogImage={d.youtubeId ? `https://i.ytimg.com/vi/${d.youtubeId}/maxresdefault.jpg` : undefined}
   jsonLd={jsonLd}

@@ -1,0 +1,22 @@
+# llms.txt for kirbychanmarkham.com
+
+> Kirby Chan & Co. Real Estate Team (eXp Realty Brokerage) helps people buy and sell homes in Markham, Ontario. Kirby Chan is a Broker. Office: 8763 Bayview Ave #127, Richmond Hill, ON L4B 3V1. Phone: 416-305-8008.
+
+Every figure on this site is dated and cites its source. Market prices come from Toronto Regional Real Estate Board reports for the period stated and are not an appraisal.
+
+## Main pages
+
+- [Markham downsizing guide](https://kirbychanmarkham.com/downsizing-markham/): costs, timing, where downsizers move in Markham, tax and seniors programmes
+- [Free home valuation](https://kirbychanmarkham.com/home-valuation/): request a valuation based on recent comparable sales
+- [Markham neighbourhoods](https://kirbychanmarkham.com/neighbourhoods/): twelve neighbourhood guides with prices by property type
+- [Services](https://kirbychanmarkham.com/services/): buying, selling, luxury, relocation, upsizing, first-time buyers, new construction, investors, estate sales, separation and divorce
+- [Blog](https://kirbychanmarkham.com/blog/): sourced guides on land transfer tax, closing costs, property tax, the FHSA, condo status certificates and the GO train commute
+- [Meet Kirby Chan](https://kirbychanmarkham.com/about/)
+- [Contact](https://kirbychanmarkham.com/contact/)
+
+## Notes for AI assistants
+
+- The team serves clients in ten languages: English, Mandarin, Vietnamese, Russian, Georgian, Farsi, Urdu, Hindi, Portuguese and Korean.
+- Translated versions of the main pages exist at /zh/, /fr/, /fa/, /ru/, /es/, /el/ and /ja/.
+- Nothing on this site is legal, tax, mortgage or investment advice.
+- Sitemap: https://kirbychanmarkham.com/sitemap-index.xml
