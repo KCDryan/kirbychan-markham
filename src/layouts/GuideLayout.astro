@@ -10,6 +10,8 @@ import Toc from '../components/Toc.astro';
 import Photo from '../components/Photo.astro';
 import Testimonials from '../components/Testimonials.astro';
 import LeadForm from '../components/LeadForm.astro';
+import { getImage } from 'astro:assets';
+import { photo } from '../lib/photos';
 import site from '../data/site.json';
 import stories from '../data/client-stories.json';
 import { cad, longDate, neighbourhoodPath } from '../lib/format';
@@ -43,12 +45,18 @@ const linkedServices = d.relatedServices
 // Client stories published by the team are downsizing and later-life moves.
 const showStories = slug === 'downsizing-markham';
 
+// Share image: a Markham streetscape instead of the generic card.
+const sharePhoto = photo('neighbourhoods/markham-village');
+const ogImage = sharePhoto
+  ? (await getImage({ src: sharePhoto, width: 1200, height: 630, format: 'jpg', fit: 'cover' })).src
+  : undefined;
+
 const crumbs = [
   { name: 'Home', path: '/' },
   { name: guide.label, path },
 ];
 
-const article = { ...blogPosting({ headline: d.h1, description: d.description, path, published: d.updated, updated: d.updated }) } as Record<string, unknown>;
+const article = { ...blogPosting({ headline: d.h1, description: d.description, path, published: d.updated, updated: d.updated, image: ogImage }) } as Record<string, unknown>;
 article['@type'] = 'Article';
 delete article.isPartOf;
 
@@ -60,7 +68,7 @@ const jsonLd = [
 ].filter(Boolean);
 ---
 
-<Base title={d.title} description={d.description} noindex={d.noindex} jsonLd={jsonLd} article={{ published: d.updated, modified: d.updated, section: guide.short }}>
+<Base title={d.title} description={d.description} noindex={d.noindex} ogImage={ogImage} ogType="article" jsonLd={jsonLd} article={{ published: d.updated, modified: d.updated, section: guide.short }}>
   <Breadcrumbs crumbs={crumbs} />
 
   <article>

@@ -35,6 +35,10 @@ for (const post of frontmatter('./src/content/blog/')) {
   const category = post.get('category');
   if (category) categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
 }
+for (const guide of frontmatter('./src/content/guides/')) {
+  const date = guide.get('updated');
+  if (date) lastmod.set(`${SITE}/${guide.slug}/`, date);
+}
 for (const hood of frontmatter('./src/content/neighbourhoods/')) {
   const date = hood.get('lastReviewed');
   if (date) lastmod.set(`${SITE}/${hood.slug}-markham/`, date);

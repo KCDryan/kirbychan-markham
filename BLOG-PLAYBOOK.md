@@ -225,6 +225,14 @@ npm run verify       # again, if the rebase brought in changes
 git push origin main
 ```
 
+Then wait about three minutes for the deploy and notify Bing and other IndexNow engines of the new post:
+
+```bash
+node scripts/indexnow.mjs /blog/<slug>/ /downsizing-markham/ /blog/
+```
+
+A non-200 result is not a failure of the run; note it in the log.
+
 Never force push. Never push with a failing `npm run verify`. If the push is rejected twice, stop and
 record it in the log.
 
