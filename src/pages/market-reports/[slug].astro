@@ -65,6 +65,23 @@ const jsonLd = [
         <Content />
       </div>
 
+      {
+        d.sources.length > 0 && (
+          <section class="mr-sources">
+            <h2>Sources</h2>
+            <ul>
+              {d.sources.map((s) => (
+                <li>
+                  <a href={s.url} rel="noopener noreferrer" target="_blank">
+                    {s.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
       <div class="disclaimer">
         <p>
           <strong>Market data.</strong> Figures in this report are general information drawn from
@@ -103,6 +120,17 @@ const jsonLd = [
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--brown);
+  }
+  .mr-sources h2 {
+    font-size: var(--step-1);
+    margin-bottom: var(--sp-3);
+  }
+  .mr-sources ul {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding-left: 1.2em;
+    font-size: 0.88rem;
   }
   .mr-body {
     display: grid;

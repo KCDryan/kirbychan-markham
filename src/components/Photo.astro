@@ -1,0 +1,70 @@
+---
+/**
+ * Renders a real photo from src/assets/photos/ when one exists for `name`,
+ * optimised to AVIF and WebP at several widths with width and height set.
+ * Otherwise renders the labelled placeholder, so a missing photo is visible
+ * rather than broken.
+ */
+import { Picture } from 'astro:assets';
+import Placeholder from './Placeholder.astro';
+import { photo } from '../lib/photos';
+
+interface Props {
+  name: string;
+  alt: string;
+  /** Shown on the placeholder until the real photo exists. */
+  label: string;
+  ratio?: string;
+  /** Above the fold images load eagerly. Everything else is lazy. */
+  priority?: boolean;
+  sizes?: string;
+  class?: string;
+}
+
+const {
+  name,
+  alt,
+  label,
+  ratio = '4 / 3',
+  priority = false,
+  sizes = '(min-width: 900px) 440px, 100vw',
+  class: cls = '',
+} = Astro.props;
+
+const src = photo(name);
+---
+
+{
+  src ? (
+    <div class:list={['photo', cls]} style={`aspect-ratio:${ratio}`}>
+      <Picture
+        src={src}
+        alt={alt}
+        formats={['avif', 'webp']}
+        widths={[400, 640, 880, 1200]}
+        sizes={sizes}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : 'auto'}
+        decoding="async"
+      />
+    </div>
+  ) : (
+    <Placeholder label={label} ratio={ratio} class={cls} />
+  )
+}
+
+<style>
+  .photo {
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--sand);
+  }
+  .photo :global(picture),
+  .photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>

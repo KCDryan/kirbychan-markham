@@ -1,5 +1,5 @@
 ---
-import Placeholder from './Placeholder.astro';
+import Photo from './Photo.astro';
 import stats from '../data/stats.json';
 import { isTodo } from '../lib/format';
 
@@ -10,7 +10,7 @@ const yearsKnown = years && !isTodo(years.value);
 <section class="team section section--alt">
   <div class="wrap team__inner">
     <div class="team__media">
-      <Placeholder label="Portrait of Kirby Chan" ratio="3 / 4" />
+      <Photo name="kirby-portrait" alt="Kirby Chan" label="Portrait of Kirby Chan" ratio="3 / 4" />
     </div>
     <div class="team__copy">
       <p class="eyebrow">The team</p>

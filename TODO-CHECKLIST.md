@@ -53,18 +53,16 @@ Nothing in this section has been guessed. Every one renders as a visible placeho
 
 | # | What | Where |
 | --- | --- | --- |
-| 19 | Logo files | `public/images/logo/`. The header and footer currently use a CSS wordmark. Swap the markup in `src/components/Logo.astro` once files exist |
-| 20 | Team photography | `public/images/team/`. Used on `/about/` and in the homepage team section |
-| 21 | Neighbourhood photography, 12 images | `public/images/neighbourhoods/`. Each pillar page hero shows a labelled placeholder block |
-| 22 | Hero image for the homepage | Same. See `src/components/Hero.astro` |
+| 19 | Logo files | `src/assets/logo/logo.svg` and `logo-light.svg`. Drop them in and they replace the text wordmark automatically |
+| 20 | Kirby portrait | `src/assets/photos/kirby-portrait.jpg`. Used on `/about/` and in the homepage team section |
+| 21 | Neighbourhood photography, 12 images | `src/assets/photos/neighbourhoods/<slug>.jpg`. Each replaces that page's placeholder and adds a card thumbnail and share image |
+| 22 | Hero image for the homepage | `src/assets/photos/home-hero.jpg` |
 | 23 | Record the three videos, then add each YouTube ID and transcript | `src/content/videos/*.mdx`. Pages render a labelled placeholder until `youtubeId` is filled |
 | 24 | Optional: replace the generated OG image with a designed one, 1200 x 630 | `public/og-default.png` |
 
-**How to swap a placeholder for a real photo.** Put the image in `src/assets/`, import it at the
-top of the component and replace `<Placeholder ... />` with
-`<Image src={photo} alt="..." widths={[480, 800, 1200]} />` from `astro:assets`. That gives you
-WebP and AVIF, correct width and height and lazy loading below the fold. The placeholders exist so
-the build never breaks on a missing file.
+**Swapping a placeholder for a real photo needs no code.** Drop the file into `src/assets/photos/`
+with the name listed above and commit it. The build makes AVIF and WebP versions, sets width and
+height and lazy loads below the fold. The full list of names is in `src/assets/photos/README.md`.
 
 ---
 

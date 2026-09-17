@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import { neighbourhoodPath } from '../lib/format';
+import { neighbourhoodPhoto } from '../lib/photos';
 
 interface Props {
   limit?: number;
@@ -18,20 +20,49 @@ if (limit) hoods = hoods.slice(0, limit);
 
 <ul class="hood-grid" role="list">
   {
-    hoods.map((h) => (
+    hoods.map((h) => {
+      // Cards show a thumbnail only once a real photo exists. No placeholder
+      // here, so the grid stays clean until photos arrive.
+      const thumb = neighbourhoodPhoto(h.id);
+      return (
       <li>
-        <a class="hood" href={neighbourhoodPath(h.id)}>
+        <a class:list={['hood', thumb && 'hood--photo']} href={neighbourhoodPath(h.id)}>
+          {thumb && (
+            <Image
+              class="hood__img"
+              src={thumb}
+              alt=""
+              widths={[320, 560]}
+              sizes="(min-width: 700px) 280px, 100vw"
+              loading="lazy"
+              decoding="async"
+            />
+          )}
           <span class="hood__num">N&deg; {String(h.data.order).padStart(2, '0')}</span>
           {heading ? <h3 class="hood__name">{h.data.name}</h3> : <span class="hood__name">{h.data.name}</span>}
           <span class="hood__line">{h.data.personality}</span>
           <span class="hood__cta">Explore {h.data.name}</span>
         </a>
       </li>
-    ))
+      );
+    })
   }
 </ul>
 
 <style>
+  .hood--photo {
+    padding-top: 0;
+    overflow: hidden;
+  }
+  .hood :global(.hood__img) {
+    display: block;
+    width: calc(100% + var(--sp-5) * 2);
+    max-width: none;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    margin: 0 calc(var(--sp-5) * -1) var(--sp-3);
+  }
   .hood-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));

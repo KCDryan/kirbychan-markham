@@ -11,7 +11,9 @@
     "preview": "astro preview",
     "check": "astro check",
     "check:links": "node scripts/check-links.mjs",
-    "verify": "npm run check && npm run build && npm run check:links",
+    "check:style": "node scripts/check-style.mjs",
+    "clean:cache": "node -e \"const fs=require('fs');for(const d of ['.astro','node_modules/.astro','dist']) fs.rmSync(d,{recursive:true,force:true})\"",
+    "verify": "npm run clean:cache && npm run check:style && npm run check && npm run build && npm run check:links",
     "astro": "astro"
   },
   "dependencies": {

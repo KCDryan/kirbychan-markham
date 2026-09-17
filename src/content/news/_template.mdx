@@ -1,0 +1,30 @@
+---
+# TEMPLATE. Ignored by the build because the filename starts with an underscore.
+# Copy to a file named for the publish date, for example 2026-09-22.mdx.
+#
+# Rules, enforced by src/content.config.ts:
+#   - title under 60 characters, description 140 to 168 characters
+#   - every item needs a full https sourceUrl or the build fails
+#   - quote every text value; a colon followed by a space breaks unquoted YAML
+#   - neighbourhoods uses slugs: unionville, markham-village, cornell, berczy-village,
+#     cathedraltown, wismer, greensborough, angus-glen, box-grove, thornhill,
+#     milliken-mills, downtown
+#   - topic is one of: Transit, Schools, Development, City, Parks, Market, Other
+title: "Markham News, September 22, 2026"
+description: "A roundup of verified Markham news for buyers and sellers covering transit, schools, development and city decisions, each item linked to its original source."
+h1: "Markham news for September 22, 2026"
+accent: "news"
+published: 2026-09-22
+summary: "One sentence on the most useful thing in this roundup."
+items:
+  - headline: "Short factual headline"
+    date: 2026-09-18
+    summary: "Two or three sentences. What happened, where and why a buyer or seller in Markham would care."
+    sourceName: "City of Markham"
+    sourceUrl: "https://www.markham.ca/"
+    neighbourhoods:
+      - unionville
+    topic: City
+---
+
+Optional one paragraph introduction. Leave empty if the items speak for themselves.

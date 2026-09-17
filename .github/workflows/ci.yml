@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
         # npm ci when a lockfile is committed, npm install on the very first
@@ -46,12 +46,6 @@ jobs:
       - name: Check internal links
         run: node scripts/check-links.mjs
 
-      - name: Check writing rules
-        # Canadian spelling, no em dashes and no Oxford commas are house rules.
-        # This fails the build if an em dash slips into src/.
-        run: |
-          if grep -rInP '\xe2\x80\x94' src/ 2>/dev/null; then
-            echo "::error::Em dash found in src/. House style forbids them."
-            exit 1
-          fi
-          echo "No em dashes found."
+      - name: Check house style
+        # Em dashes, en dashes, commas before and/or, American spellings.
+        run: npm run check:style

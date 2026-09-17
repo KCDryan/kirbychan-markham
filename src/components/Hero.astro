@@ -1,6 +1,6 @@
 ---
 import site from '../data/site.json';
-import Placeholder from './Placeholder.astro';
+import Photo from './Photo.astro';
 
 const searchHref = site.links.loftySearch || '/contact/';
 const searchExternal = searchHref.startsWith('http');
@@ -30,7 +30,13 @@ const searchExternal = searchHref.startsWith('http');
       </div>
     </div>
     <div class="hero__media">
-      <Placeholder label="Hero image: a recognisable Markham street or streetscape" ratio="4 / 5" />
+      <Photo
+        name="home-hero"
+        alt="A Markham streetscape"
+        label="Hero image: a recognisable Markham street or streetscape"
+        ratio="4 / 5"
+        priority
+      />
     </div>
   </div>
 </section>

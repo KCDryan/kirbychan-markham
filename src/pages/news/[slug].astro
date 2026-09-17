@@ -1,0 +1,85 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Accent from '../../components/Accent.astro';
+import NewsItems from '../../components/NewsItems.astro';
+import Cta from '../../components/Cta.astro';
+import { blogPosting, breadcrumbList } from '../../lib/schema';
+import { longDate } from '../../lib/format';
+
+export const getStaticPaths = (async () => {
+  const roundups = await getCollection('news', ({ data }) => !data.draft);
+  return roundups.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { entry } = Astro.props as Props;
+const d = entry.data;
+const { Content } = await render(entry);
+const path = `/news/${entry.id}/`;
+
+const hoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
+const names = Object.fromEntries(hoods.map((h) => [h.id, h.data.name]));
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Markham news', path: '/news/' },
+  { name: longDate(d.published), path },
+];
+
+const jsonLd = [
+  breadcrumbList(crumbs),
+  blogPosting({ headline: d.h1, description: d.description, path, published: d.published }),
+];
+---
+
+<Base title={d.title} description={d.description} noindex={d.noindex} ogType="article" jsonLd={jsonLd}>
+  <Breadcrumbs crumbs={crumbs} />
+
+  <article>
+    <header class="nr-hero">
+      <div class="wrap-narrow">
+        <p class="eyebrow">Markham news &middot; {longDate(d.published)}</p>
+        <h1><Accent text={d.h1} accent={d.accent} /></h1>
+        <p class="lede">{d.summary}</p>
+      </div>
+    </header>
+
+    <div class="wrap-narrow nr-body">
+      <div class="prose">
+        <Content />
+      </div>
+
+      <NewsItems items={d.items} names={names} />
+
+      <div class="disclaimer">
+        <p>
+          <strong>About this roundup.</strong> Each item summarises a public announcement or report
+          and links to the original. Details change after publication, so check the source before
+          relying on it. Nothing here is legal, tax, mortgage or investment advice.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <Cta />
+</Base>
+
+<style>
+  .nr-hero {
+    background: var(--sand);
+    border-bottom: 1px solid var(--rule);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+  }
+  .nr-hero .lede {
+    margin-top: var(--sp-4);
+    max-width: 58ch;
+  }
+  .nr-body {
+    display: grid;
+    gap: var(--sp-6);
+    padding-block: var(--section-y);
+  }
+</style>

@@ -22,7 +22,15 @@ const sourceLine = sourceMissing ? null : `Source: ${market.source} ${market.per
           {market.metric} by neighbourhood
         </h2>
         {sourceLine ? (
-          <p class="ticker__source">{sourceLine}</p>
+          <p class="ticker__source">
+            {market.sourceUrl ? (
+              <a href={market.sourceUrl} rel="noopener noreferrer" target="_blank">
+                {sourceLine}
+              </a>
+            ) : (
+              sourceLine
+            )}
+          </p>
         ) : (
           <p class="ticker__source">
             <span class="todo-badge">TODO: set source and period in src/data/market.json</span>

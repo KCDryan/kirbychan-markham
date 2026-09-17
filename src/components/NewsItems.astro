@@ -1,0 +1,108 @@
+---
+import { longDate, neighbourhoodPath } from '../lib/format';
+
+interface Item {
+  headline: string;
+  date: Date;
+  summary: string;
+  sourceName: string;
+  sourceUrl: string;
+  neighbourhoods: string[];
+  topic: string;
+}
+interface Props {
+  items: Item[];
+  names?: Record<string, string>;
+  compact?: boolean;
+}
+const { items, names = {}, compact = false } = Astro.props;
+---
+
+<ul class:list={['news', compact && 'news--compact']} role="list">
+  {
+    items.map((item) => (
+      <li class="news__item">
+        <p class="news__meta">
+          <span class="news__topic">{item.topic}</span>
+          <time datetime={item.date.toISOString()}>{longDate(item.date)}</time>
+        </p>
+        <h3 class="news__headline">{item.headline}</h3>
+        <p class="news__summary">{item.summary}</p>
+        <p class="news__foot">
+          <a href={item.sourceUrl} rel="noopener noreferrer" target="_blank">
+            Source: {item.sourceName}
+            <span class="visually-hidden"> (opens in a new tab)</span>
+          </a>
+          {!compact &&
+            item.neighbourhoods
+              .filter((slug) => names[slug])
+              .map((slug) => (
+                <a class="news__tag" href={neighbourhoodPath(slug)}>
+                  {names[slug]}
+                </a>
+              ))}
+        </p>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .news {
+    display: grid;
+    gap: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .news__item {
+    padding: var(--sp-5) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .news__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.9rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .news__topic {
+    color: var(--brown);
+    font-weight: 600;
+  }
+  .news__headline {
+    margin: var(--sp-2) 0;
+    font-size: var(--step-1);
+  }
+  .news--compact .news__headline {
+    font-size: var(--step-0);
+    font-family: var(--font-sans);
+    font-weight: 600;
+  }
+  .news__summary {
+    color: var(--text-muted);
+    line-height: 1.65;
+    max-width: 68ch;
+  }
+  .news__foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    margin-top: var(--sp-3);
+    font-size: 0.8rem;
+  }
+  .news__tag {
+    padding: 0.1rem 0.55rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.72rem;
+  }
+  .news__tag:hover {
+    border-color: var(--gold);
+  }
+</style>

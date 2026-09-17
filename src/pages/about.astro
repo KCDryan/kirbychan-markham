@@ -1,6 +1,6 @@
 ---
 import Page from '../layouts/Page.astro';
-import Placeholder from '../components/Placeholder.astro';
+import Photo from '../components/Photo.astro';
 import Cta from '../components/Cta.astro';
 import stats from '../data/stats.json';
 import site from '../data/site.json';
@@ -44,9 +44,9 @@ const faq = [
   <section class="section">
     <div class="wrap about-grid">
       <div class="about-media">
-        <Placeholder label="Portrait of Kirby Chan" ratio="3 / 4" />
+        <Photo name="kirby-portrait" alt="Kirby Chan" label="Portrait of Kirby Chan" ratio="3 / 4" priority />
         <p class="about-todo">
-          <span class="todo-badge">TODO: add team photography to /public/images/team/</span>
+          <span class="todo-badge">TODO: add src/assets/photos/kirby-portrait.jpg</span>
         </p>
       </div>
       <div class="about-copy prose">

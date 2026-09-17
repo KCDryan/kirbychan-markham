@@ -1,6 +1,7 @@
 {
   "source": "",
   "period": "",
+  "sourceUrl": "",
   "metric": "Median sale price",
   "note": "Fill source with \"TRREB\" and period with the month and year, for example \"August 2026\". Add a price to each neighbourhood as a plain number with no symbols, for example 1425000. Leave price as null until you have the real figure. Neighbourhoods with a null price are skipped on the ticker and if every price is null the whole ticker section is hidden.",
   "neighbourhoods": [

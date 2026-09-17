@@ -11,6 +11,15 @@ const seo = {
   noindex: z.boolean().default(false),
 };
 
+const sources = z
+  .array(
+    z.object({
+      name: z.string().min(2),
+      url: z.string().url('Every source needs a full https URL'),
+    })
+  )
+  .default([]);
+
 const faq = z
   .array(
     z.object({
@@ -44,6 +53,8 @@ const neighbourhoods = defineCollection({
     nearby: z.array(z.string()).length(2).describe('Slugs of two nearby neighbourhoods'),
     relatedServices: z.array(z.string()).default([]),
     faq,
+    lastReviewed: z.coerce.date().optional(),
+    sources,
     draft: z.boolean().default(false),
   }),
 });
@@ -140,6 +151,38 @@ const marketReports = defineCollection({
     period: z.string().describe('For example "August 2026"'),
     published: z.coerce.date(),
     summary: z.string(),
+    sources,
+    draft: z.boolean().default(false),
+  }),
+});
+
+/**
+ * Markham news roundups. One file per update run. Each item must carry a
+ * source URL, which the schema enforces, so an unsourced item fails the build
+ * instead of going live.
+ */
+const news = defineCollection({
+  // Files starting with an underscore, such as _template.mdx, are ignored.
+  loader: glob({ base: './src/content/news', pattern: '**/[^_]*.mdx' }),
+  schema: z.object({
+    ...seo,
+    h1: z.string(),
+    accent: z.string().optional(),
+    published: z.coerce.date(),
+    summary: z.string(),
+    items: z
+      .array(
+        z.object({
+          headline: z.string().min(8),
+          date: z.coerce.date(),
+          summary: z.string().min(40),
+          sourceName: z.string().min(2),
+          sourceUrl: z.string().url('Every news item needs a full https source URL'),
+          neighbourhoods: z.array(z.string()).default([]),
+          topic: z.enum(['Transit', 'Schools', 'Development', 'City', 'Parks', 'Market', 'Other']),
+        })
+      )
+      .min(1),
     draft: z.boolean().default(false),
   }),
 });
@@ -151,4 +194,5 @@ export const collections = {
   videos,
   'case-studies': caseStudies,
   'market-reports': marketReports,
+  news,
 };

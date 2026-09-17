@@ -130,6 +130,58 @@ a click to load facade, so nothing from YouTube is requested until a visitor pre
 
 ---
 
+## Adding photos and the logo
+
+No code changes needed. Drop a file into the right folder with the right name, commit it and it
+replaces the placeholder on the next deploy. The build creates fast AVIF and WebP versions at several
+sizes automatically, so upload the largest original you have.
+
+| File | Where it shows |
+| --- | --- |
+| `src/assets/photos/home-hero.jpg` | Homepage hero |
+| `src/assets/photos/kirby-portrait.jpg` | Homepage team section and /about/ |
+| `src/assets/photos/neighbourhoods/<slug>.jpg` | That neighbourhood's page, its homepage card and its social share image |
+| `src/assets/logo/logo.svg` | Header |
+| `src/assets/logo/logo-light.svg` | Footer on the dark background |
+
+Slugs: `unionville`, `markham-village`, `cornell`, `berczy-village`, `cathedraltown`,
+`wismer`, `greensborough`, `angus-glen`, `box-grove`, `thornhill`, `milliken-mills`,
+`downtown`. JPG, PNG and WebP all work. Names must be lower case. The full list with crop shapes
+is in `src/assets/photos/README.md`.
+
+On github.com: open the folder, choose **Add file > Upload files**, drag the photo in and commit.
+
+---
+
+## Automated updates every two weeks
+
+A scheduled Claude cloud agent updates the site on the 8th and 22nd of each month. It follows
+`UPDATE-PLAYBOOK.md` exactly and commits straight to `main`, so changes go live without review.
+
+Each run:
+
+1. **Market figures.** When TRREB has published newer community level figures, updates the homepage
+   ticker and publishes a market report page.
+2. **Markham news.** Publishes a sourced roundup at /news/ and shows relevant items on each
+   neighbourhood page.
+3. **Fact check.** Re-verifies three neighbourhood pages, oldest first then stamps them with a
+   "last reviewed" date and their sources.
+
+Guardrails built into the repo, not just the instructions:
+
+- Every news item and every cited fact must carry a full https source URL. The schema rejects
+  anything without one and the build fails.
+- `npm run verify` (style, types, build, links) must pass before the agent may push.
+- The agent may only touch the content files listed in the playbook. Brokerage details, business
+  statistics, testimonials, services, photos and all code are off limits.
+- Every run writes an entry to `UPDATE-LOG.md` with its sources and anything that needs your
+  attention.
+
+**After each run, skim `UPDATE-LOG.md`.** If something published is wrong, revert that commit in
+GitHub or use **Rollback** in Cloudflare, then fix the playbook so it does not happen again.
+
+---
+
 ## House style
 
 These are enforced, not suggestions. The CI workflow fails the build on an em dash.

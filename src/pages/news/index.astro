@@ -1,0 +1,103 @@
+---
+import { getCollection } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import Cta from '../../components/Cta.astro';
+import { longDate } from '../../lib/format';
+
+const roundups = (await getCollection('news', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.published.valueOf() - a.data.published.valueOf()
+);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Markham news', path: '/news/' },
+];
+---
+
+<Page
+  title="Markham News and Updates"
+  description="A regular roundup of verified Markham news for buyers and sellers. Transit, schools, development and city decisions, each item linked to its original source."
+  eyebrow="Updated every two weeks"
+  h1="What changed in Markham"
+  accent="changed"
+  lede="Transit, schools, development and city decisions that affect where people live and what homes are worth. Every item links to its original source."
+  crumbs={crumbs}
+>
+  <section class="section">
+    <div class="wrap-narrow">
+      {
+        roundups.length > 0 ? (
+          <ul class="roundups" role="list">
+            {roundups.map((r) => (
+              <li>
+                <a class="roundup" href={`/news/${r.id}/`}>
+                  <time datetime={r.data.published.toISOString()}>
+                    {longDate(r.data.published)}
+                  </time>
+                  <h2>{r.data.h1}</h2>
+                  <span class="roundup__sum">{r.data.summary}</span>
+                  <span class="roundup__count">
+                    {r.data.items.length} {r.data.items.length === 1 ? 'item' : 'items'}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="empty">The first roundup is on its way.</p>
+        )
+      }
+      <div class="disclaimer">
+        <p>
+          <strong>About this page.</strong> Items are summaries of public announcements and reports,
+          each linked to its source. Details change, so always check the original before relying on
+          it for a decision.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Cta />
+</Page>
+
+<style>
+  .roundups {
+    display: grid;
+    gap: var(--sp-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .roundup {
+    display: grid;
+    gap: 0.35rem;
+    padding: var(--sp-5);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--gold);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+  }
+  .roundup:hover {
+    border-color: var(--gold);
+    box-shadow: var(--shadow);
+  }
+  .roundup time,
+  .roundup__count {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .roundup h2 {
+    font-size: var(--step-1);
+  }
+  .roundup__sum {
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .empty {
+    color: var(--text-muted);
+  }
+</style>

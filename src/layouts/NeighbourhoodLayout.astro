@@ -8,9 +8,12 @@ import FaqAccordion from '../components/FaqAccordion.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import VideoCard from '../components/VideoCard.astro';
 import Cta from '../components/Cta.astro';
-import Placeholder from '../components/Placeholder.astro';
+import Photo from '../components/Photo.astro';
+import { getImage } from 'astro:assets';
+import { neighbourhoodPhoto } from '../lib/photos';
 import site from '../data/site.json';
-import { neighbourhoodPath } from '../lib/format';
+import NewsItems from '../components/NewsItems.astro';
+import { longDate, neighbourhoodPath } from '../lib/format';
 import { breadcrumbList, faqPage, place } from '../lib/schema';
 
 interface Props {
@@ -38,6 +41,13 @@ const articles = (await getCollection('articles', ({ data }) => !data.draft))
   .filter((a) => a.data.neighbourhood === entry.id || a.data.related.includes(entry.id))
   .slice(0, 3);
 
+// News items tagged with this neighbourhood, newest first, from any roundup.
+const news = (await getCollection('news', ({ data }) => !data.draft))
+  .flatMap((r) => r.data.items)
+  .filter((item) => item.neighbourhoods.includes(entry.id))
+  .sort((a, b) => b.date.valueOf() - a.date.valueOf())
+  .slice(0, 4);
+
 const crumbs = [
   { name: 'Home', path: '/' },
   { name: 'Neighbourhoods', path: '/neighbourhoods/' },
@@ -47,6 +57,12 @@ const crumbs = [
 const searchHref = site.links.loftySearch || '/contact/';
 const searchExternal = searchHref.startsWith('http');
 
+// Social share card uses the neighbourhood photo when one exists.
+const heroPhoto = neighbourhoodPhoto(entry.id);
+const ogImage = heroPhoto
+  ? (await getImage({ src: heroPhoto, width: 1200, height: 630, format: 'jpg', fit: 'cover' })).src
+  : undefined;
+
 const jsonLd = [
   breadcrumbList(crumbs),
   place({ name: d.name, description: d.intro, path }),
@@ -55,7 +71,13 @@ const jsonLd = [
 
 ---
 
-<Base title={d.title} description={d.description} noindex={d.noindex} jsonLd={jsonLd}>
+<Base
+  title={d.title}
+  description={d.description}
+  noindex={d.noindex}
+  ogImage={ogImage}
+  jsonLd={jsonLd}
+>
   <Breadcrumbs crumbs={crumbs} />
 
   <section class="hood-hero">
@@ -80,7 +102,13 @@ const jsonLd = [
           <a class="btn btn--ghost" href="/contact/">Ask us about {d.name}</a>
         </div>
       </div>
-      <Placeholder label={`${d.name} streetscape photo`} ratio="4 / 3" />
+      <Photo
+        name={`neighbourhoods/${entry.id}`}
+        alt={`${d.name}, Markham`}
+        label={`${d.name} streetscape photo`}
+        ratio="4 / 3"
+        priority
+      />
     </div>
   </section>
 
@@ -137,7 +165,41 @@ const jsonLd = [
         <slot />
       </div>
 
+      {
+        news.length > 0 && (
+          <section class="hood-news" aria-labelledby="hood-news-heading">
+            <h2 id="hood-news-heading">Recent news in {d.name}</h2>
+            <NewsItems items={news} compact />
+            <a class="hood-news__all" href="/news/">All Markham news</a>
+          </section>
+        )
+      }
+
       <FaqAccordion faq={d.faq} heading={`${d.name} questions`} accent="questions" />
+
+      {
+        (d.lastReviewed || d.sources.length > 0) && (
+          <section class="hood-sources" aria-label="Sources">
+            {d.lastReviewed && (
+              <p class="hood-sources__reviewed">
+                Facts last reviewed{' '}
+                <time datetime={d.lastReviewed.toISOString()}>{longDate(d.lastReviewed)}</time>
+              </p>
+            )}
+            {d.sources.length > 0 && (
+              <ul>
+                {d.sources.map((s) => (
+                  <li>
+                    <a href={s.url} rel="noopener noreferrer" target="_blank">
+                      {s.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )
+      }
 
       <div class="disclaimer">
         <p>
@@ -346,6 +408,28 @@ const jsonLd = [
     font-size: 0.8rem;
     letter-spacing: 0.06em;
     color: var(--text-on-dark-muted);
+  }
+
+  .hood-news h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--sp-4);
+  }
+  .hood-news__all {
+    display: inline-block;
+    margin-top: var(--sp-4);
+    font-size: 0.8rem;
+  }
+  .hood-sources {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .hood-sources ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1.2rem;
+    margin: var(--sp-2) 0 0;
+    padding: 0;
+    list-style: none;
   }
 
   .related-row {
