@@ -23,6 +23,7 @@ add the slug. New ideas go at the bottom.
 
 Priority: the downsizing cluster. Posts marked (guide: downsizing-markham) must set `guide: downsizing-markham` in frontmatter and link to /downsizing-markham/ in the body.
 
+- [ ] Markham townhouses: freehold or condo, and what each costs | buying | markham townhouse for sale
 - [ ] Selling and buying at the same time when you downsize | downsizing | sell and buy at the same time ontario (guide: downsizing-markham)
 - [ ] How long downsizing takes and what sets the timeline | downsizing | downsizing timeline (guide: downsizing-markham)
 - [ ] Real estate agent or move manager: who does what when you downsize | downsizing | downsizing move manager markham (guide: downsizing-markham)
@@ -55,7 +56,6 @@ Priority: the downsizing cluster. Posts marked (guide: downsizing-markham) must 
 - [ ] Moving from Toronto to Markham: what changes | moving-to-markham | moving from toronto to markham
 - [ ] York Region schools: how to confirm a school boundary before you buy | buying | yrdsb school boundary
 - [ ] YRT and Viva: getting around Markham without a car | moving-to-markham | yrt viva markham
-- [ ] Freehold townhouse vs condo townhouse in Markham | buying | freehold vs condo townhouse
 - [ ] Buying a detached home in Markham: what to check on older houses | buying | older homes markham
 - [ ] Secondary suites and basement apartments in Markham | investing | basement apartment markham
 - [ ] Renting out a condo in Markham: rules landlords must follow | investing | landlord rules ontario
