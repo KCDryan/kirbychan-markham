@@ -32,11 +32,12 @@ const searchExternal = searchHref.startsWith('http');
     <div class="hero__media">
       <Photo
         name="home-hero"
-        alt="Kirby Chan with a member of the Kirby Chan & Co. team"
-        label="Team photo"
-        ratio="3 / 2"
-        sizes="(min-width: 900px) 560px, 100vw"
+        alt="Kirby Chan, Broker, smiling and pointing toward the headline"
+        label="Photo of Kirby Chan"
+        ratio="873 / 1080"
+        sizes="(min-width: 900px) 460px, 80vw"
         priority
+        cutout
       />
     </div>
   </div>
@@ -44,6 +45,7 @@ const searchExternal = searchHref.startsWith('http');
 
 <style>
   .hero {
+    overflow: hidden;
     background:
       radial-gradient(120% 90% at 85% 10%, rgba(31, 80, 69, 0.1), transparent 60%),
       var(--paper);
@@ -69,17 +71,22 @@ const searchExternal = searchHref.startsWith('http');
     margin-top: var(--sp-6);
   }
   .hero__media {
-    max-width: 580px;
+    max-width: 380px;
     width: 100%;
+    justify-self: center;
+    /* The photo is cut off at the waist, so it sits flush on the section edge. */
+    align-self: end;
+    margin-bottom: calc(-1 * clamp(3rem, 1.8rem + 6vw, 6rem));
   }
 
   @media (min-width: 900px) {
     .hero__inner {
-      grid-template-columns: 1.05fr 0.95fr;
+      grid-template-columns: 1.2fr 0.8fr;
       gap: var(--sp-8);
     }
     .hero__media {
       justify-self: end;
+      max-width: 460px;
     }
   }
 </style>

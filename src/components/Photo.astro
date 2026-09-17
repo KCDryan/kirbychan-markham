@@ -19,6 +19,8 @@ interface Props {
   priority?: boolean;
   sizes?: string;
   class?: string;
+  /** Transparent cutout: no background panel, no crop. */
+  cutout?: boolean;
 }
 
 const {
@@ -29,6 +31,7 @@ const {
   priority = false,
   sizes = '(min-width: 900px) 440px, 100vw',
   class: cls = '',
+  cutout = false,
 } = Astro.props;
 
 const src = photo(name);
@@ -36,7 +39,7 @@ const src = photo(name);
 
 {
   src ? (
-    <div class:list={['photo', cls]} style={`aspect-ratio:${ratio}`}>
+    <div class:list={['photo', cutout && 'photo--cutout', cls]} style={`aspect-ratio:${ratio}`}>
       <Picture
         src={src}
         alt={alt}
@@ -59,6 +62,14 @@ const src = photo(name);
     overflow: hidden;
     border-radius: var(--radius-lg);
     background: var(--mist);
+  }
+  .photo--cutout {
+    background: transparent;
+    border-radius: 0;
+  }
+  .photo--cutout :global(img) {
+    object-fit: contain;
+    object-position: bottom center;
   }
   .photo :global(picture),
   .photo :global(img) {
