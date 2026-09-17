@@ -75,16 +75,23 @@ and the AI assistants treat the profile as the business entity, so:
    to be found for. An error there misinforms every system that reads it.
 2. **The website mirrors the profile.** Service pages should match the profile's services, and
    internal links should follow the same hierarchy rather than linking loosely related pages
-   together.
+   together. Search engines build their picture of the site from the internal links, not from the
+   URL structure, so a link between two pages is a claim that they belong together. In practice:
+   a blog post or neighbourhood page names its services in `relatedServices`, and the service page
+   lists everything that names it. Links run up and down that hierarchy, not sideways between
+   unrelated services.
 3. **Name, address and phone must match everywhere.** Ours live in `src/data/site.json` and feed the
    `RealEstateAgent` schema in `src/lib/schema.ts`: the real Richmond Hill office, with Markham and
    its neighbourhoods as `areaServed`. Never a fake Markham address.
-4. **Reviews are not replaceable.** No on-site work substitutes for genuine Google reviews from
+4. **Say who wrote it.** The author of everything published here is a named registrant with a
+   page, a title and profiles elsewhere, not an unattributed brand. `person()` in
+   `src/lib/schema.ts` is the `Person` entity and it is the `author` on every post and guide.
+5. **Reviews are not replaceable.** No on-site work substitutes for genuine Google reviews from
    clients, ideally mentioning what the work actually was.
-5. **Geography has to be real.** When a page names a landmark, park, road or GO station, use ones
+6. **Geography has to be real.** When a page names a landmark, park, road or GO station, use ones
    that exist on Google Maps and that the page's own facts support. A list of trivia about a place
    is not local relevance.
-6. **Rankings are measured across a map, not from one spot.** A single search from one location
+7. **Rankings are measured across a map, not from one spot.** A single search from one location
    proves nothing, because proximity is a major factor in map results. Judge progress by whether
    enquiries arrive, and by Search Console impressions for the queries we target.
 

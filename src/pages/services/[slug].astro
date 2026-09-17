@@ -6,6 +6,9 @@ import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import FaqAccordion from '../../components/FaqAccordion.astro';
 import ServiceGrid from '../../components/ServiceGrid.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { publishedPosts } from '../../lib/blog-posts';
+import { neighbourhoodPath } from '../../lib/format';
 import Cta from '../../components/Cta.astro';
 import { breadcrumbList, faqPage, service } from '../../lib/schema';
 import { hasGuide } from '../../lib/guides';
@@ -21,6 +24,14 @@ const { entry } = Astro.props as Props;
 const d = entry.data;
 const { Content } = await render(entry);
 const path = `/services/${entry.id}/`;
+
+// Everything on the site that names this service, so the page links down to its
+// own cluster instead of only sideways to the other services.
+const posts = (await publishedPosts()).filter((p) => p.data.relatedServices.includes(entry.id)).slice(0, 6);
+const hoods = await getCollection(
+  'neighbourhoods',
+  (h) => !h.data.draft && h.data.relatedServices.includes(entry.id)
+);
 
 
 const crumbs = [
@@ -101,6 +112,46 @@ const jsonLd = [
     </div>
   </section>
 
+  {
+    (posts.length > 0 || hoods.length > 0) && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Go deeper</p>
+            <h2>Reading on {d.name.toLowerCase()}</h2>
+          </div>
+          {posts.length > 0 && (
+            <ul class="svc-posts" role="list">
+              {posts.map((p) => (
+                <li>
+                  <BlogCard
+                    slug={p.id}
+                    title={p.data.h1}
+                    subtitle={p.data.subtitle}
+                    category={p.data.category}
+                    published={p.data.published}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+          {hoods.length > 0 && (
+            <p class="svc-hoods">
+              Neighbourhood guides that cover this:{' '}
+              {hoods.map((h, i) => (
+                <>
+                  {i > 0 && ', '}
+                  <a href={neighbourhoodPath(h.id)}>{h.data.name}</a>
+                </>
+              ))}
+              .
+            </p>
+          )}
+        </div>
+      </section>
+    )
+  }
+
   <section class="section section--alt">
     <div class="wrap">
       <div class="section-head">
@@ -134,6 +185,18 @@ const jsonLd = [
   }
   .svc-grid-2 h2 {
     font-size: var(--step-3);
+  }
+  .svc-posts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .svc-hoods {
+    margin-top: var(--sp-5);
+    color: var(--text-muted);
   }
   .svc-problem {
     font-size: var(--step-1);

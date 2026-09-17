@@ -4,6 +4,27 @@ import { isoDate, isoDuration, isTodo } from './format';
 
 const AGENT_ID = `${site.url}/#realestateagent`;
 const ORG_ID = `${site.url}/#organization`;
+const PERSON_ID = `${site.url}/about/#kirby`;
+
+/**
+ * The named registrant behind everything published here. Search engines and AI
+ * assistants read a business as an entity, and a person with a page, a title
+ * and profiles elsewhere is a stronger signal than an unattributed brand.
+ */
+export function person() {
+  const sameAs = [site.social.linkedin, site.social.youtube, site.social.instagram].filter(
+    (u) => typeof u === 'string' && u.length > 0
+  );
+  return {
+    '@type': 'Person',
+    '@id': PERSON_ID,
+    name: site.brokerage.registrant,
+    jobTitle: site.brokerage.registrationCategory,
+    url: canonical('/about/'),
+    worksFor: { '@id': AGENT_ID },
+    ...(sameAs.length > 0 ? { sameAs } : {}),
+  };
+}
 
 /** Sitewide RealEstateAgent. Address is the real registered office, never Markham. */
 export function realEstateAgent(areaServed: string[]) {
@@ -39,11 +60,7 @@ export function realEstateAgent(areaServed: string[]) {
       },
     })),
     ...(sameAs.length > 0 ? { sameAs } : {}),
-    employee: {
-      '@type': 'Person',
-      name: site.brokerage.registrant,
-      jobTitle: site.brokerage.registrationCategory,
-    },
+    employee: person(),
     ...(isTodo(site.brokerage.legalName)
       ? {}
       : {
@@ -112,7 +129,7 @@ export function blogPosting(input: {
     ...(input.section ? { articleSection: input.section } : {}),
     ...(input.wordCount ? { wordCount: input.wordCount } : {}),
     isPartOf: { '@type': 'Blog', '@id': `${site.url}/blog/#blog` },
-    author: { '@type': 'RealEstateAgent', '@id': AGENT_ID, name: site.name, url: site.url },
+    author: { '@type': 'Person', '@id': PERSON_ID, name: site.brokerage.registrant, url: canonical('/about/') },
     publisher: {
       '@type': 'RealEstateAgent',
       '@id': AGENT_ID,
