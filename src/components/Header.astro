@@ -17,6 +17,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
 
 <div class="utility">
   <div class="wrap utility__inner">
+    <span class="utility__brokerage">{site.brokerage.legalName}</span>
     <a href={site.contact.phoneHref}>{site.contact.phone}</a>
     <span aria-hidden="true">&middot;</span>
     <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
@@ -123,9 +124,15 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
     gap: 0.6rem;
     align-items: center;
     justify-content: flex-end;
+    flex-wrap: wrap;
     padding-block: 0.45rem;
     font-size: 0.78rem;
     letter-spacing: 0.03em;
+  }
+  .utility__brokerage {
+    margin-right: auto;
+    color: var(--text-on-dark);
+    letter-spacing: 0.06em;
   }
   .utility a {
     color: var(--text-on-dark-muted);

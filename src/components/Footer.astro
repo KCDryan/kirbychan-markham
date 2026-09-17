@@ -30,6 +30,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
     <div class="footer__top">
       <div class="footer__brand">
         <Logo variant="light" />
+        <p class="footer__exp">{site.brokerage.legalName}</p>
         <p class="footer__tag">
           Markham, neighbourhood by neighbourhood. Twelve pillar guides, honest numbers and one
           agent who answers the phone.
@@ -84,19 +85,22 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
     <div class="footer__legal">
       <div class="footer__disclosure">
         <p class="footer__brokerage">
-          <strong>Kirby Chan &amp; Co. Real Estate Inc.</strong>
-          {
-            brokerageMissing ? (
-              <span class="todo">
-                TODO: add the brokerage legal name exactly as registered with RECO, plus the
-                registrant disclosure text, in src/data/site.json
-              </span>
-            ) : (
-              <span> &middot; {site.brokerage.legalName}</span>
-            )
-          }
+          <strong>{site.name}</strong>
         </p>
-        {!brokerageMissing && <p>{site.brokerage.disclosure}</p>}
+        {
+          brokerageMissing ? (
+            <p>
+              <span class="todo">TODO: add the brokerage name in src/data/site.json</span>
+            </p>
+          ) : (
+            <p class="footer__brokerage-name">
+              Brokerage: <strong>{site.brokerage.legalName}</strong>
+            </p>
+          )
+        }
+        <p>
+          {site.brokerage.registrant}, {site.brokerage.registrationCategory}
+        </p>
         <p>
           Office: {site.office.street}, {site.office.city}, {site.office.region}{' '}
           {site.office.postalCode}. Serving Markham and the surrounding York Region communities.
@@ -113,7 +117,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
         </p>
       </div>
       <div class="footer__meta">
-        <p>&copy; {year} Kirby Chan &amp; Co. Real Estate Inc.</p>
+        <p>&copy; {year} {site.name}</p>
         <ul>
           {nav.footer.legal.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
         </ul>
@@ -135,6 +139,17 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
     grid-template-columns: 1fr;
     padding-bottom: var(--sp-7);
     border-bottom: 1px solid var(--rule-dark);
+  }
+  .footer__exp {
+    margin-top: var(--sp-3);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-on-dark);
+  }
+  .footer__brokerage-name strong {
+    color: var(--text-on-dark);
+    font-weight: 500;
   }
   .footer__tag {
     margin-top: var(--sp-4);

@@ -33,8 +33,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
 
       <h2>Who publishes this site</h2>
       <p>
-        This website is published by Kirby Chan &amp; Co. Real Estate Inc.
-        {brokerageMissing ? ' [TODO: brokerage legal name]' : `, ${site.brokerage.legalName}`}.
+        This website is published by {site.name}{brokerageMissing ? ' [TODO: brokerage legal name]' : `, ${site.brokerage.legalName}`}.
         Registered office: {site.office.street}, {site.office.city}, {site.office.region}{' '}
         {site.office.postalCode}.
       </p>
@@ -107,7 +106,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
       <h2>Copyright</h2>
       <p>
         The writing, photography, design and code on this site are owned by Kirby Chan &amp; Co.
-        Real Estate Inc. unless stated otherwise. You may link to these pages and quote briefly
+        Real Estate Team unless stated otherwise. You may link to these pages and quote briefly
         with attribution. You may not republish substantial portions without written permission.
       </p>
       <p>

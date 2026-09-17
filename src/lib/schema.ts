@@ -38,6 +38,11 @@ export function realEstateAgent(areaServed: string[]) {
       },
     })),
     ...(sameAs.length > 0 ? { sameAs } : {}),
+    employee: {
+      '@type': 'Person',
+      name: site.brokerage.registrant,
+      jobTitle: site.brokerage.registrationCategory,
+    },
     ...(isTodo(site.brokerage.legalName)
       ? {}
       : {

@@ -1,6 +1,6 @@
 # kirbychanmarkham.com
 
-Hyperlocal Markham real estate site for Kirby Chan &amp; Co. Real Estate Inc.
+Hyperlocal Markham real estate site for Kirby Chan &amp; Co. Real Estate Team, eXp Realty Brokerage.
 
 Astro, static output, no client framework. Deploys to Cloudflare Pages through the GitHub
 integration: every commit to `main` builds and goes live.

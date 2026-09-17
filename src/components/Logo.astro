@@ -18,13 +18,13 @@ const find = (base: string) =>
 const file = variant === 'light' ? (find('logo-light') ?? find('logo')) : find('logo');
 ---
 {file ? (
-  <Image class:list={['logo-img', cls]} src={file} alt="Kirby Chan & Co. Real Estate Inc." height={44} densities={[1, 2]} loading="eager" />
+  <Image class:list={['logo-img', cls]} src={file} alt="Kirby Chan & Co. Real Estate Team" height={44} densities={[1, 2]} loading="eager" />
 ) : (
 <span class:list={['logo', `logo--${variant}`, cls]}>
   <span class="logo__mark" aria-hidden="true">KC</span>
   <span class="logo__text">
     <span class="logo__name">Kirby Chan <em>&amp;</em> Co.</span>
-    <span class="logo__sub">Real Estate Inc. | Markham</span>
+    <span class="logo__sub">Real Estate Team | Markham</span>
   </span>
 </span>
 )}

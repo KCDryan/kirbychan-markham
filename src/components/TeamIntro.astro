@@ -11,6 +11,7 @@ const yearsKnown = years && !isTodo(years.value);
   <div class="wrap team__inner">
     <div class="team__media">
       <Photo name="kirby-portrait" alt="Kirby Chan" label="Portrait of Kirby Chan" ratio="1 / 1" />
+      <p class="broker-caption"><strong>Kirby Chan</strong>, Broker</p>
     </div>
     <div class="team__copy">
       <p class="eyebrow">The team</p>
@@ -56,6 +57,15 @@ const yearsKnown = years && !isTodo(years.value);
     display: grid;
     gap: var(--sp-7);
     align-items: center;
+  }
+  .broker-caption {
+    margin-top: var(--sp-3);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .broker-caption strong {
+    color: var(--ink);
+    font-weight: 600;
   }
   .team__media {
     max-width: 380px;

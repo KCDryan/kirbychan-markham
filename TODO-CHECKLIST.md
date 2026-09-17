@@ -12,8 +12,8 @@ requirements, not polish.
 
 | # | What | File | Why it blocks |
 | --- | --- | --- | --- |
-| 1 | Brokerage legal name, exactly as registered with RECO | `src/data/site.json` &rarr; `brokerage.legalName` | TRESA requires the registered brokerage name in advertising. It currently shows a visible TODO in the footer and on `/contact/` |
-| 2 | Registrant disclosure text | `src/data/site.json` &rarr; `brokerage.disclosure` | Same. Supply the wording your brokerage requires |
+| 1 | Done, confirm spelling | `src/data/site.json` &rarr; `brokerage.legalName` is `eXp Realty Brokerage`, shown on its own in the top bar, the footer and `/contact/` | Check it matches the RECO public register character for character, including any comma |
+| 2 | Done | Team name, brokerage and "Kirby Chan, Broker" in the footer, on `/contact/` and beside Kirby's photo | Ask eXp compliance whether they require any extra wording |
 | 3 | Have a lawyer read `/privacy/`, `/terms/` and `/accessibility/` | `src/pages/privacy.astro`, `terms.astro`, `accessibility.astro` | Written to align with PIPEDA, CASL and AODA, but not reviewed by counsel. Each page says so at the top. Remove that notice once reviewed |
 | 4 | Delete or replace the sample case study | `src/content/case-studies/sample-layout-buyer-on-a-deadline.mdx` | It is a layout sample, not a client. It is set to `noindex` and carries a visible warning, but it should not survive launch |
 | 5 | Set `LEAD_WEBHOOK_URL` in Cloudflare | Cloudflare dashboard | Until this is set the form refuses submissions and tells visitors to phone. It does not silently lose leads, but it does not deliver them either |

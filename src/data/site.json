@@ -1,7 +1,7 @@
 {
-  "name": "Kirby Chan & Co. Real Estate Inc.",
+  "name": "Kirby Chan & Co. Real Estate Team",
   "shortName": "Kirby Chan & Co.",
-  "brandLine": "Kirby Chan & Co. Real Estate Inc. | Markham",
+  "brandLine": "Kirby Chan & Co. Real Estate Team | eXp Realty Brokerage",
   "tagline": "Markham, neighbourhood by neighbourhood.",
   "url": "https://kirbychanmarkham.com",
   "locale": "en_CA",
@@ -19,8 +19,10 @@
     "country": "CA"
   },
   "brokerage": {
-    "legalName": "TODO: brokerage legal name exactly as registered with RECO, for example \"eXp Realty, Brokerage\"",
-    "disclosure": "TODO: registrant disclosure text supplied by Kirby. Must name the brokerage and the registration category as required under TRESA."
+    "legalName": "eXp Realty Brokerage",
+    "disclosure": "Kirby Chan & Co. Real Estate Team | eXp Realty Brokerage. Kirby Chan, Broker.",
+    "registrant": "Kirby Chan",
+    "registrationCategory": "Broker"
   },
   "links": {
     "loftySearch": "",

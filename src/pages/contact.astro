@@ -78,7 +78,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
 
         <div class="side-block side-block--legal">
           <h2>Brokerage and registration</h2>
-          <p><strong>Kirby Chan &amp; Co. Real Estate Inc.</strong></p>
+          <p><strong>{site.name}</strong></p>
           {
             brokerageMissing ? (
               <p>
@@ -90,8 +90,8 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
               </p>
             ) : (
               <>
-                <p>{site.brokerage.legalName}</p>
-                <p>{site.brokerage.disclosure}</p>
+                <p>Brokerage: <strong>{site.brokerage.legalName}</strong></p>
+                <p>{site.brokerage.registrant}, {site.brokerage.registrationCategory}</p>
               </>
             )
           }

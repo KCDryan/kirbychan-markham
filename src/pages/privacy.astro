@@ -34,8 +34,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
 
       <h2>Who we are</h2>
       <p>
-        Kirby Chan &amp; Co. Real Estate Inc.
-        {brokerageMissing ? ' [TODO: brokerage legal name]' : `, ${site.brokerage.legalName}`}.
+        {site.name}{brokerageMissing ? ' [TODO: brokerage legal name]' : `, ${site.brokerage.legalName}`}.
         Registered office: {site.office.street}, {site.office.city}, {site.office.region}{' '}
         {site.office.postalCode}. Phone {site.contact.phone}. Email {site.contact.email}.
       </p>

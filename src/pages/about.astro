@@ -45,6 +45,7 @@ const faq = [
     <div class="wrap about-grid">
       <div class="about-media">
         <Photo name="kirby-portrait" alt="Kirby Chan" label="Portrait of Kirby Chan" ratio="1 / 1" priority />
+        <p class="broker-caption"><strong>Kirby Chan</strong>, Broker</p>
       </div>
       <div class="about-copy prose">
         <h2>Why we work this way</h2>
@@ -114,6 +115,15 @@ const faq = [
     display: grid;
     gap: var(--sp-7);
     align-items: start;
+  }
+  .broker-caption {
+    margin-top: var(--sp-3);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .broker-caption strong {
+    color: var(--ink);
+    font-weight: 600;
   }
   .about-media {
     max-width: 380px;
