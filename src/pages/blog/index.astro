@@ -1,0 +1,25 @@
+---
+import BlogListing from '../../views/BlogListing.astro';
+import { POSTS_PER_PAGE } from '../../lib/blog';
+import { publishedPosts, usedCategories } from '../../lib/blog-posts';
+
+const all = await publishedPosts();
+const totalPages = Math.max(1, Math.ceil(all.length / POSTS_PER_PAGE));
+---
+
+<BlogListing
+  title="Markham Real Estate Blog | Kirby Chan & Co."
+  description="The Markham real estate blog by Kirby Chan & Co. Real Estate Team. Buying, selling, neighbourhoods, costs and market updates, with every figure sourced and dated."
+  eyebrow="Blog"
+  h1="Markham Real Estate Blog"
+  lede="Plain answers to the questions people ask before they buy or sell in Markham. New posts every Monday, Wednesday and Friday, with the sources listed on every post."
+  crumbs={[
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog/' },
+  ]}
+  posts={all.slice(0, POSTS_PER_PAGE)}
+  categories={usedCategories(all)}
+  page={1}
+  totalPages={totalPages}
+  withBlogSchema
+/>

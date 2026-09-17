@@ -4,7 +4,7 @@
     { "label": "Services", "href": "/services/" },
     { "label": "Meet Kirby", "href": "/about/" },
     { "label": "Videos", "href": "/videos/" },
-    { "label": "Articles", "href": "/articles/" }
+    { "label": "Blog", "href": "/blog/" }
   ],
   "footer": {
     "connect": [
@@ -14,7 +14,7 @@
       { "label": "Market reports", "href": "/market-reports/" },
       { "label": "Client stories", "href": "/client-stories/" },
       { "label": "Videos", "href": "/videos/" },
-      { "label": "Articles", "href": "/articles/" }
+      { "label": "Blog", "href": "/blog/" }
     ],
     "legal": [
       { "label": "Privacy", "href": "/privacy/" },

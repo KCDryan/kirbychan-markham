@@ -59,7 +59,8 @@ Then verify, log, commit and push. See sections 6 to 8.
 - `src/data/site.json`, `src/data/testimonials.json`, `src/data/client-stories.json`,
   `src/data/nav.json`, `src/data/photo-credits.json`
 - `src/i18n/` (the translations and the team's published statistics) and `src/views/`
-- `src/content/services/`, `src/content/articles/`, `src/content/videos/`
+- `src/content/services/`, `src/content/blog/`, `src/content/videos/`
+- `BLOG-PLAYBOOK.md`, `BLOG-TOPICS.md`, `BLOG-LOG.md` (the separate blog routine owns these)
 - `src/assets/` (photos and logo belong to the owner)
 - `README.md`, `TODO-CHECKLIST.md`, `CHANGES-*.md`, this file
 

@@ -1,0 +1,365 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { MarkdownHeading } from 'astro';
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+import Base from './Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import FaqAccordion from '../components/FaqAccordion.astro';
+import BlogCard from '../components/BlogCard.astro';
+import Toc from '../components/Toc.astro';
+import Cta from '../components/Cta.astro';
+import site from '../data/site.json';
+import { longDate, neighbourhoodPath } from '../lib/format';
+import { BLOG_CATEGORIES } from '../lib/blog';
+import { neighbourhoodPhoto } from '../lib/photos';
+import { blogPosting, breadcrumbList, faqPage } from '../lib/schema';
+
+interface Props {
+  entry: CollectionEntry<'blog'>;
+  headings: MarkdownHeading[];
+  minutes: number;
+  words: number;
+}
+const { entry, headings, minutes, words } = Astro.props;
+const d = entry.data;
+const path = `/blog/${entry.id}/`;
+const categoryName = BLOG_CATEGORIES[d.category];
+const categoryPath = `/blog/category/${d.category}/`;
+
+const allHoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
+const linkedHoods = d.related
+  .map((slug) => allHoods.find((h) => h.id === slug))
+  .filter((h): h is CollectionEntry<'neighbourhoods'> => Boolean(h));
+
+const allServices = await getCollection('services', ({ data }) => !data.draft);
+const linkedServices = d.relatedServices
+  .map((slug) => allServices.find((s) => s.id === slug))
+  .filter((s): s is CollectionEntry<'services'> => Boolean(s));
+
+// Related posts: same category first, then the newest of the rest.
+const others = (await getCollection('blog', ({ data }) => !data.draft))
+  .filter((p) => p.id !== entry.id)
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
+const morePosts = [
+  ...others.filter((p) => p.data.category === d.category),
+  ...others.filter((p) => p.data.category !== d.category),
+].slice(0, 3);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+  { name: categoryName, path: categoryPath },
+  { name: d.h1, path },
+];
+
+// Share image: the neighbourhood photo when the post is about one.
+const hoodPhoto = d.neighbourhood ? neighbourhoodPhoto(d.neighbourhood) : undefined;
+const ogImage = hoodPhoto
+  ? (await getImage({ src: hoodPhoto, width: 1200, height: 630, format: 'jpg', fit: 'cover' })).src
+  : undefined;
+
+const jsonLd = [
+  breadcrumbList(crumbs),
+  blogPosting({
+    headline: d.h1,
+    description: d.description,
+    path,
+    published: d.published,
+    updated: d.updated,
+    image: ogImage,
+    section: categoryName,
+    wordCount: words,
+  }),
+  faqPage(d.faq),
+].filter(Boolean);
+---
+
+<Base
+  title={d.title}
+  description={d.description}
+  noindex={d.noindex}
+  ogType="article"
+  ogImage={ogImage}
+  jsonLd={jsonLd}
+  article={{ published: d.published, modified: d.updated, section: categoryName }}
+>
+  <Breadcrumbs crumbs={crumbs} />
+
+  <article>
+    <header class="post-hero">
+      <div class="wrap-narrow">
+        <p class="post-cat"><a href={categoryPath}>{categoryName}</a></p>
+        <h1>{d.h1}</h1>
+        <p class="lede">{d.subtitle}</p>
+        <p class="post-meta">
+          <span>By {site.name}</span>
+          <span aria-hidden="true">&middot;</span>
+          <span>Published <time datetime={d.published.toISOString()}>{longDate(d.published)}</time></span>
+          {
+            d.updated && (
+              <>
+                <span aria-hidden="true">&middot;</span>
+                <span>Updated <time datetime={d.updated.toISOString()}>{longDate(d.updated)}</time></span>
+              </>
+            )
+          }
+          <span aria-hidden="true">&middot;</span>
+          <span>{minutes} min read</span>
+        </p>
+      </div>
+    </header>
+
+    <div class="wrap post-body">
+      <div class="post-shell">
+        <div class="post-main">
+          <div class="takeaway">
+            <h2>The quick answer</h2>
+            <p>{d.takeaway}</p>
+          </div>
+
+          <div class="prose">
+            <slot />
+          </div>
+
+          <FaqAccordion faq={d.faq} />
+
+          {
+            (linkedHoods.length > 0 || linkedServices.length > 0) && (
+              <section class="post-links" aria-labelledby="post-links-heading">
+                <h2 id="post-links-heading">Keep exploring</h2>
+                <ul>
+                  {linkedHoods.map((h) => (
+                    <li>
+                      <a href={neighbourhoodPath(h.id)}>{h.data.name} neighbourhood guide</a>
+                      <span>{h.data.personality}</span>
+                    </li>
+                  ))}
+                  {linkedServices.map((s) => (
+                    <li>
+                      <a href={`/services/${s.id}/`}>{s.data.name}</a>
+                      <span>{s.data.summary}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          }
+
+          <section class="post-sources" aria-labelledby="post-sources-heading">
+            <h2 id="post-sources-heading">Sources</h2>
+            <ul>
+              {
+                d.sources.map((src) => (
+                  <li>
+                    <a href={src.url} rel="noopener noreferrer" target="_blank">
+                      {src.name}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+            <p>Figures and rules were checked against these sources on the date this post was published or last updated.</p>
+          </section>
+
+          <div class="disclaimer">
+            <p>
+              <strong>Not advice.</strong> This post is general information only. It is not legal,
+              tax, mortgage or investment advice. Rules and figures change, so confirm the details
+              for your own situation with a qualified professional before acting.
+            </p>
+            <p>
+              <strong>Market data.</strong> Any prices quoted are general information for the period
+              stated. They are not an appraisal or an opinion of value for any specific property.
+            </p>
+          </div>
+        </div>
+
+        <aside class="post-aside">
+          <Toc headings={headings} />
+          <div class="aside-cta on-dark">
+            <h2>Questions about this?</h2>
+            <p>Talk to Kirby Chan & Co. Real Estate Team. There is no pressure and no obligation.</p>
+            <a class="btn btn--brass btn--sm btn--wide" href="/contact/">Get in touch</a>
+            <a class="aside-cta__phone" href={site.contact.phoneHref}>{site.contact.phone}</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+
+  {
+    morePosts.length > 0 && (
+      <section class="section section--alt">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Keep reading</p>
+            <h2>More from the blog</h2>
+          </div>
+          <ul class="related-row" role="list">
+            {morePosts.map((p) => (
+              <li>
+                <BlogCard
+                  slug={p.id}
+                  title={p.data.h1}
+                  subtitle={p.data.subtitle}
+                  category={p.data.category}
+                  published={p.data.published}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <Cta />
+</Base>
+
+<style>
+  .post-hero {
+    background: var(--mist);
+    border-bottom: 1px solid var(--rule);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+  }
+  .post-cat {
+    margin-bottom: var(--sp-4);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .post-cat a {
+    color: var(--brand);
+    text-decoration: none;
+    border-bottom: 1px solid var(--brass);
+  }
+  .post-hero h1 {
+    max-width: 24ch;
+  }
+  .post-hero .lede {
+    margin-top: var(--sp-4);
+    max-width: 60ch;
+  }
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.55rem;
+    margin-top: var(--sp-5);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .post-body {
+    padding-block: var(--section-y);
+  }
+  .post-shell {
+    display: grid;
+    gap: var(--sp-7);
+  }
+  /* A grid item may not shrink below its content without this, so a wide table
+     would widen the page on phones. */
+  .post-main {
+    min-width: 0;
+  }
+  .post-main > * + * {
+    margin-top: var(--sp-7);
+  }
+  .post-main .prose {
+    max-width: 70ch;
+  }
+
+  .post-links h2,
+  .post-sources h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--sp-4);
+  }
+  .post-links ul {
+    display: grid;
+    gap: var(--sp-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .post-links li {
+    display: grid;
+    gap: 0.2rem;
+    padding-bottom: var(--sp-4);
+    border-bottom: 1px solid var(--rule);
+  }
+  .post-links li a {
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .post-links li span {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+  .post-sources ul {
+    display: grid;
+    gap: 0.45rem;
+    margin: 0;
+    padding-inline-start: 1.2em;
+  }
+  .post-sources p {
+    margin-top: var(--sp-3);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .post-aside {
+    display: grid;
+    gap: var(--sp-5);
+    align-content: start;
+  }
+  .aside-cta {
+    padding: var(--sp-5);
+    background: var(--ground);
+    border-radius: var(--radius-lg);
+    color: var(--text-on-dark-muted);
+  }
+  .aside-cta h2 {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: var(--sp-3);
+  }
+  .aside-cta p {
+    font-size: 0.88rem;
+    margin-bottom: var(--sp-4);
+  }
+  .aside-cta__phone {
+    display: block;
+    margin-top: var(--sp-4);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-on-dark-muted);
+  }
+
+  .related-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 1000px) {
+    .post-shell {
+      grid-template-columns: minmax(0, 1fr) 270px;
+      gap: var(--sp-8);
+      align-items: start;
+    }
+    .post-aside {
+      position: sticky;
+      top: 100px;
+    }
+  }
+</style>

@@ -95,6 +95,8 @@ export function blogPosting(input: {
   published: Date;
   updated?: Date;
   image?: string;
+  section?: string;
+  wordCount?: number;
 }) {
   return {
     '@context': 'https://schema.org',
@@ -103,11 +105,40 @@ export function blogPosting(input: {
     description: input.description,
     mainEntityOfPage: { '@type': 'WebPage', '@id': canonical(input.path) },
     url: canonical(input.path),
+    inLanguage: 'en-CA',
     datePublished: isoDate(input.published),
     dateModified: isoDate(input.updated ?? input.published),
     image: absolute(input.image ?? '/og-default.png'),
-    author: { '@id': AGENT_ID, '@type': 'RealEstateAgent', name: site.name },
-    publisher: { '@id': AGENT_ID, '@type': 'RealEstateAgent', name: site.name },
+    ...(input.section ? { articleSection: input.section } : {}),
+    ...(input.wordCount ? { wordCount: input.wordCount } : {}),
+    isPartOf: { '@type': 'Blog', '@id': `${site.url}/blog/#blog` },
+    author: { '@type': 'RealEstateAgent', '@id': AGENT_ID, name: site.name, url: site.url },
+    publisher: {
+      '@type': 'RealEstateAgent',
+      '@id': AGENT_ID,
+      name: site.name,
+      url: site.url,
+      logo: { '@type': 'ImageObject', url: absolute('/apple-touch-icon.png') },
+    },
+  };
+}
+
+/** The blog itself, for the blog index page. */
+export function blog(posts: { headline: string; path: string; published: Date }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    '@id': `${site.url}/blog/#blog`,
+    name: `${site.shortName} Markham Real Estate Blog`,
+    url: canonical('/blog/'),
+    inLanguage: 'en-CA',
+    publisher: { '@id': AGENT_ID },
+    blogPost: posts.slice(0, 20).map((p) => ({
+      '@type': 'BlogPosting',
+      headline: p.headline,
+      url: canonical(p.path),
+      datePublished: isoDate(p.published),
+    })),
   };
 }
 

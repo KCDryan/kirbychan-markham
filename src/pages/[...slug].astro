@@ -2,27 +2,20 @@
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import { getCollection, render } from 'astro:content';
 import NeighbourhoodLayout from '../layouts/NeighbourhoodLayout.astro';
-import ArticleLayout from '../layouts/ArticleLayout.astro';
 
 /**
  * Two page types share the site root:
  *   /[neighbourhood]-markham/  the twelve pillar pages
- *   /[article-slug]/           articles, kept flat for search
  * Static routes such as /buyers/ always win over this catch-all, so a page file
  * in src/pages is never shadowed by a content slug.
  */
 export const getStaticPaths = (async () => {
   const hoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
-  const articles = await getCollection('articles', ({ data }) => !data.draft);
 
   return [
     ...hoods.map((entry) => ({
       params: { slug: `${entry.id}-markham` },
-      props: { kind: 'neighbourhood' as const, entry },
-    })),
-    ...articles.map((entry) => ({
-      params: { slug: entry.id },
-      props: { kind: 'article' as const, entry },
+      props: { entry },
     })),
   ];
 }) satisfies GetStaticPaths;
@@ -30,17 +23,9 @@ export const getStaticPaths = (async () => {
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 
 const props = Astro.props as Props;
-const { Content, headings } = await render(props.entry);
+const { Content } = await render(props.entry);
 ---
 
-{
-  props.kind === 'neighbourhood' ? (
-    <NeighbourhoodLayout entry={props.entry}>
-      <Content />
-    </NeighbourhoodLayout>
-  ) : (
-    <ArticleLayout entry={props.entry} headings={headings}>
-      <Content />
-    </ArticleLayout>
-  )
-}
+<NeighbourhoodLayout entry={props.entry}>
+  <Content />
+</NeighbourhoodLayout>

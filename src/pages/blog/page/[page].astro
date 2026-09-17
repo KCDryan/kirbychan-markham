@@ -1,0 +1,37 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BlogListing from '../../../views/BlogListing.astro';
+import { POSTS_PER_PAGE } from '../../../lib/blog';
+import { publishedPosts, usedCategories } from '../../../lib/blog-posts';
+
+// Page 1 is /blog/ itself, so numbered pages start at 2.
+export const getStaticPaths = (async () => {
+  const all = await publishedPosts();
+  const totalPages = Math.ceil(all.length / POSTS_PER_PAGE);
+  return Array.from({ length: Math.max(0, totalPages - 1) }, (_, i) => ({
+    params: { page: String(i + 2) },
+  }));
+}) satisfies GetStaticPaths;
+
+const page = Number(Astro.params.page);
+const all = await publishedPosts();
+const totalPages = Math.ceil(all.length / POSTS_PER_PAGE);
+const posts = all.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
+---
+
+<BlogListing
+  title={`Markham Real Estate Blog, Page ${page} | Kirby Chan & Co.`}
+  description={`Page ${page} of the Markham real estate blog by Kirby Chan & Co. Real Estate Team. Older posts on buying, selling, neighbourhoods, costs and the Markham market.`}
+  eyebrow="Blog"
+  h1={`Markham Real Estate Blog, Page ${page}`}
+  lede="Older posts from the blog, newest first."
+  crumbs={[
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog/' },
+    { name: `Page ${page}`, path: `/blog/page/${page}/` },
+  ]}
+  posts={posts}
+  categories={usedCategories(all)}
+  page={page}
+  totalPages={totalPages}
+/>

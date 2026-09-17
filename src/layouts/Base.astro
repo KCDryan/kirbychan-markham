@@ -16,6 +16,11 @@ interface Props {
   ogType?: 'website' | 'article' | 'video.other';
   jsonLd?: unknown[];
   bodyClass?: string;
+  /** Open Graph article details for blog posts. */
+  article?: { published: Date; modified?: Date; section?: string };
+  /** Pagination links for numbered listing pages. */
+  prev?: string;
+  next?: string;
 }
 
 const {
@@ -26,6 +31,9 @@ const {
   ogType = 'website',
   jsonLd = [],
   bodyClass = '',
+  article,
+  prev,
+  next,
 } = Astro.props;
 
 const url = canonical(Astro.url.pathname);
@@ -85,6 +93,13 @@ const graphs = [agent, ...jsonLd].filter(Boolean);
     <meta property="og:locale" content={locale.ogLocale} />
     {alternates.length > 0 && LANGS.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={LOCALES[l].ogLocale} />)}
 
+    {article && <meta property="article:published_time" content={article.published.toISOString()} />}
+    {article && <meta property="article:modified_time" content={(article.modified ?? article.published).toISOString()} />}
+    {article?.section && <meta property="article:section" content={article.section} />}
+    {article && <meta property="article:author" content={`${site.url}/about/`} />}
+    {prev && <link rel="prev" href={canonical(prev)} />}
+    {next && <link rel="next" href={canonical(next)} />}
+
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -96,6 +111,7 @@ const graphs = [agent, ...jsonLd].filter(Boolean);
     <link rel="icon" href="/favicon.png" type="image/png" sizes="96x96" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.shortName} Markham Real Estate Blog`} href="/blog/rss.xml" />
 
     {
       graphs.map((graph) => (

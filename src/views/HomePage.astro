@@ -9,7 +9,7 @@ import MeetKirby from '../components/MeetKirby.astro';
 import ServiceGrid from '../components/ServiceGrid.astro';
 import WhyMarkham from '../components/WhyMarkham.astro';
 import VideoCard from '../components/VideoCard.astro';
-import ArticleCard from '../components/ArticleCard.astro';
+import BlogCard from '../components/BlogCard.astro';
 import Testimonials from '../components/Testimonials.astro';
 import TranslationNotice from '../components/TranslationNotice.astro';
 import Cta from '../components/Cta.astro';
@@ -23,7 +23,7 @@ const videos = (await getCollection('videos', ({ data }) => !data.draft && data.
   .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
   .slice(0, 3);
 
-const articles = (await getCollection('articles', ({ data }) => !data.draft))
+const articles = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
   .slice(0, 3);
 ---
@@ -107,22 +107,22 @@ const articles = (await getCollection('articles', ({ data }) => !data.draft))
         <div class="wrap">
           <div class="section-head section-head--row">
             <div>
-              <p class="eyebrow">Read</p>
-              <h2>The long answers</h2>
+              <p class="eyebrow">From the blog</p>
+              <h2>Latest from the Markham real estate blog</h2>
             </div>
-            <a class="btn btn--ghost btn--sm" href="/articles/">
-              All articles
+            <a class="btn btn--ghost btn--sm" href="/blog/">
+              All blog posts
             </a>
           </div>
           <ul class="card-row" role="list">
             {articles.map((a) => (
               <li>
-                <ArticleCard
+                <BlogCard
                   slug={a.id}
                   title={a.data.h1}
                   subtitle={a.data.subtitle}
+                  category={a.data.category}
                   published={a.data.published}
-                  minutes={a.data.readMinutes}
                 />
               </li>
             ))}

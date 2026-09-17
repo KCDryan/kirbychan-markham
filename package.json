@@ -3,7 +3,9 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
-  "engines": { "node": ">=20.0.0" },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -13,8 +15,9 @@
     "check:links": "node scripts/check-links.mjs",
     "check:style": "node scripts/check-style.mjs",
     "clean:cache": "node -e \"const fs=require('fs');for(const d of ['.astro','node_modules/.astro','dist']) fs.rmSync(d,{recursive:true,force:true})\"",
-    "verify": "npm run clean:cache && npm run check:style && npm run check && npm run build && npm run check:links",
-    "astro": "astro"
+    "verify": "npm run clean:cache && npm run check:style && npm run check:blog && npm run check && npm run build && npm run check:links",
+    "astro": "astro",
+    "check:blog": "node scripts/check-blog.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.0",
@@ -24,6 +27,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "yaml": "^2.9.1"
   }
 }

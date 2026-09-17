@@ -5,7 +5,7 @@ import { getCollection } from 'astro:content';
 import Base from './Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import FaqAccordion from '../components/FaqAccordion.astro';
-import ArticleCard from '../components/ArticleCard.astro';
+import BlogCard from '../components/BlogCard.astro';
 import VideoCard from '../components/VideoCard.astro';
 import Cta from '../components/Cta.astro';
 import Photo from '../components/Photo.astro';
@@ -38,7 +38,7 @@ const videos = (await getCollection('videos', ({ data }) => !data.draft))
   .filter((v) => v.data.neighbourhood === entry.id)
   .slice(0, 2);
 
-const articles = (await getCollection('articles', ({ data }) => !data.draft))
+const articles = (await getCollection('blog', ({ data }) => !data.draft))
   .filter((a) => a.data.neighbourhood === entry.id || a.data.related.includes(entry.id))
   .slice(0, 3);
 
@@ -289,12 +289,12 @@ const jsonLd = [
             ))}
             {articles.map((a) => (
               <li>
-                <ArticleCard
+                <BlogCard
                   slug={a.id}
                   title={a.data.h1}
                   subtitle={a.data.subtitle}
+                  category={a.data.category}
                   published={a.data.published}
-                  minutes={a.data.readMinutes}
                 />
               </li>
             ))}

@@ -21,7 +21,10 @@
 /neighborhoods/ /neighbourhoods/ 301
 
 # Common alternates
-/blog/ /articles/ 301
+/articles/ /blog/ 301
+/articles/* /blog/ 301
+/unionville-vs-markham-village/ /blog/unionville-vs-markham-village/ 301
+/blogs/ /blog/ 301
 /map/ /map-of-markham/ 301
 /team/ /about/ 301
 /listings/ /contact/ 301

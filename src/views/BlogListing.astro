@@ -1,0 +1,172 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Page from '../layouts/Page.astro';
+import BlogCard from '../components/BlogCard.astro';
+import Cta from '../components/Cta.astro';
+import { BLOG_CATEGORIES, type BlogCategory } from '../lib/blog';
+import { blog } from '../lib/schema';
+import type { Crumb } from '../lib/schema';
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  h1: string;
+  lede: string;
+  crumbs: Crumb[];
+  posts: CollectionEntry<'blog'>[];
+  /** Categories that have at least one post, for the filter row. */
+  categories: BlogCategory[];
+  activeCategory?: BlogCategory;
+  page?: number;
+  totalPages?: number;
+  noindex?: boolean;
+  withBlogSchema?: boolean;
+}
+const {
+  title,
+  description,
+  eyebrow,
+  h1,
+  lede,
+  crumbs,
+  posts,
+  categories,
+  activeCategory,
+  page = 1,
+  totalPages = 1,
+  noindex = false,
+  withBlogSchema = false,
+} = Astro.props;
+
+const pageHref = (n: number) => (n <= 1 ? '/blog/' : `/blog/page/${n}/`);
+const prev = page > 1 ? pageHref(page - 1) : undefined;
+const next = page < totalPages ? pageHref(page + 1) : undefined;
+
+const extraJsonLd = withBlogSchema
+  ? [blog(posts.map((p) => ({ headline: p.data.h1, path: `/blog/${p.id}/`, published: p.data.published })))]
+  : [];
+---
+
+<Page
+  title={title}
+  description={description}
+  eyebrow={eyebrow}
+  h1={h1}
+  lede={lede}
+  crumbs={crumbs}
+  noindex={noindex}
+  extraJsonLd={extraJsonLd}
+  prev={prev}
+  next={next}
+>
+  <section class="section">
+    <div class="wrap">
+      {
+        categories.length > 1 && (
+          <nav class="cats" aria-label="Blog categories">
+            <ul>
+              <li>
+                <a href="/blog/" aria-current={!activeCategory ? 'page' : undefined}>All posts</a>
+              </li>
+              {categories.map((c) => (
+                <li>
+                  <a href={`/blog/category/${c}/`} aria-current={activeCategory === c ? 'page' : undefined}>
+                    {BLOG_CATEGORIES[c]}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+
+      {
+        posts.length > 0 ? (
+          <ul class="list" role="list">
+            {posts.map((p) => (
+              <li>
+                <BlogCard
+                  slug={p.id}
+                  title={p.data.h1}
+                  subtitle={p.data.subtitle}
+                  category={p.data.category}
+                  published={p.data.published}
+                  level={2}
+                />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>New posts are on the way.</p>
+        )
+      }
+
+      {
+        totalPages > 1 && (
+          <nav class="pager" aria-label="Blog pages">
+            {prev ? <a href={prev} rel="prev">&larr; Newer posts</a> : <span />}
+            <span class="pager__count">
+              Page {page} of {totalPages}
+            </span>
+            {next ? <a href={next} rel="next">Older posts &rarr;</a> : <span />}
+          </nav>
+        )
+      }
+    </div>
+  </section>
+
+  <Cta />
+</Page>
+
+<style>
+  .cats ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0 0 var(--sp-6);
+    padding: 0;
+  }
+  .cats a {
+    display: inline-block;
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: #fff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .cats a:hover {
+    border-color: var(--brass);
+  }
+  .cats a[aria-current='page'] {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: var(--paper);
+  }
+  .list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--sp-4);
+    margin-top: var(--sp-7);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--rule);
+    font-weight: 600;
+  }
+  .pager__count {
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+</style>

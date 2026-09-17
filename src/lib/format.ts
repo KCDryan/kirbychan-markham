@@ -13,6 +13,8 @@ export function longDate(value: Date): string {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    // Content dates are calendar dates stored as UTC midnight, so format in UTC.
+    timeZone: 'UTC',
   }).format(value);
 }
 

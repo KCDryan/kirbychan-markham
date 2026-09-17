@@ -35,6 +35,9 @@ jobs:
             npm install
           fi
 
+      - name: Check blog SEO rules
+        run: npm run check:blog
+
       - name: Type and content check
         run: npm run check
 

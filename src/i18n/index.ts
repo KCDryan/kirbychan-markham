@@ -5,7 +5,7 @@ import en from './en.json';
  * root. Every other language lives under its own folder, for example /zh/.
  *
  * Only the pages in TRANSLATED_PATHS exist in every language. Neighbourhood
- * guides, articles, news and legal pages are English only, so the language
+ * guides, blog posts, news and legal pages are English only, so the language
  * switcher sends readers of those pages to the home page of the language.
  */
 export const LOCALES = {

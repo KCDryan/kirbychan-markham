@@ -53,7 +53,7 @@ src/
   content/          all editable page content, as MDX
     neighbourhoods/ 12 pillar pages
     services/       9 situation pages
-    articles/       long form guides
+    blog/           blog posts, served at /blog/<slug>/
     videos/         video pages
     market-reports/ monthly reports
   data/             site settings, market figures, testimonials, client stories, photo credits, nav
@@ -97,11 +97,18 @@ URLs come from the filename: `unionville.mdx` becomes `/unionville-markham/`. Th
 
 If you add a thirteenth neighbourhood, add a matching entry to `src/data/market.json` as well.
 
-### An article
+### A blog post
 
-Add an `.mdx` file to `src/content/articles/`. The filename becomes the URL at the site root, so
-`unionville-vs-markham-village.mdx` is served at `/unionville-vs-markham-village/`. Keep slugs flat
-for search. Do not name a file after an existing page such as `buyers` or `contact`.
+Blog posts live in `src/content/blog/` and are served at `/blog/<file-name>/`, with a paginated
+index at `/blog/`, category pages at `/blog/category/<category>/` and an RSS feed at
+`/blog/rss.xml`. Follow `BLOG-PLAYBOOK.md` for every post. `npm run check:blog` enforces the SEO rules
+(unique titles, lengths, word count, headings, internal links and sources) and runs inside
+`npm run verify`.
+
+A scheduled Claude routine publishes one new post every Monday, Wednesday and Friday. It takes the
+next topic from `BLOG-TOPICS.md`, researches it from primary sources, fact checks it, passes
+`npm run verify`, records the run in `BLOG-LOG.md` and pushes to `main`. Add or reorder topics in
+`BLOG-TOPICS.md` to steer it.
 
 ### A market report
 
@@ -129,7 +136,7 @@ published on kirbychanandco.com. Never add an invented quote or figure.
 The site is published in English plus Simplified Chinese (`/zh/`), French (`/fr/`), Farsi
 (`/fa/`, right to left), Russian (`/ru/`), Spanish (`/es/`), Greek (`/el/`) and Japanese
 (`/ja/`). The home, Meet Kirby, services, neighbourhoods and contact pages exist in every language,
-with hreflang tags and sitemap alternates. Neighbourhood guides, articles, news and legal pages are
+with hreflang tags and sitemap alternates. Neighbourhood guides, blog posts, news and legal pages are
 English only and the language menu says so.
 
 All translated text lives in `src/i18n/<code>.json`, with the same keys as `en.json`. When you

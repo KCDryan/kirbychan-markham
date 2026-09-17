@@ -17,6 +17,8 @@ interface Props {
   extraJsonLd?: unknown[];
   noindex?: boolean;
   tone?: 'cream' | 'sand';
+  prev?: string;
+  next?: string;
 }
 
 const {
@@ -31,12 +33,14 @@ const {
   extraJsonLd = [],
   noindex = false,
   tone = 'cream',
+  prev,
+  next,
 } = Astro.props;
 
 const jsonLd = [breadcrumbList(crumbs), faqPage(faq), ...extraJsonLd].filter(Boolean);
 ---
 
-<Base title={title} description={description} noindex={noindex} jsonLd={jsonLd}>
+<Base title={title} description={description} noindex={noindex} jsonLd={jsonLd} prev={prev} next={next}>
   <Breadcrumbs crumbs={crumbs} />
   <section class:list={['page-hero', tone === 'sand' && 'page-hero--mist']}>
     <div class="wrap">

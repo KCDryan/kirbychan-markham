@@ -1,0 +1,21 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import { render } from 'astro:content';
+import BlogPostLayout from '../../layouts/BlogPostLayout.astro';
+import { readingMinutes, wordCount } from '../../lib/blog';
+import { publishedPosts } from '../../lib/blog-posts';
+
+export const getStaticPaths = (async () => {
+  const posts = await publishedPosts();
+  return posts.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { entry } = Astro.props as Props;
+const { Content, headings } = await render(entry);
+const words = wordCount(entry.body);
+---
+
+<BlogPostLayout entry={entry} headings={headings} minutes={readingMinutes(words)} words={words}>
+  <Content />
+</BlogPostLayout>

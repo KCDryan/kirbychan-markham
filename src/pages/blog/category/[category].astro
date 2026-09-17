@@ -1,0 +1,37 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BlogListing from '../../../views/BlogListing.astro';
+import { BLOG_CATEGORIES, type BlogCategory } from '../../../lib/blog';
+import { publishedPosts, usedCategories } from '../../../lib/blog-posts';
+
+export const getStaticPaths = (async () => {
+  const all = await publishedPosts();
+  return usedCategories(all).map((category) => ({ params: { category } }));
+}) satisfies GetStaticPaths;
+
+const category = Astro.params.category as BlogCategory;
+const name = BLOG_CATEGORIES[category];
+const all = await publishedPosts();
+const posts = all.filter((p) => p.data.category === category);
+
+// A category page with only one or two posts is thin, so it stays out of the
+// index until it has three. Readers can still use it.
+const thin = posts.length < 3;
+---
+
+<BlogListing
+  title={`${name} | Markham Real Estate Blog`}
+  description={`${name} posts from the Markham real estate blog by Kirby Chan & Co. Real Estate Team. Practical, sourced answers for buyers and sellers in Markham, Ontario.`}
+  eyebrow="Blog category"
+  h1={`${name}: Markham Real Estate Blog`}
+  lede={`Every ${name.toLowerCase()} post on the blog, newest first.`}
+  crumbs={[
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog/' },
+    { name, path: `/blog/category/${category}/` },
+  ]}
+  posts={posts}
+  categories={usedCategories(all)}
+  activeCategory={category}
+  noindex={thin}
+/>

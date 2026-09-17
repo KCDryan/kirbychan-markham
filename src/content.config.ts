@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { CATEGORY_SLUGS } from './lib/blog';
 
 const seo = {
   title: z.string().max(60, 'Keep titles under 60 characters'),
@@ -75,20 +76,37 @@ const services = defineCollection({
   }),
 });
 
-const articles = defineCollection({
-  loader: glob({ base: './src/content/articles', pattern: '**/*.mdx' }),
+
+/**
+ * Blog posts at /blog/<slug>/. The file name is the slug. Every post must cite
+ * at least one source and scripts/check-blog.mjs enforces the rest of the SEO
+ * rules (unique titles, length, internal links, structure) before a build.
+ */
+const blog = defineCollection({
+  loader: glob({ base: './src/content/blog', pattern: '**/[^_]*.mdx' }),
   schema: z.object({
     ...seo,
-    h1: z.string(),
-    accent: z.string(),
-    subtitle: z.string(),
+    h1: z.string().min(20).max(90),
+    subtitle: z.string().min(40).max(200),
+    category: z.enum(CATEGORY_SLUGS),
     published: z.coerce.date(),
     updated: z.coerce.date().optional(),
-    readMinutes: z.number(),
-    takeaway: z.string().describe('The quick answer box at the top'),
-    neighbourhood: z.string().optional(),
-    related: z.array(z.string()).default([]),
-    faq,
+    takeaway: z.string().min(120).describe('The quick answer box at the top'),
+    neighbourhood: z.string().optional().describe('Main neighbourhood slug, used for the share image'),
+    related: z.array(z.string()).default([]).describe('Neighbourhood slugs linked at the end'),
+    relatedServices: z.array(z.string()).default([]),
+    faq: z
+      .array(z.object({ q: z.string(), a: z.string() }))
+      .min(3)
+      .max(8),
+    sources: z
+      .array(
+        z.object({
+          name: z.string().min(2),
+          url: z.string().url('Every source needs a full https URL'),
+        })
+      )
+      .min(1, 'Every blog post must cite at least one source'),
     draft: z.boolean().default(false),
   }),
 });
@@ -166,7 +184,7 @@ const news = defineCollection({
 export const collections = {
   neighbourhoods,
   services,
-  articles,
+  blog,
   videos,
   'market-reports': marketReports,
   news,
