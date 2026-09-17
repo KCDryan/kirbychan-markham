@@ -25,3 +25,6 @@ npm-debug.log*
 
 # packaged releases
 *.zip
+
+# graphify knowledge graph cache
+graphify-out/
