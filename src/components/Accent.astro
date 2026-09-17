@@ -18,4 +18,4 @@ const before = at >= 0 ? text.slice(0, at) : '';
 const after = at >= 0 ? text.slice(at + (accent as string).length) : '';
 ---
 
-{at >= 0 ? <Fragment>{before}<em>{accent}</em>{after}</Fragment> : text}
+{at >= 0 ? <Fragment>{before}{accent}{after}</Fragment> : text}

@@ -227,8 +227,8 @@ Kirby Chan & Co. mark, recoloured: evergreen on light backgrounds, brass on the 
 | brass on ground | 6.5:1 | Accents on the dark footer |
 | brass on paper | 2.3:1 | **Fails.** Decorative only on light backgrounds: rules, numerals, borders |
 
-Typefaces are Fraunces (serif headings with the italic accent) and Inter (body). Both are
-self hosted from `public/fonts` under the SIL Open Font License. No third party font request is
+Typefaces are Montserrat (headings) and Lato (body), the same pair as kirbychanandco.com. No
+italics are used anywhere. Both are self hosted from `public/fonts` under the SIL Open Font License. No third party font request is
 made.
 
 ---

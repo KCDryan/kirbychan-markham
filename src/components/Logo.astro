@@ -23,7 +23,7 @@ const file = variant === 'light' ? (find('logo-light') ?? find('logo')) : find('
 <span class:list={['logo', `logo--${variant}`, cls]}>
   <span class="logo__mark" aria-hidden="true">KC</span>
   <span class="logo__text">
-    <span class="logo__name">Kirby Chan <em>&amp;</em> Co.</span>
+    <span class="logo__name">Kirby Chan &amp; Co.</span>
     <span class="logo__sub">Real Estate Team | Markham</span>
   </span>
 </span>
@@ -39,19 +39,18 @@ const file = variant === 'light' ? (find('logo-light') ?? find('logo')) : find('
     flex: 0 0 38px;
     border: 1px solid var(--brass);
     color: var(--brass);
-    font-family: var(--font-serif);
+    font-family: var(--font-heading);
     font-size: 0.85rem;
     letter-spacing: 0.06em;
     border-radius: 2px;
   }
   .logo__text { display: flex; flex-direction: column; line-height: 1.15; }
   .logo__name {
-    font-family: var(--font-serif);
+    font-family: var(--font-heading);
     font-size: 1.05rem;
     letter-spacing: -0.01em;
     white-space: nowrap;
   }
-  .logo__name em { color: var(--brass); font-style: italic; }
   .logo__sub {
     font-size: 0.62rem;
     letter-spacing: 0.14em;
