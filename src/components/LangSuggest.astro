@@ -1,0 +1,124 @@
+---
+import { LOCALES, OTHER_LANGS, switchHref, t } from '../i18n';
+
+// English pages only. If the visitor's browser prefers one of the site's other
+// languages, a small bar offers that version. It never redirects, so search
+// engines and people who chose English always get the English page.
+const path = Astro.url.pathname;
+const offers = Object.fromEntries(
+  OTHER_LANGS.map((l) => [
+    l,
+    {
+      href: switchHref(path, l),
+      lang: LOCALES[l].htmlLang,
+      dir: LOCALES[l].dir,
+      ...t(l).suggest,
+    },
+  ])
+);
+---
+
+<div class="suggest" data-lang-suggest hidden>
+  <div class="wrap suggest__inner">
+    <svg class="suggest__icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" />
+    </svg>
+    <p class="suggest__text" data-text></p>
+    <a class="suggest__switch" data-switch href="/"></a>
+    <button class="suggest__close" type="button" data-close>
+      <span aria-hidden="true">&times;</span>
+      <span class="visually-hidden" data-dismiss></span>
+    </button>
+  </div>
+</div>
+
+<script is:inline define:vars={{ offers }}>
+  (function () {
+    var KEY = 'kc-lang-suggest-dismissed';
+    try {
+      if (localStorage.getItem(KEY)) return;
+    } catch (e) {}
+    var prefs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+    var pick = null;
+    for (var i = 0; i < prefs.length; i++) {
+      var code = String(prefs[i]).toLowerCase().split('-')[0];
+      if (code === 'en') return;
+      if (offers[code]) {
+        pick = offers[code];
+        break;
+      }
+    }
+    if (!pick) return;
+    var bar = document.querySelector('[data-lang-suggest]');
+    if (!bar) return;
+    bar.setAttribute('lang', pick.lang);
+    bar.setAttribute('dir', pick.dir);
+    bar.querySelector('[data-text]').textContent = pick.message;
+    var link = bar.querySelector('[data-switch]');
+    link.textContent = pick.switch;
+    link.setAttribute('href', pick.href);
+    link.setAttribute('hreflang', pick.lang);
+    bar.querySelector('[data-dismiss]').textContent = pick.dismiss;
+    bar.querySelector('[data-close]').setAttribute('aria-label', pick.dismiss);
+    bar.hidden = false;
+    bar.querySelector('[data-close]').addEventListener('click', function () {
+      bar.hidden = true;
+      try {
+        localStorage.setItem(KEY, '1');
+      } catch (e) {}
+    });
+  })();
+</script>
+
+<style>
+  .suggest {
+    background: var(--brass-soft);
+    color: var(--ink);
+    border-bottom: 1px solid var(--brass);
+  }
+  .suggest__inner {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem 0.9rem;
+    flex-wrap: wrap;
+    padding-block: 0.55rem;
+  }
+  .suggest__icon {
+    fill: none;
+    stroke: var(--brand-dark);
+    stroke-width: 1.6;
+    flex: none;
+  }
+  .suggest__text {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+  .suggest__switch {
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: var(--brand);
+    color: var(--paper);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .suggest__switch:hover {
+    background: var(--ground);
+  }
+  .suggest__close {
+    margin-inline-start: auto;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .suggest__close:hover {
+    background: rgba(0, 0, 0, 0.08);
+  }
+</style>

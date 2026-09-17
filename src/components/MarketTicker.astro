@@ -31,11 +31,7 @@ const sourceLine = sourceMissing ? null : `Source: ${market.source} ${market.per
               sourceLine
             )}
           </p>
-        ) : (
-          <p class="ticker__source">
-            <span class="todo-badge">TODO: set source and period in src/data/market.json</span>
-          </p>
-        )}
+        ) : null}
       </div>
 
       {/* Visual marquee. Hidden from assistive tech because the same figures

@@ -1,0 +1,43 @@
+---
+import Page from '../../../layouts/Page.astro';
+import NeighbourhoodGrid from '../../../components/NeighbourhoodGrid.astro';
+import TranslationNotice from '../../../components/TranslationNotice.astro';
+import Cta from '../../../components/Cta.astro';
+import { OTHER_LANGS, localePath, t, type Lang } from '../../../i18n';
+
+export function getStaticPaths() {
+  return OTHER_LANGS.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const dict = t(lang);
+const crumbs = [
+  { name: dict.ui.nav.home, path: localePath(lang, '/') },
+  { name: dict.ui.nav.neighbourhoods, path: localePath(lang, '/neighbourhoods/') },
+];
+---
+
+<Page
+  title={dict.meta.neighbourhoods.title}
+  description={dict.meta.neighbourhoods.description}
+  eyebrow={dict.neighbourhoods.eyebrow}
+  h1={dict.neighbourhoods.h1}
+  lede={dict.neighbourhoods.lede}
+  crumbs={crumbs}
+>
+  <TranslationNotice />
+  <section class="section">
+    <div class="wrap">
+      <p class="guides-note">{dict.ui.lang.note}</p>
+      <NeighbourhoodGrid detailed />
+    </div>
+  </section>
+  <Cta />
+</Page>
+
+<style>
+  .guides-note {
+    margin: 0 0 var(--sp-5);
+    color: var(--text-muted);
+  }
+</style>

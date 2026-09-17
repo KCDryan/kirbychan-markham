@@ -1,6 +1,10 @@
 ---
 import Accent from './Accent.astro';
 import site from '../data/site.json';
+import { langFromPath, localePath, t } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const dict = t(lang);
 
 interface Props {
   heading?: string;
@@ -9,13 +13,15 @@ interface Props {
   tone?: 'dark' | 'light';
 }
 const {
-  heading = 'Book a 30-minute conversation',
-  accent = '30-minute',
-  body = 'No pitch and no pressure. Tell us the situation and we will tell you plainly whether we are the right people for it.',
+  heading = lang === 'en' ? 'Book a 30-minute conversation' : dict.home.cta.h2,
+  accent = lang === 'en' ? '30-minute' : undefined,
+  body = lang === 'en'
+    ? 'No pitch and no pressure. Tell us the situation and we will tell you plainly whether we are the right people for it.'
+    : dict.home.cta.body,
   tone = 'dark',
 } = Astro.props;
 
-const bookingHref = site.links.booking || '/contact/';
+const bookingHref = site.links.booking || localePath(lang, '/contact/');
 const bookingExternal = bookingHref.startsWith('http');
 ---
 
@@ -34,11 +40,11 @@ const bookingExternal = bookingHref.startsWith('http');
         rel={bookingExternal ? 'noopener' : undefined}
         target={bookingExternal ? '_blank' : undefined}
       >
-        Book a conversation{
-          bookingExternal && <span class="visually-hidden"> (opens in a new tab)</span>
+        {lang === 'en' ? 'Book a conversation' : dict.home.cta.button}{
+          bookingExternal && <span class="visually-hidden"> ({dict.ui.opensNewTab})</span>
         }
       </a>
-      <a class="btn btn--ghost" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
+      <a class="btn btn--ghost" href={site.contact.phoneHref}>{dict.ui.callUs} <span class="ltr">{site.contact.phone}</span></a>
     </div>
   </div>
 </section>

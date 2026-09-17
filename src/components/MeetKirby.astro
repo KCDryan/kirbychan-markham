@@ -1,0 +1,72 @@
+---
+import Photo from './Photo.astro';
+import { langFromPath, localePath, t } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const dict = t(lang);
+const k = dict.home.kirby;
+---
+
+<section class="kirby section section--alt">
+  <div class="wrap kirby__inner">
+    <div class="kirby__media">
+      <Photo name="kirby-portrait" alt={dict.about.photoAlt} label="Portrait of Kirby Chan" ratio="1 / 1" />
+      <p class="broker-caption"><strong>Kirby Chan</strong>, Broker</p>
+    </div>
+    <div class="kirby__copy">
+      <p class="eyebrow">{k.eyebrow}</p>
+      <h2>{k.h2}</h2>
+      <p class="lede">{k.p1}</p>
+      <p>{k.p2}</p>
+      <blockquote class="kirby__quote">
+        <p>{dict.about.quote}</p>
+      </blockquote>
+      <a class="btn btn--primary" href={localePath(lang, '/about/')}>{k.button}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .kirby__inner {
+    display: grid;
+    gap: var(--sp-7);
+    align-items: center;
+  }
+  .kirby__media {
+    max-width: 380px;
+    width: 100%;
+  }
+  .broker-caption {
+    margin-top: var(--sp-3);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .broker-caption strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .kirby__copy > p {
+    margin-top: var(--sp-4);
+  }
+  .kirby__quote {
+    margin: var(--sp-6) 0 0;
+    padding-inline-start: var(--sp-5);
+    border-inline-start: 3px solid var(--brass);
+  }
+  .kirby__quote p {
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--brand);
+  }
+  .kirby__copy .btn {
+    margin-top: var(--sp-6);
+  }
+
+  @media (min-width: 880px) {
+    .kirby__inner {
+      grid-template-columns: 0.75fr 1.25fr;
+      gap: var(--sp-8);
+    }
+  }
+</style>

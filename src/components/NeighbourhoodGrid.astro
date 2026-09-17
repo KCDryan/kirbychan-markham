@@ -3,13 +3,19 @@ import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import { neighbourhoodPath } from '../lib/format';
 import { neighbourhoodPhoto } from '../lib/photos';
+import { langFromPath, t } from '../i18n';
 
 interface Props {
   limit?: number;
   exclude?: string;
   heading?: boolean;
+  /** Show the short introduction under each name (translated pages). */
+  detailed?: boolean;
 }
-const { limit, exclude, heading = true } = Astro.props;
+const { limit, exclude, heading = true, detailed = false } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const dict = t(lang);
+const items = dict.neighbourhoods.items as Record<string, { tagline: string; body: string }>;
 
 let hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order
@@ -26,7 +32,7 @@ if (limit) hoods = hoods.slice(0, limit);
       const thumb = neighbourhoodPhoto(h.id);
       return (
       <li>
-        <a class:list={['hood', thumb && 'hood--photo']} href={neighbourhoodPath(h.id)}>
+        <a class:list={['hood', thumb && 'hood--photo']} href={neighbourhoodPath(h.id)} hreflang={lang === 'en' ? undefined : 'en-CA'}>
           {thumb && (
             <Image
               class="hood__img"
@@ -40,8 +46,9 @@ if (limit) hoods = hoods.slice(0, limit);
           )}
           <span class="hood__num">N&deg; {String(h.data.order).padStart(2, '0')}</span>
           {heading ? <h3 class="hood__name">{h.data.name}</h3> : <span class="hood__name">{h.data.name}</span>}
-          <span class="hood__line">{h.data.personality}</span>
-          <span class="hood__cta">Explore {h.data.name}</span>
+          <span class="hood__line">{lang === 'en' ? h.data.personality : (items[h.id]?.tagline ?? h.data.personality)}</span>
+          {detailed && lang !== 'en' && items[h.id] && <span class="hood__body">{items[h.id].body}</span>}
+          <span class="hood__cta">{lang === 'en' ? `Explore ${h.data.name}` : dict.ui.englishGuide}</span>
         </a>
       </li>
       );
@@ -110,6 +117,10 @@ if (limit) hoods = hoods.slice(0, limit);
     line-height: 1.55;
     color: var(--text-muted);
     flex: 1;
+  }
+  .hood__body {
+    font-size: 0.9rem;
+    line-height: 1.65;
   }
   .hood__cta {
     margin-top: var(--sp-3);

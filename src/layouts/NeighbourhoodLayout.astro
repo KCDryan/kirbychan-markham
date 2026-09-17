@@ -13,6 +13,7 @@ import { getImage } from 'astro:assets';
 import { neighbourhoodPhoto } from '../lib/photos';
 import site from '../data/site.json';
 import NewsItems from '../components/NewsItems.astro';
+import credits from '../data/photo-credits.json';
 import { longDate, neighbourhoodPath } from '../lib/format';
 import { breadcrumbList, faqPage, place } from '../lib/schema';
 
@@ -63,6 +64,8 @@ const ogImage = heroPhoto
   ? (await getImage({ src: heroPhoto, width: 1200, height: 630, format: 'jpg', fit: 'cover' })).src
   : undefined;
 
+const credit = credits.find((c) => c.slug === entry.id);
+
 const jsonLd = [
   breadcrumbList(crumbs),
   place({ name: d.name, description: d.intro, path }),
@@ -102,13 +105,20 @@ const jsonLd = [
           <a class="btn btn--ghost" href="/contact/">Ask us about {d.name}</a>
         </div>
       </div>
-      <Photo
-        name={`neighbourhoods/${entry.id}`}
-        alt={`${d.name}, Markham`}
-        label={`${d.name} streetscape photo`}
-        ratio="4 / 3"
-        priority
-      />
+      <figure class="hood-photo">
+        <Photo
+          name={`neighbourhoods/${entry.id}`}
+          alt={credit?.shows ?? `${d.name}, Markham`}
+          label={`${d.name} streetscape photo`}
+          ratio="4 / 3"
+          priority
+        />
+        {credit && (
+          <figcaption>
+            Photo: <a href={credit.source} rel="noopener noreferrer" target="_blank">{credit.author}</a>, <a href={credit.licenseUrl} rel="noopener noreferrer license" target="_blank">{credit.license}</a>, resized
+          </figcaption>
+        )}
+      </figure>
     </div>
   </section>
 
@@ -132,14 +142,14 @@ const jsonLd = [
       {
         d.priceBands.length > 0 && (
           <section class="bands" aria-labelledby="bands-heading">
-            <h2 id="bands-heading">Price bands in {d.name}</h2>
+            <h2 id="bands-heading">Recent prices in {d.name}</h2>
             <div class="table-scroll">
               <table class="stat-table">
                 <thead>
                   <tr>
-                    <th scope="col">Band</th>
-                    <th scope="col">Range</th>
-                    <th scope="col">What it buys</th>
+                    <th scope="col">Property type</th>
+                    <th scope="col">Median price</th>
+                    <th scope="col">Sales and average</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -302,6 +312,17 @@ const jsonLd = [
 </Base>
 
 <style>
+  .hood-photo {
+    margin: 0;
+  }
+  .hood-photo figcaption {
+    margin-top: 0.45rem;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+  .hood-photo figcaption a {
+    color: inherit;
+  }
   .hood-hero {
     background:
       radial-gradient(110% 80% at 90% 0%, rgba(31, 80, 69, 0.1), transparent 60%),

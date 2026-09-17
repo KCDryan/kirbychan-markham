@@ -1,0 +1,337 @@
+{
+  "meta": {
+    "home": {
+      "title": "万锦房地产买房卖房 | Kirby Chan & Co.",
+      "description": "Kirby Chan & Co. Real Estate Team 帮助家庭在安大略省万锦买房卖房，提供每个社区的介绍，从头到尾给您真诚的建议。"
+    },
+    "about": {
+      "title": "认识经纪人 Kirby Chan | Kirby Chan & Co.",
+      "description": "经纪人（Broker）Kirby Chan，eXp Realty Brokerage 旗下 Kirby Chan & Co. 联合创始人，服务万锦、Richmond Hill 及大多伦多地区。"
+    },
+    "services": {
+      "title": "万锦房地产服务 | Kirby Chan & Co.",
+      "description": "买房、卖房、换小房、搬迁、遗产房产出售、新楼盘等。了解 Kirby Chan & Co. Real Estate Team 在万锦如何针对不同情况为您提供帮助。"
+    },
+    "neighbourhoods": {
+      "title": "万锦社区房产指南 | Kirby Chan & Co.",
+      "description": "万锦十二个社区，从 Unionville、Markham Village 到 Cornell 和 Berczy Village。用浅白的话介绍每个社区的特点，以及适合什么样的家庭。"
+    },
+    "contact": {
+      "title": "联系 Kirby Chan & Co. | 万锦房地产",
+      "description": "欢迎致电、发邮件或留言给 Kirby Chan & Co. Real Estate Team。每一条咨询都由我们亲自回复，绝无任何压力，也没有任何义务。"
+    }
+  },
+  "ui": {
+    "skip": "跳到正文",
+    "nav": {
+      "home": "首页",
+      "neighbourhoods": "社区介绍",
+      "services": "服务项目",
+      "about": "认识 Kirby",
+      "contact": "联系我们",
+      "searchHomes": "搜索房源",
+      "menu": "菜单",
+      "openMenu": "打开菜单",
+      "englishGuides": "英文指南"
+    },
+    "lang": {
+      "button": "语言",
+      "heading": "选择语言",
+      "current": "当前语言",
+      "note": "社区指南、文章和新闻以英文发布。"
+    },
+    "footer": {
+      "explore": "浏览",
+      "neighbourhoods": "社区介绍",
+      "legal": "法律信息",
+      "languages": "语言",
+      "privacy": "隐私政策",
+      "terms": "使用条款",
+      "accessibility": "无障碍",
+      "inEnglish": "英文版",
+      "brokerage": "经纪公司",
+      "rights": "版权所有。"
+    },
+    "readMore": "了解更多",
+    "englishPage": "阅读完整英文页面",
+    "englishGuide": "完整英文指南",
+    "callUs": "致电",
+    "emailUs": "发邮件",
+    "office": "办公室",
+    "opensNewTab": "在新标签页中打开"
+  },
+  "suggest": {
+    "message": "本网站也提供简体中文版。",
+    "switch": "查看中文版",
+    "dismiss": "关闭"
+  },
+  "notice": {
+    "translation": "本页由英文翻译而来，方便您阅读。如内容有任何出入，以英文版为准。",
+    "team": "我们的团队可以用普通话为您服务。团队一共可以用十种语言服务客户。"
+  },
+  "home": {
+    "eyebrow": "安大略省万锦",
+    "h1": "万锦房地产，一个社区一个社区地了解",
+    "lede": "Kirby Chan & Co. Real Estate Team 帮助家庭在万锦买房卖房。我们了解每个社区各自的特点，从 Unionville 充满历史风貌的主街，到 Cornell 较新的街区。",
+    "ctaContact": "与 Kirby 聊聊",
+    "ctaNeighbourhoods": "浏览社区",
+    "photoAlt": "经纪人（Broker）Kirby Chan 面带微笑，指向标题",
+    "stats": [
+      {
+        "value": "150+",
+        "label": "Google 五星好评"
+      },
+      {
+        "value": "5.0",
+        "label": "Google 评分"
+      },
+      {
+        "value": "10",
+        "label": "团队服务语言"
+      },
+      {
+        "value": "12",
+        "label": "万锦社区指南"
+      }
+    ],
+    "kirby": {
+      "eyebrow": "认识 Kirby",
+      "h2": "先倾听，再给建议的经纪人",
+      "p1": "Kirby Chan 是经纪人（Broker），也是 Kirby Chan & Co. Real Estate Team 的联合创始人。大多数人一生只卖几次房子，所以 Kirby 把每一次搬家都当作重大的财务决定来对待。",
+      "p2": "他不会催促您。他会先倾听，给出真诚的建议，帮助您做出适合自己的决定，即使真诚的答案是再等一等。",
+      "button": "认识 Kirby"
+    },
+    "services": {
+      "eyebrow": "我们的服务",
+      "h2": "我们能为您做什么",
+      "lede": "每一次搬家都有各自的情况。请选择最接近您的一项。",
+      "viewAll": "全部服务"
+    },
+    "hoods": {
+      "eyebrow": "社区介绍",
+      "h2": "万锦不是一个市场，而是十二个。",
+      "lede": "每个社区的房屋类型、学校、交通和价位都各不相同。先从您正在考虑的社区看起吧。",
+      "viewAll": "全部社区"
+    },
+    "cta": {
+      "h2": "正在考虑在万锦买房或卖房？",
+      "body": "没有压力，也没有任何义务。只是和一个了解市场的团队真诚地聊一聊。",
+      "button": "联系我们"
+    }
+  },
+  "about": {
+    "eyebrow": "认识 Kirby",
+    "h1": "Kirby Chan, Broker",
+    "lede": "eXp Realty Brokerage 旗下 Kirby Chan & Co. Real Estate Team 联合创始人，服务万锦、Richmond Hill 及大多伦多地区。",
+    "photoAlt": "Kirby Chan 的肖像照",
+    "teamPhotoAlt": "Kirby Chan 与 Kirby Chan & Co. Real Estate Team 的一位成员",
+    "bio": [
+      "大多数人一生只卖几次房子。这不只是一笔交易，而是人生中最重大的财务决定之一。Kirby Chan 的事业，就是围绕着确保这件事顺利完成而建立起来的。",
+      "Kirby 是经纪人（Broker），也是 Kirby Chan & Co. Real Estate Team 的联合创始人，业务覆盖万锦、Richmond Hill 及大多伦多地区。团队创立之初就秉持一个简单的承诺：诚实经营，客户至上。",
+      "他的做法很直接。他不会催促您。他会倾听，给出建议，帮助您做出适合您的决定，而不是对他方便的决定。正因如此，老客户的推荐和回头客是这份事业的根基。",
+      "Kirby 与联合创始人 Carrie Szeto 以及一群尽心尽力的专业人员一起带领团队。他们结合本地市场知识、现代数字营销，以及对万锦和 Richmond Hill 业主在搬家时真正需要什么的深入理解。"
+    ],
+    "quote": "他不会催促您。他会倾听，给出建议，帮助您做出适合您的决定。",
+    "philosophyEyebrow": "我们的动力",
+    "philosophyHeading": "我们的工作方式",
+    "philosophy": [
+      {
+        "title": "真诚建议优先",
+        "body": "我们告诉您需要知道的，而不是您想听的。有时候，真诚的答案是再等一等。"
+      },
+      {
+        "title": "熟悉本地",
+        "body": "万锦和 Richmond Hill 是我们的主场。我们熟悉这里的街道、学校，也清楚不同社区之间的房价差异。"
+      },
+      {
+        "title": "长久的客户关系",
+        "body": "我们的大部分业务来自老客户和他们的推荐。这是用心对待每一位客户的结果。"
+      }
+    ],
+    "vision": {
+      "label": "愿景",
+      "body": "成为全球最值得信赖、最具影响力的房地产公司。"
+    },
+    "mission": {
+      "label": "使命",
+      "body": "我们通过提供个性化的房地产服务，支持社区建立可以传承几代人的财富。"
+    },
+    "values": {
+      "label": "价值观",
+      "body": "我们以合作、正直、责任和慷慨为基础，与团队成员、客户和社区建立稳固的关系。"
+    },
+    "languagesHeading": "我们说您的语言",
+    "languagesBody": "万锦是加拿大最多元化的城市之一。我们的团队用十种语言为客户服务，让您人生中最重要的决定之一，不会因为语言不通而产生误会。",
+    "languages": [
+      "英语",
+      "普通话",
+      "越南语",
+      "俄语",
+      "格鲁吉亚语",
+      "波斯语",
+      "乌尔都语",
+      "印地语",
+      "葡萄牙语",
+      "韩语"
+    ],
+    "cta": {
+      "h2": "从一次交谈开始",
+      "body": "告诉我们您的计划。我们会就市场情况和您的选择，给您真诚的分析。",
+      "button": "联系 Kirby"
+    }
+  },
+  "services": {
+    "eyebrow": "我们的服务",
+    "h1": "万锦房地产服务",
+    "lede": "每一次搬家都不一样。以下是我们最常协助处理的情况，并用浅白的话说明我们如何处理每一种情况。",
+    "items": {
+      "buying": {
+        "name": "买房",
+        "summary": "清晰的找房过程，仔细的核查，根据真实的可比成交价出价。",
+        "body": "我们帮您制定切合实际的预算，缩小适合您生活的社区范围，并在您出价之前仔细检查每一处房产。"
+      },
+      "selling": {
+        "name": "卖房",
+        "summary": "有依据的定价，充分的准备，以及能触达买家的营销。",
+        "body": "我们根据真实的可比成交价为您的房子定价，告诉您哪些准备工作值得花钱，并把房子推广给最有可能出好价钱的买家。"
+      },
+      "luxury": {
+        "name": "豪宅",
+        "summary": "可比成交少，买家群体小，定价容不得失误。",
+        "body": "万锦的豪宅很少有可以直接参考的成交案例。我们谨慎定价，妥善展示房屋，并在整个过程中保护您的隐私。"
+      },
+      "relocation": {
+        "name": "搬迁安家",
+        "summary": "要在从未住过的地方选社区，而且通常时间紧迫。",
+        "body": "从其他城市或国家搬到万锦？我们会如实介绍各个社区、学校和通勤情况，让您即使身在远方，也能放心做出选择。"
+      },
+      "downsizing": {
+        "name": "换小房",
+        "summary": "在一栋房子里住了几十年，搬家需要按正确的顺序进行。",
+        "body": "我们按照适合您的节奏，把卖房和下一个住处一起规划好，并协助处理离开多年老宅时的各种实际事务。"
+      },
+      "upsizing": {
+        "name": "换大房",
+        "summary": "两笔交易，一条时间线，中间还有一段资金缺口要安排。",
+        "body": "卖掉一套房再买一套更大的，意味着两笔交易必须衔接好。在您做出承诺之前，我们会先规划好顺序、时间和贷款方面的问题。"
+      },
+      "first-time-buyers": {
+        "name": "首次购房",
+        "summary": "真实的预算，切合实际的社区选择，交房时没有意外。",
+        "body": "从贷款预批到过户费用，我们陪您走好每一步，让您随时清楚下一步是什么、需要花多少钱。"
+      },
+      "new-construction": {
+        "name": "新楼盘",
+        "summary": "由开发商起草的合同，以及几年后才交房的时间。",
+        "body": "楼花和新房的合同通常对开发商有利。在您签字之前，我们会和您一起审阅细节，并解释其中的风险。"
+      },
+      "investors": {
+        "name": "投资者",
+        "summary": "先算清楚数字，再听故事。",
+        "body": "在听推销之前，我们先看租金、持有成本和转售情况，确保万锦的投资物业首先在账面上说得通。"
+      },
+      "estate-sales": {
+        "name": "遗产房产出售",
+        "summary": "由遗嘱执行人负责的出售，通常发生在非常艰难的一年里。",
+        "body": "我们以耐心和清晰的沟通，协助遗嘱执行人和家属出售遗产房产，并在每一步与遗产律师密切配合。"
+      },
+      "separation-and-divorce": {
+        "name": "分居与离婚",
+        "summary": "一套共同的房子，两个人各自开始新生活，出售必须对双方公平。",
+        "body": "我们让双方同等地掌握信息，与各自的律师配合，从定价到过户，整个出售过程公开透明。"
+      }
+    }
+  },
+  "neighbourhoods": {
+    "eyebrow": "安大略省万锦",
+    "h1": "万锦十二个社区",
+    "lede": "万锦不是一个单一的市场。每个社区都有自己的特色、房屋类型、学校和交通。以下是每个社区的简要介绍。",
+    "items": {
+      "unionville": {
+        "tagline": "历史主街，成荫老树，万锦最有名气的社区。",
+        "body": "一条十九世纪的主街，尽头就是 GO 车站。提到万锦，大多数人首先想到的就是 Unionville，房价也相应较高。"
+      },
+      "markham-village": {
+        "tagline": "最初的镇中心，老房子多，地块纵深大。",
+        "body": "万锦最早的中心。一条热闹的主街，纵深大的地块，以及跨越一百多年建成的房屋，步行不远就到 GO 车站。"
+      },
+      "cornell": {
+        "tagline": "前门廊，后巷车库，附近就有医院。",
+        "body": "位于万锦东部的规划社区，街道呈网格布局，房屋带前门廊，车库设在后巷，Markham Stouffville Hospital 就在社区边上。"
+      },
+      "berczy-village": {
+        "tagline": "以家庭为主，重视学校，房价也与之相符。",
+        "body": "万锦北部的家庭聚居区。较新的独立屋和镇屋，安静的弯月形街道，学校口碑吸引了很多买家。"
+      },
+      "cathedraltown": {
+        "tagline": "围绕一座大教堂而建，街景独具特色。",
+        "body": "围绕一座大教堂建成的规划社区，建筑管控比万锦其他任何地方都严格，街景风格鲜明，有人非常喜欢，也有人不太喜欢。"
+      },
+      "wismer": {
+        "tagline": "较新的家庭住宅，附近有 GO 车站。",
+        "body": "Wismer Commons 位于万锦北部的中间地带，环境安静。较新的家庭住宅，学校需求旺盛，GO 车站也近得可以日常使用。"
+      },
+      "greensborough": {
+        "tagline": "东北角，围绕 GO 车站发展起来。",
+        "body": "万锦东北部，围绕 Mount Joy GO 发展起来。房屋较新，镇屋很多，不少街道步行不远就能搭火车。"
+      },
+      "angus-glen": {
+        "tagline": "高端住宅，锦标赛级高尔夫球场，大地块。",
+        "body": "万锦的高端住宅区，位于 Major Mackenzie Drive 以北，地块宽大，有一座锦标赛级高尔夫俱乐部和一个知名的社区中心。"
+      },
+      "box-grove": {
+        "tagline": "历史小村落，周围建起了较新的住宅。",
+        "body": "一个十九世纪的小村落，被较新的住宅区环绕，位于万锦东南角，紧邻 Highway 407。"
+      },
+      "thornhill": {
+        "tagline": "成熟稳定的老社区，与 Vaughan 以 Yonge Street 为界。",
+        "body": "Thornhill 沿 Yonge Street 分属万锦和 Vaughan 两地。万锦这一侧拥有全市最成熟的住宅区之一。"
+      },
+      "milliken-mills": {
+        "tagline": "紧邻多伦多，是买独立屋门槛最低的地方。",
+        "body": "万锦南端，沿 Steeles Avenue 一带。房屋较老，公共交通便利，通常是全市买独立屋价格最容易负担的地方。"
+      },
+      "downtown": {
+        "tagline": "万锦少有的适合步行、不必开车的地方。",
+        "body": "Downtown Markham 按城市中心的理念设计，公寓楼、餐厅、电影院和 York University Markham Campus 都集中在一起。"
+      }
+    }
+  },
+  "contact": {
+    "eyebrow": "联系我们",
+    "h1": "联系 Kirby Chan & Co.",
+    "lede": "欢迎致电、发邮件或留言。每一条咨询都由我们亲自回复，绝无任何压力，也没有任何义务。",
+    "phone": "电话",
+    "email": "电子邮件",
+    "office": "办公室",
+    "officeNote": "我们的办公室位于 Richmond Hill，距离万锦只有很短的车程。我们也很乐意在您方便的地方见面。",
+    "form": {
+      "heading": "给我们留言",
+      "name": "姓名",
+      "email": "电子邮件",
+      "phone": "电话",
+      "neighbourhood": "感兴趣的社区",
+      "notSure": "还不确定",
+      "elsewhere": "万锦其他地区",
+      "intent": "我想",
+      "buying": "买房",
+      "selling": "卖房",
+      "both": "买房和卖房",
+      "researching": "先了解一下",
+      "timeline": "时间安排",
+      "t1": "未来3个月内",
+      "t2": "3至6个月",
+      "t3": "6至12个月",
+      "t4": "一年以上",
+      "message": "有什么想让我们了解的？",
+      "consent": "我同意 Kirby Chan & Co. 通过电子邮件、电话或短信，就我的咨询以及万锦房地产相关事宜与我联系。我可以随时撤回同意。",
+      "privacyLink": "隐私声明（英文）",
+      "send": "发送",
+      "sending": "正在发送",
+      "sent": "已发送",
+      "success": "谢谢您。我们会尽快与您联系。",
+      "error": "出了点问题。您也可以直接致电 416-305-8008。",
+      "fine": "本网站内容不构成法律、税务、贷款或投资建议。"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+---
+import Page from '../../../layouts/Page.astro';
+import ServiceGrid from '../../../components/ServiceGrid.astro';
+import TranslationNotice from '../../../components/TranslationNotice.astro';
+import Cta from '../../../components/Cta.astro';
+import { OTHER_LANGS, localePath, t, type Lang } from '../../../i18n';
+
+export function getStaticPaths() {
+  return OTHER_LANGS.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const dict = t(lang);
+const crumbs = [
+  { name: dict.ui.nav.home, path: localePath(lang, '/') },
+  { name: dict.ui.nav.services, path: localePath(lang, '/services/') },
+];
+---
+
+<Page
+  title={dict.meta.services.title}
+  description={dict.meta.services.description}
+  eyebrow={dict.services.eyebrow}
+  h1={dict.services.h1}
+  lede={dict.services.lede}
+  crumbs={crumbs}
+>
+  <TranslationNotice />
+  <section class="section">
+    <div class="wrap">
+      <ServiceGrid detailed />
+    </div>
+  </section>
+  <Cta />
+</Page>

@@ -1,20 +1,18 @@
 {
   "primary": [
     { "label": "Neighbourhoods", "href": "/neighbourhoods/", "mega": true },
-    { "label": "Map", "href": "/map-of-markham/" },
-    { "label": "Buyers", "href": "/buyers/" },
-    { "label": "Sellers", "href": "/sellers/" },
-    { "label": "About", "href": "/about/" },
+    { "label": "Services", "href": "/services/" },
+    { "label": "Meet Kirby", "href": "/about/" },
     { "label": "Videos", "href": "/videos/" },
     { "label": "Articles", "href": "/articles/" }
   ],
   "footer": {
     "connect": [
       { "label": "Contact", "href": "/contact/" },
-      { "label": "About the team", "href": "/about/" },
+      { "label": "Meet Kirby", "href": "/about/" },
       { "label": "Markham news", "href": "/news/" },
       { "label": "Market reports", "href": "/market-reports/" },
-      { "label": "Case studies", "href": "/case-studies/" },
+      { "label": "Client stories", "href": "/client-stories/" },
       { "label": "Videos", "href": "/videos/" },
       { "label": "Articles", "href": "/articles/" }
     ],

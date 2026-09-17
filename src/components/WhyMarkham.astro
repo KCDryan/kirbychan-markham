@@ -1,6 +1,5 @@
 ---
 import why from '../data/why-markham.json';
-import { isTodo } from '../lib/format';
 ---
 
 <section class="why section section--dark on-dark">
@@ -19,16 +18,8 @@ import { isTodo } from '../lib/format';
         why.points.map((p) => (
           <li class="why__item">
             <p class="why__value">
-              {isTodo(p.value) ? (
-                <span class="why__todo" title={p.source}>
-                  TODO
-                </span>
-              ) : (
-                <>
-                  {p.value}
-                  {p.unit && <span class="why__unit"> {p.unit}</span>}
-                </>
-              )}
+              {p.value}
+              {p.unit && <span class="why__unit"> {p.unit}</span>}
             </p>
             <h3>{p.label}</h3>
             <p class="why__body">{p.body}</p>
@@ -62,15 +53,6 @@ import { isTodo } from '../lib/format';
     font-size: 0.4em;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-  }
-  .why__todo {
-    display: inline-block;
-    padding: 0.1rem 0.7rem;
-    border: 1px dashed var(--brass);
-    border-radius: 2px;
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    letter-spacing: 0.12em;
   }
   .why__item h3 {
     margin-top: var(--sp-3);

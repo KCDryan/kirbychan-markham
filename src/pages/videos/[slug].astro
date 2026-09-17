@@ -102,24 +102,18 @@ const jsonLd = [
         <Content />
       </div>
 
-      <section class="transcript">
-        <h2>Transcript</h2>
-        {
-          d.transcript ? (
-            <div class="transcript__body">
-              {d.transcript.split('\n\n').map((para) => (
-                <p>{para}</p>
-              ))}
-            </div>
-          ) : (
-            <p class="transcript__empty">
-              <span class="todo-badge">
-                TODO: paste the transcript into this file's frontmatter once the video is published
-              </span>
-            </p>
-          )
-        }
-      </section>
+      {
+        d.transcript && (
+          <section class="transcript">
+            <h2>Transcript</h2>
+              <div class="transcript__body">
+                {d.transcript.split('\n\n').map((para) => (
+                  <p>{para}</p>
+                ))}
+              </div>
+          </section>
+        )
+      }
 
       <div class="disclaimer">
         <p>

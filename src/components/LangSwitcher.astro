@@ -1,0 +1,220 @@
+---
+import { LANGS, LOCALES, langFromPath, switchHref, t } from '../i18n';
+
+const path = Astro.url.pathname;
+const lang = langFromPath(path);
+const dict = t(lang);
+const current = LOCALES[lang];
+---
+
+<details class="lang" data-lang-switcher>
+  <summary class="lang__button" aria-label={`${dict.ui.lang.button}: ${current.native}`}>
+    <svg class="lang__globe" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" />
+    </svg>
+    <span class="lang__label lang__label--long" lang={current.htmlLang}>{current.native}</span>
+    <span class="lang__label lang__label--short" lang={current.htmlLang}>{current.short}</span>
+    <span class="lang__caret" aria-hidden="true"></span>
+  </summary>
+
+  <div class="lang__panel">
+    <p class="lang__heading">{dict.ui.lang.heading}</p>
+    <ul class="lang__list" role="list">
+      {
+        LANGS.map((l) => {
+          const loc = LOCALES[l];
+          const active = l === lang;
+          return (
+            <li>
+              <a
+                class:list={['lang__opt', active && 'is-active']}
+                href={switchHref(path, l)}
+                hreflang={loc.hreflang}
+                lang={loc.htmlLang}
+                aria-current={active ? 'true' : undefined}
+              >
+                <span class="lang__native">{loc.native}</span>
+                <span class="lang__english" lang="en">{loc.english}</span>
+                {active && (
+                  <svg class="lang__check" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                    <path d="M5 12.5l4.2 4.2L19 7" />
+                  </svg>
+                )}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+    {lang !== 'en' && <p class="lang__note">{dict.ui.lang.note}</p>}
+  </div>
+</details>
+
+<script>
+  // Close the panel on an outside click or Escape, like a normal menu.
+  const switchers = document.querySelectorAll<HTMLDetailsElement>('[data-lang-switcher]');
+  document.addEventListener('click', (event) => {
+    switchers.forEach((d) => {
+      if (d.open && !d.contains(event.target as Node)) d.open = false;
+    });
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    switchers.forEach((d) => {
+      if (d.open) {
+        d.open = false;
+        d.querySelector('summary')?.focus();
+      }
+    });
+  });
+</script>
+
+<style>
+  .lang {
+    position: relative;
+  }
+  .lang__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    list-style: none;
+    cursor: pointer;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    transition:
+      border-color 0.16s var(--ease),
+      background 0.16s var(--ease);
+  }
+  .lang__button::-webkit-details-marker {
+    display: none;
+  }
+  .lang__button:hover,
+  .lang[open] .lang__button {
+    border-color: var(--brass);
+    background: var(--mist);
+  }
+  .lang__globe {
+    fill: none;
+    stroke: var(--brand);
+    stroke-width: 1.6;
+    flex: none;
+  }
+  .lang__label--long {
+    display: none;
+  }
+  .lang__caret {
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.16s var(--ease);
+  }
+  .lang[open] .lang__caret {
+    transform: translateY(1px) rotate(-135deg);
+  }
+
+  .lang__panel {
+    position: absolute;
+    inset-inline-end: 0;
+    top: calc(100% + 0.6rem);
+    z-index: 120;
+    width: min(92vw, 360px);
+    padding: 1rem;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--brass);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lift);
+  }
+  .lang__heading {
+    margin: 0 0 0.7rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brand);
+  }
+  .lang__list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .lang__opt {
+    position: relative;
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .lang__opt:hover {
+    background: var(--mist);
+    border-color: var(--rule);
+  }
+  .lang__opt.is-active {
+    background: var(--brand);
+    color: var(--paper);
+  }
+  .lang__native {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .lang__english {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+  .lang__opt.is-active .lang__english {
+    color: var(--brass-soft);
+  }
+  .lang__check {
+    position: absolute;
+    top: 0.65rem;
+    inset-inline-end: 0.6rem;
+    fill: none;
+    stroke: var(--brass);
+    stroke-width: 2.4;
+  }
+  .lang__note {
+    margin: 0.8rem 0 0;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  /* On phones the panel spans the header width instead of hanging off the button. */
+  @media (max-width: 639px) {
+    .lang {
+      position: static;
+    }
+    .lang__panel {
+      inset-inline: 16px;
+      top: calc(100% - 4px);
+      width: auto;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .lang__label--long {
+      display: inline;
+    }
+    .lang__label--short {
+      display: none;
+    }
+  }
+</style>

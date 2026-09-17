@@ -70,7 +70,6 @@ const services = defineCollection({
     summary: z.string().describe('One line used on the homepage services grid'),
     problem: z.string(),
     steps: z.array(z.object({ title: z.string(), body: z.string() })).min(3),
-    caseStudy: z.string().optional().describe('Slug of a related case study'),
     faq,
     draft: z.boolean().default(false),
   }),
@@ -115,29 +114,6 @@ const videos = defineCollection({
     takeaways: z.array(z.string()).default([]),
     transcript: z.string().default(''),
     neighbourhood: z.string().optional(),
-    draft: z.boolean().default(false),
-  }),
-});
-
-const caseStudies = defineCollection({
-  loader: glob({ base: './src/content/case-studies', pattern: '**/*.mdx' }),
-  schema: z.object({
-    ...seo,
-    h1: z.string(),
-    accent: z.string(),
-    published: z.coerce.date(),
-    situation: z.string(),
-    difficulty: z.string(),
-    result: z.string(),
-    atAGlance: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
-    neighbourhood: z.string().optional(),
-    service: z.string().optional(),
-    featured: z.boolean().default(false),
-    placeholder: z
-      .boolean()
-      .default(false)
-      .describe('True renders a visible notice that this is a layout sample, not a real client'),
-    faq,
     draft: z.boolean().default(false),
   }),
 });
@@ -192,7 +168,6 @@ export const collections = {
   services,
   articles,
   videos,
-  'case-studies': caseStudies,
   'market-reports': marketReports,
   news,
 };

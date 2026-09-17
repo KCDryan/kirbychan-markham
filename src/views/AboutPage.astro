@@ -1,0 +1,325 @@
+---
+import Page from '../layouts/Page.astro';
+import Photo from '../components/Photo.astro';
+import Cta from '../components/Cta.astro';
+import Testimonials from '../components/Testimonials.astro';
+import TranslationNotice from '../components/TranslationNotice.astro';
+import site from '../data/site.json';
+import stories from '../data/client-stories.json';
+import { cad } from '../lib/format';
+import { langFromPath, localePath, t } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const dict = t(lang);
+const a = dict.about;
+const en = lang === 'en';
+
+const crumbs = [
+  { name: dict.ui.nav.home, path: localePath(lang, '/') },
+  { name: dict.ui.nav.about, path: localePath(lang, '/about/') },
+];
+
+const faq = en
+  ? [
+      {
+        q: 'Which areas do you serve?',
+        a: 'Markham, Richmond Hill and the wider Greater Toronto Area. This website focuses on Markham, with a guide to each of its main neighbourhoods.',
+      },
+      {
+        q: 'Who leads the team?',
+        a: 'Kirby Chan, Broker, and co-founder Carrie Szeto lead Kirby Chan & Co. Real Estate Team, supported by a group of specialists.',
+      },
+      {
+        q: 'What is your brokerage?',
+        a: `Our brokerage is ${site.brokerage.legalName}. The brokerage and registrant details also appear in the footer of every page and on the contact page.`,
+      },
+      {
+        q: 'Which languages does the team speak?',
+        a: 'The team serves clients in ten languages: English, Mandarin, Vietnamese, Russian, Georgian, Farsi, Urdu, Hindi, Portuguese and Korean.',
+      },
+      {
+        q: 'Do you charge for a home valuation?',
+        a: 'No. We will look at recent comparable sales and give you an honest read on what your home could sell for, with no obligation to list with us.',
+      },
+    ]
+  : [];
+---
+
+<Page
+  title={dict.meta.about.title}
+  description={dict.meta.about.description}
+  eyebrow={a.eyebrow}
+  h1={a.h1}
+  lede={a.lede}
+  crumbs={crumbs}
+  faq={faq}
+>
+  {!en && <TranslationNotice />}
+
+  <section class="section">
+    <div class="wrap about-grid">
+      <div class="about-media">
+        <Photo name="kirby-portrait" alt={a.photoAlt} label="Portrait of Kirby Chan" ratio="1 / 1" priority />
+        <p class="broker-caption"><strong>Kirby Chan</strong>, Broker</p>
+        <p class="broker-caption">{site.brokerage.legalName}</p>
+      </div>
+      <div class="about-copy">
+        {a.bio.map((p, i) => <p class:list={[i === 0 && 'lede']}>{p}</p>)}
+        <blockquote class="about-quote">
+          <p>{a.quote}</p>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-team section section--alt">
+    <div class="wrap">
+      <Photo
+        name="about-team"
+        alt={a.teamPhotoAlt}
+        label="Team photo"
+        ratio="3 / 2"
+        sizes="(min-width: 1180px) 1100px, 100vw"
+      />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">{a.philosophyEyebrow}</p>
+        <h2>{a.philosophyHeading}</h2>
+      </div>
+      <ul class="pillars" role="list">
+        {
+          a.philosophy.map((p, i) => (
+            <li class="pillar">
+              <span class="pillar__num">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{p.title}</h3>
+              <p>{p.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--dark on-dark">
+    <div class="wrap">
+      <dl class="vmv">
+        {
+          [a.vision, a.mission, a.values].map((item) => (
+            <div>
+              <dt>{item.label}</dt>
+              <dd>{item.body}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap langs-block">
+      <div class="section-head">
+        <h2>{a.languagesHeading}</h2>
+        <p class="lede">{a.languagesBody}</p>
+      </div>
+      <ul class="langs-list" role="list">
+        {a.languages.map((l) => <li>{l}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  {
+    en && (
+      <section class="section section--alt">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Client stories</p>
+            <h2>Recent moves the team has handled</h2>
+            <p class="lede">
+              Stories published by the team on kirbychanandco.com, with the list and sale prices
+              reported for each home.
+            </p>
+          </div>
+          <ul class="stories" role="list">
+            {stories.stories.slice(0, 3).map((s) => (
+              <li class="story">
+                <p class="story__area">{s.area}</p>
+                <h3>{s.names}</h3>
+                <p>{s.situation}</p>
+                <p class="story__prices">
+                  Listed {cad(s.listed)} <span aria-hidden="true">&middot;</span> Sold {cad(s.sold)}
+                </p>
+              </li>
+            ))}
+          </ul>
+          <p class="stories__more">
+            <a href="/client-stories/">All client stories</a>
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {en && <Testimonials />}
+
+  <Cta heading={a.cta.h2} body={a.cta.body} />
+</Page>
+
+<style>
+  .about-grid {
+    display: grid;
+    gap: var(--sp-7);
+    align-items: start;
+  }
+  .about-media {
+    max-width: 380px;
+  }
+  .broker-caption {
+    margin-top: var(--sp-3);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .broker-caption + .broker-caption {
+    margin-top: 0.1rem;
+  }
+  .broker-caption strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .about-copy > p + p {
+    margin-top: var(--sp-5);
+  }
+  .about-quote {
+    margin: var(--sp-7) 0 0;
+    padding-inline-start: var(--sp-5);
+    border-inline-start: 3px solid var(--brass);
+  }
+  .about-quote p {
+    font-family: var(--font-heading);
+    font-size: var(--step-2);
+    line-height: 1.45;
+    color: var(--brand);
+  }
+
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .pillar {
+    padding: var(--sp-6);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--brass);
+    border-radius: var(--radius-lg);
+  }
+  .pillar__num {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--brass);
+  }
+  .pillar h3 {
+    margin: var(--sp-3) 0 var(--sp-3);
+    font-size: var(--step-1);
+  }
+  .pillar p {
+    color: var(--text-muted);
+  }
+
+  .vmv {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: var(--sp-6);
+    margin: 0;
+  }
+  .vmv > div {
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--brass);
+  }
+  .vmv dt {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brass);
+  }
+  .vmv dd {
+    margin: var(--sp-3) 0 0;
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--text-on-dark);
+  }
+
+  .langs-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .langs-list li {
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: #fff;
+    font-weight: 600;
+    color: var(--brand);
+  }
+
+  .stories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .story {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding: var(--sp-6);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+  .story h3 {
+    margin: 0;
+    font-size: var(--step-1);
+  }
+  .story p {
+    color: var(--text-muted);
+  }
+  .story__area {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brand) !important;
+  }
+  .story__prices {
+    margin-top: auto;
+    padding-top: var(--sp-3);
+    border-top: 1px solid var(--rule);
+    font-weight: 700;
+    color: var(--ink) !important;
+  }
+  .stories__more {
+    margin-top: var(--sp-5);
+  }
+
+  @media (min-width: 900px) {
+    .about-grid {
+      grid-template-columns: 0.7fr 1.3fr;
+      gap: var(--sp-8);
+    }
+  }
+</style>

@@ -12,7 +12,7 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
-const ROOTS = ['src/content', 'src/data', 'src/pages', 'src/components', 'src/layouts'];
+const ROOTS = ['src/content', 'src/data', 'src/pages', 'src/components', 'src/layouts', 'src/views', 'src/i18n'];
 const EXT = /\.(mdx|md|astro|json)$/;
 
 const RULES = [

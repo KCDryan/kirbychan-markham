@@ -26,3 +26,5 @@
 /team/ /about/ 301
 /listings/ /contact/ 301
 /search/ /contact/ 302
+/case-studies/ /client-stories/ 301
+/case-studies/* /client-stories/ 301

@@ -56,9 +56,10 @@ Then verify, log, commit and push. See sections 6 to 8.
 - Any file under `src/components/`, `src/layouts/`, `src/pages/`, `src/lib/`, `src/styles/`,
   `functions/`, `scripts/`, `public/`, `.github/`
 - `package.json`, `package-lock.json`, `astro.config.mjs`, `tsconfig.json`, `src/content.config.ts`
-- `src/data/site.json`, `src/data/stats.json`, `src/data/testimonials.json`, `src/data/nav.json`
-- `src/content/services/`, `src/content/articles/`, `src/content/videos/`,
-  `src/content/case-studies/`
+- `src/data/site.json`, `src/data/testimonials.json`, `src/data/client-stories.json`,
+  `src/data/nav.json`, `src/data/photo-credits.json`
+- `src/i18n/` (the translations and the team's published statistics) and `src/views/`
+- `src/content/services/`, `src/content/articles/`, `src/content/videos/`
 - `src/assets/` (photos and logo belong to the owner)
 - `README.md`, `TODO-CHECKLIST.md`, `CHANGES-*.md`, this file
 

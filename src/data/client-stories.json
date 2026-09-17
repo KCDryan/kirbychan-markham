@@ -1,0 +1,41 @@
+{
+  "source": "https://kirbychanandco.com/about",
+  "note": "Published by Kirby Chan & Co. Real Estate Team on kirbychanandco.com. List and sale prices are the figures the team published for each sale.",
+  "stories": [
+    {
+      "names": "Tapan and Sumita",
+      "area": "Markham",
+      "situation": "Downsizing from their Thornhill home to something better suited to the next stage of their lives.",
+      "listed": 1588000,
+      "sold": 2071000
+    },
+    {
+      "names": "Glyn and her son Daniel",
+      "area": "Thornhill",
+      "situation": "Ready for a lifestyle change, Glyn decided to move south of Thornhill to be closer to her family.",
+      "listed": 990000,
+      "sold": 1255000
+    },
+    {
+      "names": "Cynthia and her daughter Valerie",
+      "area": "Thornhill",
+      "situation": "After five decades in her Thornhill home, Cynthia decided to downsize and move closer to her grandchildren and great-grandson.",
+      "listed": 1090000,
+      "sold": 1601800
+    },
+    {
+      "names": "Sherry and Ian",
+      "area": "Thornhill",
+      "situation": "With two teenage sons heading to college and university, they began planning a downsize from their 2,800 square foot home.",
+      "listed": 1288000,
+      "sold": 1810000
+    },
+    {
+      "names": "Linda and her son John",
+      "area": "Richmond Hill",
+      "situation": "Linda was moving into a retirement residence. The family wanted to sell her long-time home quickly to fund her new retirement lifestyle.",
+      "listed": 899900,
+      "sold": 1356000
+    }
+  ]
+}

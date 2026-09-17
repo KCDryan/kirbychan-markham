@@ -1,9 +1,9 @@
 ---
 import testimonials from '../data/testimonials.json';
 
-// Empty by design. Nothing renders until Kirby supplies real, permitted quotes.
-// Adding an invented quote here would breach both the brief and RECO advertising
-// rules, so the section simply does not exist while the file is empty.
+// Excerpts from public Google reviews of Kirby Chan & Co. Real Estate Team, as
+// shown on kirbychanandco.com/reviews. Quote exactly and never invent one: that
+// would breach RECO advertising rules. Names are shortened for privacy.
 interface Testimonial {
   quote: string;
   name: string;
@@ -19,9 +19,8 @@ const items = testimonials as Testimonial[];
       <div class="wrap">
         <div class="section-head">
           <p class="eyebrow">In their words</p>
-          <h2>
-            What clients say when the deal is done
-          </h2>
+          <h2>What clients say</h2>
+          <p class="lede">Excerpts from public Google reviews, quoted as written.</p>
         </div>
         <ul class="quotes__grid" role="list">
           {items.map((t) => (
@@ -39,6 +38,11 @@ const items = testimonials as Testimonial[];
             </li>
           ))}
         </ul>
+        <p class="quotes__more">
+          <a href="https://kirbychanandco.com/reviews" rel="noopener noreferrer" target="_blank">
+            Read all reviews on kirbychanandco.com
+          </a>
+        </p>
       </div>
     </section>
   )
@@ -83,6 +87,10 @@ const items = testimonials as Testimonial[];
   .quote__name {
     font-weight: 600;
     letter-spacing: 0.04em;
+  }
+  .quotes__more {
+    margin-top: var(--sp-6);
+    font-size: 0.9rem;
   }
   .quote__ctx {
     color: var(--text-muted);

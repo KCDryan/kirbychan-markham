@@ -4,6 +4,24 @@ import Logo from './Logo.astro';
 import site from '../data/site.json';
 import nav from '../data/nav.json';
 import { neighbourhoodPath, isTodo } from '../lib/format';
+import { LANGS, LOCALES, langFromPath, localePath, switchHref, t } from '../i18n';
+
+const path = Astro.url.pathname;
+const lang = langFromPath(path);
+const dict = t(lang);
+const L = (p: string) => localePath(lang, p);
+const translatedLinks = [
+  { label: dict.ui.nav.home, href: L('/') },
+  { label: dict.ui.nav.neighbourhoods, href: L('/neighbourhoods/') },
+  { label: dict.ui.nav.services, href: L('/services/') },
+  { label: dict.ui.nav.about, href: L('/about/') },
+  { label: dict.ui.nav.contact, href: L('/contact/') },
+];
+const legalLinks = [
+  { label: dict.ui.footer.privacy, href: '/privacy/' },
+  { label: dict.ui.footer.terms, href: '/terms/' },
+  { label: dict.ui.footer.accessibility, href: '/accessibility/' },
+];
 
 const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order
@@ -32,8 +50,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
         <Logo variant="light" />
         <p class="footer__exp">{site.brokerage.legalName}</p>
         <p class="footer__tag">
-          Markham, neighbourhood by neighbourhood. Twelve pillar guides, honest numbers and one
-          agent who answers the phone.
+          {lang === 'en' ? 'Markham, neighbourhood by neighbourhood. A guide to every neighbourhood, figures with sources and a team that answers the phone.' : dict.meta.home.description}
         </p>
         {
           socials.length > 0 && (
@@ -51,26 +68,37 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
       </div>
 
       <nav class="footer__col" aria-label="Neighbourhoods">
-        <h2>Neighbourhoods</h2>
+        <h2>{lang === 'en' ? dict.ui.footer.neighbourhoods : dict.ui.nav.englishGuides}</h2>
         <ul>
           {hoods.map((h) => <li><a href={neighbourhoodPath(h.id)}>{h.data.name}</a></li>)}
           <li><a href="/map-of-markham/">Map of Markham</a></li>
         </ul>
       </nav>
 
-      <nav class="footer__col" aria-label="Services">
-        <h2>Services</h2>
-        <ul>
-          <li><a href="/buyers/">Buyers</a></li>
-          <li><a href="/sellers/">Sellers</a></li>
-          {services.map((s) => <li><a href={`/services/${s.id}/`}>{s.data.name}</a></li>)}
-        </ul>
-      </nav>
+      {
+        lang === 'en' ? (
+          <nav class="footer__col" aria-label="Services">
+            <h2>Services</h2>
+            <ul>
+              <li><a href="/buyers/">Buyers</a></li>
+              <li><a href="/sellers/">Sellers</a></li>
+              {services.map((s) => <li><a href={`/services/${s.id}/`}>{s.data.name}</a></li>)}
+            </ul>
+          </nav>
+        ) : (
+          <nav class="footer__col" aria-label={dict.ui.footer.explore}>
+            <h2>{dict.ui.footer.explore}</h2>
+            <ul>
+              {translatedLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+            </ul>
+          </nav>
+        )
+      }
 
       <nav class="footer__col" aria-label="Connect">
-        <h2>Connect</h2>
+        <h2>{lang === 'en' ? 'Connect' : dict.ui.nav.contact}</h2>
         <ul>
-          {nav.footer.connect.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+          {lang === 'en' && nav.footer.connect.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
           <li><a href={site.contact.phoneHref}>{site.contact.phone}</a></li>
           <li><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></li>
           <li>
@@ -81,6 +109,26 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
         </ul>
       </nav>
     </div>
+
+    <nav class="footer__langs" aria-label={dict.ui.footer.languages}>
+      <h2>{dict.ui.footer.languages}</h2>
+      <ul>
+        {
+          LANGS.map((l) => (
+            <li>
+              <a
+                href={switchHref(path, l)}
+                hreflang={LOCALES[l].hreflang}
+                lang={LOCALES[l].htmlLang}
+                aria-current={l === lang ? 'true' : undefined}
+              >
+                {LOCALES[l].native}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
 
     <div class="footer__legal">
       <div class="footer__disclosure">
@@ -94,7 +142,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
             </p>
           ) : (
             <p class="footer__brokerage-name">
-              Brokerage: <strong>{site.brokerage.legalName}</strong>
+              {dict.ui.footer.brokerage}: <strong>{site.brokerage.legalName}</strong>
             </p>
           )
         }
@@ -119,7 +167,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
       <div class="footer__meta">
         <p>&copy; {year} {site.name}</p>
         <ul>
-          {nav.footer.legal.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+          {legalLinks.map((l) => <li><a href={l.href} hreflang={lang === 'en' ? undefined : 'en-CA'}>{l.label}{lang !== 'en' && ` (${dict.ui.footer.inEnglish})`}</a></li>)}
         </ul>
       </div>
     </div>
@@ -194,6 +242,47 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
     text-underline-offset: 0.2em;
   }
 
+  .footer__langs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1.2rem;
+    padding-block: var(--sp-5);
+    border-bottom: 1px solid var(--rule-dark);
+  }
+  .footer__langs h2 {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brass);
+  }
+  .footer__langs ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .footer__langs a {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--rule-dark);
+    border-radius: 999px;
+    font-size: 0.85rem;
+  }
+  .site-footer .footer__langs a:hover {
+    text-decoration: none;
+    border-color: var(--brass);
+  }
+  .site-footer .footer__langs a[aria-current='true'] {
+    background: var(--brass);
+    border-color: var(--brass);
+    color: var(--ground);
+  }
   .footer__legal {
     padding-top: var(--sp-6);
     font-size: 0.75rem;
@@ -211,7 +300,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
   }
   .todo {
     display: inline-block;
-    margin-left: 0.4rem;
+    margin-inline-start: 0.4rem;
     padding: 0.1rem 0.5rem;
     border: 1px dashed var(--brass);
     border-radius: 2px;

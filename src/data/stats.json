@@ -1,6 +1,0 @@
-[
-  { "value": "TODO", "label": "Years in business", "note": "Whole number only. No rounding up." },
-  { "value": "TODO", "label": "Markham neighbourhoods covered", "note": "12 if all pillar pages ship." },
-  { "value": "TODO", "label": "Families helped", "note": "Verifiable closed client count." },
-  { "value": "TODO", "label": "Average client rating", "note": "Must match a public review profile." }
-]

@@ -4,6 +4,8 @@ import Logo from './Logo.astro';
 import site from '../data/site.json';
 import nav from '../data/nav.json';
 import { neighbourhoodPath } from '../lib/format';
+import LangSwitcher from './LangSwitcher.astro';
+import { LANGS, LOCALES, langFromPath, localePath, switchHref, t } from '../i18n';
 
 const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order
@@ -12,12 +14,49 @@ const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft))
 const searchHref = site.links.loftySearch || '/contact/';
 const searchExternal = searchHref.startsWith('http');
 const path = Astro.url.pathname;
-const isCurrent = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+const lang = langFromPath(path);
+const dict = t(lang);
+const home = localePath(lang, '/');
+const isCurrent = (href: string) => path === href || (href !== home && path.startsWith(href));
+
+interface NavItem {
+  label: string;
+  href: string;
+  mega?: boolean;
+}
+// English pages use the full navigation. Translated pages link to the pages
+// that exist in their language.
+const primary: NavItem[] =
+  lang === 'en'
+    ? nav.primary
+    : [
+        { label: dict.ui.nav.neighbourhoods, href: localePath(lang, '/neighbourhoods/') },
+        { label: dict.ui.nav.services, href: localePath(lang, '/services/') },
+        { label: dict.ui.nav.about, href: localePath(lang, '/about/') },
+        { label: dict.ui.nav.contact, href: localePath(lang, '/contact/') },
+      ];
+const contactHref = localePath(lang, '/contact/');
 ---
 
 <div class="utility">
   <div class="wrap utility__inner">
     <span class="utility__brokerage">{site.brokerage.legalName}</span>
+    <ul class="utility__langs" aria-label={dict.ui.lang.button}>
+      {
+        LANGS.map((l) => (
+          <li>
+            <a
+              href={switchHref(path, l)}
+              hreflang={LOCALES[l].hreflang}
+              lang={LOCALES[l].htmlLang}
+              aria-current={l === lang ? 'true' : undefined}
+            >
+              {LOCALES[l].native}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
     <a href={site.contact.phoneHref}>{site.contact.phone}</a>
     <span aria-hidden="true">&middot;</span>
     <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
@@ -26,14 +65,14 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
 
 <header class="site-header">
   <div class="wrap header__inner">
-    <a href="/" class="header__brand" aria-label={`${site.shortName} home`}>
+    <a href={home} class="header__brand" aria-label={`${site.shortName} home`}>
       <Logo variant="dark" />
     </a>
 
     <nav class="nav-desktop" aria-label="Primary">
       <ul>
         {
-          nav.primary.map((item) => (
+          primary.map((item) => (
             <li class:list={[item.mega && 'has-mega']}>
               <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
                 {item.label}
@@ -79,27 +118,29 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
         rel={searchExternal ? 'noopener' : undefined}
         target={searchExternal ? '_blank' : undefined}
       >
-        Search Homes{
-          searchExternal && <span class="visually-hidden"> (opens in a new tab)</span>
+        {dict.ui.nav.searchHomes}{
+          searchExternal && <span class="visually-hidden"> ({dict.ui.opensNewTab})</span>
         }
       </a>
-      <a class="btn btn--primary btn--sm" href="/contact/">Contact</a>
+      <a class="btn btn--primary btn--sm" href={contactHref}>{dict.ui.nav.contact}</a>
     </div>
 
+    <LangSwitcher />
+
     <details class="nav-mobile">
-      <summary aria-label="Open menu">
+      <summary aria-label={dict.ui.nav.openMenu}>
         <span class="bars" aria-hidden="true"><i /><i /><i /></span>
-        <span class="summary-text">Menu</span>
+        <span class="summary-text">{dict.ui.nav.menu}</span>
       </summary>
       <div class="nav-mobile__panel">
         <ul class="nav-mobile__list">
-          <li><a href="/">Home</a></li>
-          {nav.primary.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
-          <li><a href="/market-reports/">Market reports</a></li>
-          <li><a href="/case-studies/">Case studies</a></li>
-          <li><a href="/contact/">Contact</a></li>
+          <li><a href={home}>{dict.ui.nav.home}</a></li>
+          {primary.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+          {lang === 'en' && <li><a href="/market-reports/">Market reports</a></li>}
+          {lang === 'en' && <li><a href="/client-stories/">Client stories</a></li>}
+          {lang === 'en' && <li><a href="/contact/">Contact</a></li>}
         </ul>
-        <p class="nav-mobile__sub">Neighbourhoods</p>
+        <p class="nav-mobile__sub">{lang === 'en' ? dict.ui.nav.neighbourhoods : dict.ui.nav.englishGuides}</p>
         <ul class="nav-mobile__hoods">
           {hoods.map((h) => <li><a href={neighbourhoodPath(h.id)}>{h.data.name}</a></li>)}
         </ul>
@@ -107,7 +148,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
           class="btn btn--brass nav-mobile__cta"
           href={searchHref}
           rel={searchExternal ? 'noopener' : undefined}
-          target={searchExternal ? '_blank' : undefined}>Search Homes</a
+          target={searchExternal ? '_blank' : undefined}>{dict.ui.nav.searchHomes}</a
         >
       </div>
     </details>
@@ -129,8 +170,32 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
     font-size: 0.78rem;
     letter-spacing: 0.03em;
   }
+  .utility__langs {
+    display: none;
+    flex-wrap: wrap;
+    gap: 0.15rem;
+    list-style: none;
+    margin: 0;
+    margin-inline-end: auto;
+    padding: 0;
+  }
+  .utility__langs a {
+    display: inline-block;
+    padding: 0.12rem 0.5rem;
+    border-radius: 999px;
+    letter-spacing: 0;
+    color: var(--text-on-dark-muted);
+  }
+  .utility__langs a:hover {
+    color: var(--ground);
+    background: var(--brass-soft);
+  }
+  .utility__langs a[aria-current='true'] {
+    color: var(--ground);
+    background: var(--brass);
+  }
   .utility__brokerage {
-    margin-right: auto;
+    margin-inline-end: auto;
     color: var(--text-on-dark);
     letter-spacing: 0.06em;
   }
@@ -158,7 +223,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
   }
   .header__brand {
     text-decoration: none;
-    margin-right: auto;
+    margin-inline-end: auto;
   }
 
   .nav-desktop {
@@ -173,6 +238,9 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
   }
   .nav-desktop > ul > li {
     position: static;
+  }
+  .nav-desktop > ul > li > a {
+    white-space: nowrap;
   }
   .nav-desktop a {
     display: inline-flex;
@@ -277,6 +345,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
   }
 
   .header__actions {
+    white-space: nowrap;
     display: none;
     gap: 0.6rem;
   }
@@ -316,7 +385,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
   }
   .nav-mobile__panel {
     position: absolute;
-    right: 0;
+    inset-inline-end: 0;
     top: calc(100% + 0.6rem);
     width: min(88vw, 340px);
     max-height: min(74vh, 640px);
@@ -365,6 +434,14 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
     margin-top: 1.1rem;
   }
 
+  @media (min-width: 980px) {
+    .utility__brokerage {
+      margin-inline-end: 1rem;
+    }
+    .utility__langs {
+      display: flex;
+    }
+  }
   @media (min-width: 1040px) {
     .nav-desktop,
     .header__actions {

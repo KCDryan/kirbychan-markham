@@ -2,7 +2,6 @@
 import Page from '../layouts/Page.astro';
 import LeadForm from '../components/LeadForm.astro';
 import site from '../data/site.json';
-import { isTodo } from '../lib/format';
 
 const crumbs = [
   { name: 'Home', path: '/' },
@@ -10,7 +9,6 @@ const crumbs = [
 ];
 
 const bookingHref = site.links.booking || '';
-const brokerageMissing = isTodo(site.brokerage.legalName);
 ---
 
 <Page
@@ -52,15 +50,6 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
               )
             }
           </ul>
-          {
-            !bookingHref && (
-              <p class="side-todo">
-                <span class="todo-badge">
-                  TODO: add the booking link in src/data/site.json to show a scheduling option here
-                </span>
-              </p>
-            )
-          }
         </div>
 
         <div class="side-block">
@@ -79,22 +68,8 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
         <div class="side-block side-block--legal">
           <h2>Brokerage and registration</h2>
           <p><strong>{site.name}</strong></p>
-          {
-            brokerageMissing ? (
-              <p>
-                <span class="todo-badge">
-                  TODO: add the brokerage legal name exactly as registered with RECO and the
-                  registrant disclosure text in src/data/site.json. This is required under TRESA
-                  before the site goes live.
-                </span>
-              </p>
-            ) : (
-              <>
-                <p>Brokerage: <strong>{site.brokerage.legalName}</strong></p>
-                <p>{site.brokerage.registrant}, {site.brokerage.registrationCategory}</p>
-              </>
-            )
-          }
+          <p>Brokerage: <strong>{site.brokerage.legalName}</strong></p>
+          <p>{site.brokerage.registrant}, {site.brokerage.registrationCategory}</p>
           <p class="side-note">
             Not intended to solicit buyers or sellers currently under contract with another
             brokerage.
@@ -115,7 +90,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
           <p>Your message comes to us, not to a call centre or a lead queue.</p>
         </li>
         <li>
-          <h3>We reply within one business day</h3>
+          <h3>We reply personally</h3>
           <p>
             With a real answer where we can give one and with the questions we need answered where
             we cannot.
@@ -197,12 +172,6 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
     line-height: 1.7;
   }
   .side-note,
-  .side-todo {
-    margin-top: var(--sp-4);
-    font-size: 0.78rem;
-    line-height: 1.6;
-    color: var(--text-muted);
-  }
   .side-block--legal p {
     font-size: 0.85rem;
     line-height: 1.65;

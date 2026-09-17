@@ -292,3 +292,39 @@ a.card { text-decoration: none; color: inherit; display: block; }
   .article-shell { grid-template-columns: minmax(0, 1fr) 260px; gap: var(--sp-8); align-items: start; }
   .article-shell__aside { position: sticky; top: 100px; }
 }
+
+/* Translated pages ---------------------------------------------------------- */
+:lang(zh) body,
+:lang(ja) body {
+  line-height: 1.8;
+}
+:lang(zh) h1, :lang(zh) h2, :lang(zh) h3,
+:lang(ja) h1, :lang(ja) h2, :lang(ja) h3 {
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+}
+:lang(zh) .eyebrow,
+:lang(ja) .eyebrow,
+:lang(fa) .eyebrow {
+  letter-spacing: 0.04em;
+}
+:lang(fa) body {
+  line-height: 1.9;
+}
+:lang(fa) h1, :lang(fa) h2, :lang(fa) h3 {
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+/* Phone numbers, emails and addresses keep their left to right order. */
+[dir='rtl'] .ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+[dir='rtl'] .prose ul, [dir='rtl'] .prose ol { padding-left: 0; padding-right: 1.3em; }
+[dir='rtl'] .prose th, [dir='rtl'] .prose td { text-align: right; }
+
+/* Language names in their own script, wherever they appear on a page. */
+[lang|='zh'] { font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif; }
+[lang='ja'] { font-family: 'Hiragino Sans', 'Yu Gothic UI', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', sans-serif; }
+[lang='fa'] { font-family: 'Vazirmatn', Tahoma, sans-serif; }
+html[lang|='zh'], html[lang='ja'], html[lang='fa'] { font-family: var(--font-body); }

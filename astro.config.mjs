@@ -15,6 +15,19 @@ export default defineConfig({
         !page.includes('/privacy/') &&
         !page.includes('/terms/') &&
         !page.includes('/accessibility/'),
+      i18n: {
+        defaultLocale: 'en',
+        locales: {
+          en: 'en-CA',
+          zh: 'zh-Hans',
+          fr: 'fr-CA',
+          fa: 'fa',
+          ru: 'ru',
+          es: 'es',
+          el: 'el',
+          ja: 'ja',
+        },
+      },
       changefreq: 'weekly',
       lastmod: new Date(),
     }),

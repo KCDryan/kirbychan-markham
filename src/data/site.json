@@ -25,14 +25,14 @@
     "registrationCategory": "Broker"
   },
   "links": {
-    "loftySearch": "",
+    "loftySearch": "https://kirbychanandco.com/homes-for-sale-markham",
     "booking": ""
   },
   "social": {
-    "instagram": "",
+    "instagram": "https://www.instagram.com/kirbychanandco/",
     "facebook": "",
-    "youtube": "",
-    "linkedin": ""
+    "youtube": "https://www.youtube.com/@KirbyChanRealEstate",
+    "linkedin": "https://www.linkedin.com/in/kirbychan/"
   },
-  "marketSource": "TODO: TRREB, Month Year"
+  "marketSource": "TRREB"
 }

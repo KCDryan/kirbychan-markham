@@ -1,0 +1,159 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import StatsBand from '../components/StatsBand.astro';
+import MarketTicker from '../components/MarketTicker.astro';
+import NeighbourhoodGrid from '../components/NeighbourhoodGrid.astro';
+import MeetKirby from '../components/MeetKirby.astro';
+import ServiceGrid from '../components/ServiceGrid.astro';
+import WhyMarkham from '../components/WhyMarkham.astro';
+import VideoCard from '../components/VideoCard.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import Testimonials from '../components/Testimonials.astro';
+import TranslationNotice from '../components/TranslationNotice.astro';
+import Cta from '../components/Cta.astro';
+import { langFromPath, localePath, t } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const dict = t(lang);
+const en = lang === 'en';
+
+const videos = (await getCollection('videos', ({ data }) => !data.draft && data.youtubeId !== ''))
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
+  .slice(0, 3);
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
+  .slice(0, 3);
+---
+
+<Base title={dict.meta.home.title} description={dict.meta.home.description}>
+  <Hero />
+  <StatsBand />
+  {!en && <TranslationNotice />}
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head section-head--row">
+        <div>
+          <p class="eyebrow">{dict.home.services.eyebrow}</p>
+          <h2>{dict.home.services.h2}</h2>
+          <p class="lede">{dict.home.services.lede}</p>
+        </div>
+        <a class="btn btn--ghost btn--sm" href={localePath(lang, '/services/')}>{dict.home.services.viewAll}</a>
+      </div>
+      <ServiceGrid />
+    </div>
+  </section>
+
+  <MeetKirby />
+
+  {en && <MarketTicker />}
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head section-head--row">
+        <div>
+          <p class="eyebrow">{dict.home.hoods.eyebrow}</p>
+          <h2>{dict.home.hoods.h2}</h2>
+          <p class="lede">{dict.home.hoods.lede}</p>
+        </div>
+        <a class="btn btn--ghost btn--sm" href={localePath(lang, '/neighbourhoods/')}>{dict.home.hoods.viewAll}</a>
+      </div>
+      <NeighbourhoodGrid />
+    </div>
+  </section>
+
+  {en && <Testimonials />}
+
+  {en && <WhyMarkham />}
+
+  {
+    en && videos.length > 0 && (
+      <section class="section section--alt">
+        <div class="wrap">
+          <div class="section-head section-head--row">
+            <div>
+              <p class="eyebrow">Watch</p>
+              <h2>Kirby explains Markham on video</h2>
+            </div>
+            <a class="btn btn--ghost btn--sm" href="/videos/">
+              All videos
+            </a>
+          </div>
+          <ul class="card-row" role="list">
+            {videos.map((v) => (
+              <li>
+                <VideoCard
+                  slug={v.id}
+                  title={v.data.h1}
+                  category={v.data.category}
+                  minutes={v.data.durationMinutes}
+                  youtubeId={v.data.youtubeId}
+                  summary={v.data.summary}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    en && articles.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head section-head--row">
+            <div>
+              <p class="eyebrow">Read</p>
+              <h2>The long answers</h2>
+            </div>
+            <a class="btn btn--ghost btn--sm" href="/articles/">
+              All articles
+            </a>
+          </div>
+          <ul class="card-row" role="list">
+            {articles.map((a) => (
+              <li>
+                <ArticleCard
+                  slug={a.id}
+                  title={a.data.h1}
+                  subtitle={a.data.subtitle}
+                  published={a.data.published}
+                  minutes={a.data.readMinutes}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <Cta />
+</Base>
+
+<style>
+  .section-head--row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    max-width: none;
+  }
+  .section-head--row > div {
+    max-width: 62ch;
+  }
+
+  .card-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

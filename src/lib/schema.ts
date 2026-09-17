@@ -12,6 +12,7 @@ export function realEstateAgent(areaServed: string[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
+    knowsLanguage: ['en', 'zh', 'vi', 'ru', 'ka', 'fa', 'ur', 'hi', 'pt', 'ko'],
     '@id': AGENT_ID,
     name: site.name,
     url: site.url,

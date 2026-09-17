@@ -1,0 +1,337 @@
+{
+  "meta": {
+    "home": {
+      "title": "Bienes raíces en Markham | Kirby Chan & Co.",
+      "description": "Kirby Chan & Co. Real Estate Team ayuda a familias a comprar y vender casas en Markham, Ontario, con guías de cada vecindario y consejos honestos en cada paso."
+    },
+    "about": {
+      "title": "Conozca a Kirby Chan, Broker | Kirby Chan & Co.",
+      "description": "Kirby Chan es corredor (Broker) y cofundador de Kirby Chan & Co. Real Estate Team en eXp Realty Brokerage, en Markham, Richmond Hill y el Gran Toronto."
+    },
+    "services": {
+      "title": "Servicios inmobiliarios en Markham | Kirby Chan & Co.",
+      "description": "Compra, venta, mudanza a una casa más pequeña, reubicación, herencias, obra nueva y más. Cómo ayuda Kirby Chan & Co. en cada situación en Markham."
+    },
+    "neighbourhoods": {
+      "title": "Vecindarios de Markham | Kirby Chan & Co.",
+      "description": "Doce vecindarios de Markham, desde Unionville y Markham Village hasta Cornell y Berczy Village. Cómo es cada zona y para quién es, en palabras sencillas."
+    },
+    "contact": {
+      "title": "Contacte a Kirby Chan & Co. | Bienes raíces Markham",
+      "description": "Llame, escriba un correo o envíe un mensaje a Kirby Chan & Co. Real Estate Team. Respondemos personalmente cada consulta, sin presión ni compromiso."
+    }
+  },
+  "ui": {
+    "skip": "Ir al contenido",
+    "nav": {
+      "home": "Inicio",
+      "neighbourhoods": "Vecindarios",
+      "services": "Servicios",
+      "about": "Conozca a Kirby",
+      "contact": "Contacto",
+      "searchHomes": "Buscar casas",
+      "menu": "Menú",
+      "openMenu": "Abrir menú",
+      "englishGuides": "Guías en inglés"
+    },
+    "lang": {
+      "button": "Idioma",
+      "heading": "Elija su idioma",
+      "current": "Idioma actual",
+      "note": "Las guías de vecindarios, los artículos y las noticias se publican en inglés."
+    },
+    "footer": {
+      "explore": "Explorar",
+      "neighbourhoods": "Vecindarios",
+      "legal": "Aviso legal",
+      "languages": "Idiomas",
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "accessibility": "Accesibilidad",
+      "inEnglish": "en inglés",
+      "brokerage": "Agencia inmobiliaria",
+      "rights": "Todos los derechos reservados."
+    },
+    "readMore": "Más información",
+    "englishPage": "Leer la página completa en inglés",
+    "englishGuide": "Guía completa en inglés",
+    "callUs": "Llamar",
+    "emailUs": "Correo",
+    "office": "Oficina",
+    "opensNewTab": "se abre en una pestaña nueva"
+  },
+  "suggest": {
+    "message": "Este sitio web también está disponible en español.",
+    "switch": "Ver en español",
+    "dismiss": "Cerrar"
+  },
+  "notice": {
+    "translation": "Esta página es una traducción del inglés para su comodidad. Si hay alguna diferencia, prevalece la versión en inglés.",
+    "team": "Nuestro equipo atiende a clientes en diez idiomas: inglés, mandarín, vietnamita, ruso, georgiano, farsi, urdu, hindi, portugués y coreano. El español no es uno de ellos, así que las conversaciones con el equipo son en inglés o en uno de esos idiomas."
+  },
+  "home": {
+    "eyebrow": "Markham, Ontario",
+    "h1": "Bienes raíces en Markham, vecindario por vecindario",
+    "lede": "Kirby Chan & Co. Real Estate Team ayuda a familias a comprar y vender casas en Markham. Conocemos cada vecindario tal como es, desde la calle principal histórica de Unionville hasta las calles más nuevas de Cornell.",
+    "ctaContact": "Hable con Kirby",
+    "ctaNeighbourhoods": "Explorar vecindarios",
+    "photoAlt": "Kirby Chan, Broker, sonriendo y señalando hacia el titular",
+    "stats": [
+      {
+        "value": "150+",
+        "label": "Reseñas de cinco estrellas en Google"
+      },
+      {
+        "value": "5.0",
+        "label": "Calificación en Google"
+      },
+      {
+        "value": "10",
+        "label": "Idiomas que habla el equipo"
+      },
+      {
+        "value": "12",
+        "label": "Guías de vecindarios de Markham"
+      }
+    ],
+    "kirby": {
+      "eyebrow": "Conozca a Kirby",
+      "h2": "Un corredor (Broker) que escucha antes de aconsejar",
+      "p1": "Kirby Chan es corredor (Broker) y cofundador de Kirby Chan & Co. Real Estate Team. La mayoría de las personas vende una casa solo unas pocas veces en la vida, por eso Kirby trata cada mudanza como la gran decisión financiera que es.",
+      "p2": "No presiona. Escucha, le da su consejo honesto y le ayuda a tomar la decisión correcta para usted, incluso cuando la respuesta honesta es esperar.",
+      "button": "Conozca a Kirby"
+    },
+    "services": {
+      "eyebrow": "Nuestros servicios",
+      "h2": "Cómo podemos ayudarle",
+      "lede": "Cada mudanza parte de una situación. Elija la que más se parezca a la suya.",
+      "viewAll": "Todos los servicios"
+    },
+    "hoods": {
+      "eyebrow": "Los vecindarios",
+      "h2": "Markham no es un solo mercado. Son doce.",
+      "lede": "Cada vecindario tiene su propio tipo de vivienda, escuelas, transporte y nivel de precios. Empiece por el que está considerando.",
+      "viewAll": "Todos los vecindarios"
+    },
+    "cta": {
+      "h2": "¿Está pensando en comprar o vender en Markham?",
+      "body": "Sin presión y sin compromiso. Solo una conversación honesta con un equipo que conoce el mercado.",
+      "button": "Contáctenos"
+    }
+  },
+  "about": {
+    "eyebrow": "Conozca a Kirby",
+    "h1": "Kirby Chan, Broker",
+    "lede": "Cofundador de Kirby Chan & Co. Real Estate Team en eXp Realty Brokerage, al servicio de Markham, Richmond Hill y el Gran Toronto.",
+    "photoAlt": "Retrato de Kirby Chan",
+    "teamPhotoAlt": "Kirby Chan con un miembro de Kirby Chan & Co. Real Estate Team",
+    "bio": [
+      "La mayoría de las personas vende una casa solo unas pocas veces en la vida. No es simplemente una transacción. Es una de las decisiones financieras más importantes que tomarán, y Kirby Chan ha construido su carrera en torno a asegurarse de que salga bien.",
+      "Kirby es corredor (Broker) y cofundador de Kirby Chan & Co. Real Estate Team, y trabaja en Markham, Richmond Hill y el Gran Toronto. El equipo nació con un compromiso sencillo: hacer bienes raíces con honestidad y poniendo al cliente primero.",
+      "Su forma de trabajar es directa. No presiona. Escucha, aconseja y le ayuda a tomar la decisión correcta para usted, no la que le conviene a él. Por eso las recomendaciones y los clientes que regresan son la base del negocio.",
+      "Kirby dirige el equipo junto con la cofundadora Carrie Szeto y un grupo de especialistas dedicados. Juntos aportan conocimiento del mercado local, marketing digital moderno y una comprensión real de lo que necesitan los propietarios de Markham y Richmond Hill cuando llega el momento de mudarse."
+    ],
+    "quote": "No presiona. Escucha, aconseja y le ayuda a tomar la decisión correcta para usted.",
+    "philosophyEyebrow": "Lo que nos mueve",
+    "philosophyHeading": "Cómo trabajamos",
+    "philosophy": [
+      {
+        "title": "Primero, un consejo honesto",
+        "body": "Le decimos lo que necesita oír, no lo que quiere oír. A veces la respuesta honesta es esperar."
+      },
+      {
+        "title": "Conocimiento local",
+        "body": "Markham y Richmond Hill son nuestros mercados. Conocemos las calles, las escuelas y cómo cambian los precios de un vecindario a otro."
+      },
+      {
+        "title": "Clientes para toda la vida",
+        "body": "La mayor parte de nuestro trabajo viene de clientes anteriores y de sus recomendaciones. Es el resultado de tratar bien a las personas."
+      }
+    ],
+    "vision": {
+      "label": "Visión",
+      "body": "Ser la empresa inmobiliaria más confiable y de mayor impacto del mundo."
+    },
+    "mission": {
+      "label": "Misión",
+      "body": "Apoyamos a la comunidad a construir un patrimonio para varias generaciones mediante servicios inmobiliarios personalizados."
+    },
+    "values": {
+      "label": "Valores",
+      "body": "Construimos relaciones sólidas con los miembros de nuestro equipo, nuestros clientes y la comunidad, basadas en la colaboración, la integridad, la responsabilidad y la generosidad."
+    },
+    "languagesHeading": "Los idiomas de nuestro equipo",
+    "languagesBody": "Markham es una de las ciudades más diversas de Canadá. Nuestro equipo atiende a clientes en diez idiomas para que una de las decisiones más importantes de su vida nunca se pierda en la traducción.",
+    "languages": [
+      "Inglés",
+      "Mandarín",
+      "Vietnamita",
+      "Ruso",
+      "Georgiano",
+      "Farsi",
+      "Urdu",
+      "Hindi",
+      "Portugués",
+      "Coreano"
+    ],
+    "cta": {
+      "h2": "Empiece con una conversación",
+      "body": "Cuéntenos qué tiene en mente. Le daremos una lectura honesta del mercado y de sus opciones.",
+      "button": "Contacte a Kirby"
+    }
+  },
+  "services": {
+    "eyebrow": "Nuestros servicios",
+    "h1": "Servicios inmobiliarios en Markham",
+    "lede": "Cada mudanza es diferente. Estas son las situaciones en las que ayudamos con más frecuencia, con una descripción sencilla de cómo manejamos cada una.",
+    "items": {
+      "buying": {
+        "name": "Comprar una casa",
+        "summary": "Una búsqueda clara, revisiones cuidadosas y ofertas basadas en ventas comparables reales.",
+        "body": "Le ayudamos a fijar un presupuesto realista, a reducir la lista a los vecindarios que se ajustan a su vida y a revisar cada propiedad con cuidado antes de hacer una oferta."
+      },
+      "selling": {
+        "name": "Vender una casa",
+        "summary": "Un precio que podemos justificar, una buena preparación y un marketing que llega a los compradores.",
+        "body": "Fijamos el precio de su casa según ventas comparables reales, le decimos qué preparación vale la pena pagar y promocionamos la propiedad ante los compradores con más probabilidades de pagar por ella."
+      },
+      "luxury": {
+        "name": "Casas de lujo",
+        "summary": "Pocos comparables, pocos compradores y ningún margen para equivocarse con el precio.",
+        "body": "Las casas de lujo en Markham tienen pocos comparables directos. Fijamos el precio con cuidado, presentamos la casa como se debe y protegemos su privacidad durante todo el proceso."
+      },
+      "relocation": {
+        "name": "Reubicación",
+        "summary": "Elegir un vecindario donde nunca ha vivido, casi siempre con poco tiempo.",
+        "body": "¿Se muda a Markham desde otra ciudad u otro país? Le explicamos con honestidad los vecindarios, las escuelas y los trayectos para que pueda elegir con confianza, muchas veces a distancia."
+      },
+      "downsizing": {
+        "name": "Mudarse a una casa más pequeña",
+        "summary": "Décadas en una misma casa y una mudanza que debe hacerse en el orden correcto.",
+        "body": "Planificamos juntos la venta y la próxima vivienda, al ritmo que le convenga, y le ayudamos con el lado práctico de dejar la casa familiar de toda la vida."
+      },
+      "upsizing": {
+        "name": "Mudarse a una casa más grande",
+        "summary": "Dos transacciones, un solo calendario y un período intermedio que hay que financiar.",
+        "body": "Vender una casa y comprar una más grande significa coordinar dos operaciones. Planificamos el orden, los plazos y las preguntas de financiamiento antes de que se comprometa."
+      },
+      "first-time-buyers": {
+        "name": "Compradores de primera vivienda",
+        "summary": "Un presupuesto real, una lista realista de vecindarios y ninguna sorpresa al cierre.",
+        "body": "Le acompañamos en cada paso, desde la preaprobación de la hipoteca hasta los costos de cierre, para que siempre sepa qué sigue y cuánto costará."
+      },
+      "new-construction": {
+        "name": "Obra nueva",
+        "summary": "Un contrato redactado por el constructor y un cierre que puede tardar años.",
+        "body": "Las casas nuevas y en preconstrucción vienen con contratos que favorecen al constructor. Revisamos los detalles con usted y le explicamos los riesgos antes de firmar."
+      },
+      "investors": {
+        "name": "Inversionistas",
+        "summary": "Los números tienen que cuadrar antes que la historia.",
+        "body": "Analizamos la renta, los costos de mantenimiento y la reventa antes que la propuesta de venta, para que una propiedad de inversión en Markham tenga sentido primero sobre el papel."
+      },
+      "estate-sales": {
+        "name": "Venta de herencias",
+        "summary": "Una venta a cargo de un albacea, casi siempre durante un año muy difícil.",
+        "body": "Ayudamos a albaceas y familias a vender una propiedad heredada con paciencia y comunicación clara, trabajando junto al abogado de la sucesión en cada paso."
+      },
+      "separation-and-divorce": {
+        "name": "Separación y divorcio",
+        "summary": "Una casa compartida, dos personas que siguen adelante y una venta que debe ser justa para ambas.",
+        "body": "Mantenemos a ambas partes igualmente informadas, trabajamos junto al abogado de cada persona y llevamos una venta transparente desde el precio hasta el cierre."
+      }
+    }
+  },
+  "neighbourhoods": {
+    "eyebrow": "Markham, Ontario",
+    "h1": "Doce vecindarios de Markham",
+    "lede": "Markham no es un solo mercado. Cada vecindario tiene su propio carácter, tipo de vivienda, escuelas y transporte. Aquí tiene una breve presentación de cada uno.",
+    "items": {
+      "unionville": {
+        "tagline": "Calle principal histórica, árboles maduros y el nombre más conocido de la ciudad.",
+        "body": "Una calle principal del siglo XIX con una estación GO al final. Unionville es el vecindario que la mayoría imagina cuando piensa en Markham, y sus precios tienen una prima acorde."
+      },
+      "markham-village": {
+        "tagline": "El centro original del pueblo, con casas antiguas y terrenos profundos.",
+        "body": "El Markham original. Una calle principal con vida, terrenos profundos y casas construidas a lo largo de más de un siglo, todo a poca distancia a pie de una estación GO."
+      },
+      "cornell": {
+        "tagline": "Porches al frente, garajes en callejones traseros y un hospital cerca.",
+        "body": "Una comunidad planificada en el este de Markham, trazada en cuadrícula, con porches al frente, garajes en callejones traseros y el Markham Stouffville Hospital en uno de sus bordes."
+      },
+      "berczy-village": {
+        "tagline": "La familia primero, enfocado en las escuelas y con precios acordes.",
+        "body": "Zona de familias en el norte de Markham. Casas unifamiliares y townhouses más nuevas, calles tranquilas en media luna y una reputación escolar que atrae a muchos compradores."
+      },
+      "cathedraltown": {
+        "tagline": "Construido alrededor de una catedral, con un paisaje urbano distintivo.",
+        "body": "Una comunidad planificada alrededor de una catedral, con un control arquitectónico más estricto que en cualquier otro lugar de Markham y un estilo que a la gente le encanta o no le gusta."
+      },
+      "wismer": {
+        "tagline": "Viviendas familiares más nuevas con una estación GO cerca.",
+        "body": "Wismer Commons es el centro tranquilo del norte de Markham. Casas familiares más nuevas, mucha demanda por sus escuelas y una estación GO lo bastante cerca para usarla."
+      },
+      "greensborough": {
+        "tagline": "La esquina noreste, construida alrededor de una estación GO.",
+        "body": "El noreste de Markham, construido alrededor de Mount Joy GO. Viviendas más nuevas, muchos townhouses y, desde muchas calles, una corta caminata hasta el tren."
+      },
+      "angus-glen": {
+        "tagline": "Casas ejecutivas, un campo de golf de campeonato y terrenos grandes.",
+        "body": "La zona ejecutiva de Markham al norte de Major Mackenzie Drive, con terrenos grandes, un club de golf de campeonato y un centro comunitario muy conocido."
+      },
+      "box-grove": {
+        "tagline": "Un caserío histórico rodeado de viviendas más nuevas.",
+        "body": "Un caserío del siglo XIX rodeado de urbanizaciones más nuevas, en la esquina sureste de Markham junto a la Highway 407."
+      },
+      "thornhill": {
+        "tagline": "Maduro, consolidado y separado de Vaughan por Yonge Street.",
+        "body": "Thornhill está dividido entre Markham y Vaughan a lo largo de Yonge Street. El lado de Markham tiene algunas de las viviendas más consolidadas de la ciudad."
+      },
+      "milliken-mills": {
+        "tagline": "En el límite con Toronto, con el precio de entrada más bajo para una casa.",
+        "body": "El extremo sur de Markham a lo largo de Steeles Avenue. Viviendas más antiguas, buenas conexiones de transporte y, a menudo, el precio más accesible de la ciudad para una casa unifamiliar."
+      },
+      "downtown": {
+        "tagline": "La parte de Markham hecha para recorrer a pie y no en auto.",
+        "body": "Downtown Markham se diseñó para ser urbano, con torres de condominios, restaurantes, un cine y el York University Markham Campus cerca unos de otros."
+      }
+    }
+  },
+  "contact": {
+    "eyebrow": "Contacto",
+    "h1": "Hable con Kirby Chan & Co.",
+    "lede": "Llame, escriba un correo o envíe un mensaje. Respondemos personalmente cada consulta y nunca hay presión ni compromiso.",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "office": "Oficina",
+    "officeNote": "Nuestra oficina está en Richmond Hill, a poca distancia en auto de Markham. Con gusto nos reunimos donde le resulte más conveniente.",
+    "form": {
+      "heading": "Envíenos un mensaje",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "neighbourhood": "Vecindario de interés",
+      "notSure": "Todavía no lo sé",
+      "elsewhere": "Otra zona de Markham",
+      "intent": "Estoy",
+      "buying": "Comprando",
+      "selling": "Vendiendo",
+      "both": "Comprando y vendiendo",
+      "researching": "Solo investigando",
+      "timeline": "Plazo",
+      "t1": "Próximos 3 meses",
+      "t2": "De 3 a 6 meses",
+      "t3": "De 6 a 12 meses",
+      "t4": "Más de un año",
+      "message": "¿Qué debemos saber?",
+      "consent": "Acepto que Kirby Chan & Co. me contacte por correo electrónico, teléfono o mensaje de texto sobre mi consulta y sobre bienes raíces en Markham. Puedo retirar mi consentimiento en cualquier momento.",
+      "privacyLink": "Aviso de privacidad (en inglés)",
+      "send": "Enviar",
+      "sending": "Enviando",
+      "sent": "Enviado",
+      "success": "Gracias. Nos pondremos en contacto con usted pronto.",
+      "error": "Algo salió mal. También puede llamar al 416-305-8008.",
+      "fine": "Nada de lo que aparece aquí constituye asesoría legal, fiscal, hipotecaria ni de inversión."
+    }
+  }
+}

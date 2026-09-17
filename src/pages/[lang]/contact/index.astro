@@ -1,0 +1,138 @@
+---
+import Page from '../../../layouts/Page.astro';
+import LeadForm from '../../../components/LeadForm.astro';
+import TranslationNotice from '../../../components/TranslationNotice.astro';
+import site from '../../../data/site.json';
+import { OTHER_LANGS, localePath, t, type Lang } from '../../../i18n';
+
+export function getStaticPaths() {
+  return OTHER_LANGS.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const dict = t(lang);
+const c = dict.contact;
+const crumbs = [
+  { name: dict.ui.nav.home, path: localePath(lang, '/') },
+  { name: dict.ui.nav.contact, path: localePath(lang, '/contact/') },
+];
+---
+
+<Page
+  title={dict.meta.contact.title}
+  description={dict.meta.contact.description}
+  eyebrow={c.eyebrow}
+  h1={c.h1}
+  lede={c.lede}
+  crumbs={crumbs}
+  tone="sand"
+>
+  <TranslationNotice />
+  <section class="section">
+    <div class="wrap contact-grid">
+      <div>
+        <LeadForm source={`contact-page-${lang}`} />
+      </div>
+
+      <aside class="contact-side">
+        <div class="side-block">
+          <ul>
+            <li>
+              <span>{c.phone}</span>
+              <a class="ltr" href={site.contact.phoneHref}>{site.contact.phone}</a>
+            </li>
+            <li>
+              <span>{c.email}</span>
+              <a class="ltr" href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="side-block">
+          <h2>{c.office}</h2>
+          <address class="ltr" lang="en-CA">
+            {site.office.street}<br />
+            {site.office.city}, {site.office.region} {site.office.postalCode}<br />
+            Canada
+          </address>
+          <p class="side-note">{c.officeNote}</p>
+        </div>
+
+        <div class="side-block side-block--legal">
+          <p><strong>{site.name}</strong></p>
+          <p>{dict.ui.footer.brokerage}: <strong>{site.brokerage.legalName}</strong></p>
+          <p>{site.brokerage.registrant}, {site.brokerage.registrationCategory}</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .contact-grid {
+    display: grid;
+    gap: var(--sp-7);
+    align-items: start;
+  }
+  .contact-side {
+    display: grid;
+    gap: var(--sp-5);
+  }
+  .side-block {
+    padding: var(--sp-5);
+    background: var(--mist);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+  .side-block h2 {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: var(--sp-4);
+  }
+  .side-block ul {
+    display: grid;
+    gap: var(--sp-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .side-block li {
+    display: grid;
+    gap: 0.15rem;
+  }
+  .side-block li span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .side-block li a {
+    font-size: 1.05rem;
+    font-weight: 600;
+    justify-self: start;
+  }
+  .side-block address {
+    font-style: normal;
+    line-height: 1.6;
+    text-align: start;
+  }
+  .side-note {
+    margin-top: var(--sp-3);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .side-block--legal {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+  }
+
+  @media (min-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--sp-8);
+    }
+  }
+</style>

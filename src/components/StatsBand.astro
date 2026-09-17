@@ -1,24 +1,19 @@
 ---
-import stats from '../data/stats.json';
-import { isTodo } from '../lib/format';
+import { langFromPath, t } from '../i18n';
+
+// Figures published by the team on kirbychanandco.com. Change them in
+// src/i18n/en.json and each translation when the counts change.
+const dict = t(langFromPath(Astro.url.pathname));
 ---
 
-<section class="stats section--dark on-dark" aria-label="Kirby Chan and Co. at a glance">
+<section class="stats section--dark on-dark" aria-label="Kirby Chan & Co. at a glance">
   <div class="wrap">
     <dl class="stats__grid">
       {
-        stats.map((s) => (
+        dict.home.stats.map((s) => (
           <div class="stat">
             <dt>{s.label}</dt>
-            <dd>
-              {isTodo(s.value) ? (
-                <span class="stat__todo" title={s.note}>
-                  TODO
-                </span>
-              ) : (
-                s.value
-              )}
-            </dd>
+            <dd>{s.value}</dd>
           </div>
         ))
       }
@@ -48,6 +43,7 @@ import { isTodo } from '../lib/format';
     margin: 0;
     font-family: var(--font-heading);
     font-size: clamp(2rem, 1.4rem + 2.6vw, 3rem);
+    font-weight: 600;
     line-height: 1;
     color: var(--brass);
   }
@@ -57,28 +53,19 @@ import { isTodo } from '../lib/format';
     text-transform: uppercase;
     color: var(--text-on-dark-muted);
   }
-  .stat__todo {
-    display: inline-block;
-    padding: 0.1rem 0.7rem;
-    border: 1px dashed var(--brass);
-    border-radius: 2px;
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    letter-spacing: 0.12em;
-  }
 
   @media (min-width: 760px) {
     .stats__grid {
       grid-template-columns: repeat(4, 1fr);
     }
     .stat {
-      border-left: 1px solid var(--rule-dark);
-      padding-left: var(--sp-5);
-      text-align: left;
+      border-inline-start: 1px solid var(--rule-dark);
+      padding-inline-start: var(--sp-5);
+      text-align: start;
     }
     .stat:first-child {
-      border-left: 0;
-      padding-left: 0;
+      border-inline-start: 0;
+      padding-inline-start: 0;
     }
   }
 </style>

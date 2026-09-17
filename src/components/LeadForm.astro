@@ -1,13 +1,17 @@
 ---
 import { getCollection } from 'astro:content';
 import site from '../data/site.json';
+import { langFromPath, t } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const fs = t(lang).contact.form;
 
 interface Props {
   heading?: string;
   source?: string;
   compact?: boolean;
 }
-const { heading = 'Tell us what you are working on', source = 'contact', compact = false } =
+const { heading = lang === 'en' ? 'Tell us what you are working on' : fs.heading, source = 'contact', compact = false } =
   Astro.props;
 
 // The site key is public by design. The secret key is never referenced in src/.
@@ -18,11 +22,22 @@ const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft))
 );
 ---
 
-<form class:list={['lead', compact && 'lead--compact']} method="post" action="/api/lead" novalidate>
+<form
+  class:list={['lead', compact && 'lead--compact']}
+  method="post"
+  action="/api/lead"
+  novalidate
+  data-sending={fs.sending}
+  data-sent={fs.sent}
+  data-send={fs.send}
+  data-success={fs.success}
+  data-error={fs.error}
+>
   <h2 class="lead__heading">{heading}</h2>
 
   <input type="hidden" name="source" value={source} />
   <input type="hidden" name="page" value={Astro.url.pathname} />
+  <input type="hidden" name="language" value={lang} />
   <input type="hidden" name="started" value="" data-started />
 
   {/* Honeypot. Hidden from people, irresistible to naive bots. */}
@@ -33,87 +48,86 @@ const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft))
 
   <div class="lead__row">
     <p class="field">
-      <label for="lead-name">Name <span aria-hidden="true">*</span></label>
+      <label for="lead-name">{fs.name} <span aria-hidden="true">*</span></label>
       <input type="text" id="lead-name" name="name" required autocomplete="name" />
     </p>
     <p class="field">
-      <label for="lead-email">Email <span aria-hidden="true">*</span></label>
+      <label for="lead-email">{fs.email} <span aria-hidden="true">*</span></label>
       <input type="email" id="lead-email" name="email" required autocomplete="email" />
     </p>
   </div>
 
   <div class="lead__row">
     <p class="field">
-      <label for="lead-phone">Phone</label>
+      <label for="lead-phone">{fs.phone}</label>
       <input type="tel" id="lead-phone" name="phone" autocomplete="tel" />
     </p>
     <p class="field">
-      <label for="lead-hood">Neighbourhood of interest</label>
+      <label for="lead-hood">{fs.neighbourhood}</label>
       <select id="lead-hood" name="neighbourhood">
-        <option value="">Not sure yet</option>
+        <option value="">{fs.notSure}</option>
         {hoods.map((h) => <option value={h.data.name}>{h.data.name}</option>)}
-        <option value="Elsewhere in Markham">Elsewhere in Markham</option>
+        <option value="Elsewhere in Markham">{fs.elsewhere}</option>
       </select>
     </p>
   </div>
 
   <div class="lead__row">
     <p class="field">
-      <label for="lead-intent">I am</label>
+      <label for="lead-intent">{fs.intent}</label>
       <select id="lead-intent" name="intent">
-        <option value="Buying">Buying</option>
-        <option value="Selling">Selling</option>
-        <option value="Both">Buying and selling</option>
-        <option value="Researching">Just researching</option>
+        <option value="Buying">{fs.buying}</option>
+        <option value="Selling">{fs.selling}</option>
+        <option value="Both">{fs.both}</option>
+        <option value="Researching">{fs.researching}</option>
       </select>
     </p>
     <p class="field">
-      <label for="lead-timeline">Timeline</label>
+      <label for="lead-timeline">{fs.timeline}</label>
       <select id="lead-timeline" name="timeline">
-        <option value="0-3 months">Next 3 months</option>
-        <option value="3-6 months">3 to 6 months</option>
-        <option value="6-12 months">6 to 12 months</option>
-        <option value="12+ months">More than a year</option>
+        <option value="0-3 months">{fs.t1}</option>
+        <option value="3-6 months">{fs.t2}</option>
+        <option value="6-12 months">{fs.t3}</option>
+        <option value="12+ months">{fs.t4}</option>
       </select>
     </p>
   </div>
 
   <p class="field">
-    <label for="lead-message">What should we know?</label>
+    <label for="lead-message">{fs.message}</label>
     <textarea id="lead-message" name="message" rows="4"></textarea>
   </p>
 
   <p class="field field--check">
     <input type="checkbox" id="lead-consent" name="consent" value="yes" required />
+    {lang === 'en' ? (
     <label for="lead-consent">
       I agree that {site.shortName} may contact me by email, phone or text about my enquiry and
       about Markham real estate. I can withdraw consent at any time using the unsubscribe link in
       any email or by replying to any message. See the <a href="/privacy/">privacy notice</a>.
       <span aria-hidden="true">*</span>
     </label>
+    ) : (
+    <label for="lead-consent">
+      {fs.consent} <a href="/privacy/" hreflang="en-CA">{fs.privacyLink}</a>
+      <span aria-hidden="true">*</span>
+    </label>
+    )}
   </p>
 
   {
     turnstileSiteKey ? (
       <div class="cf-turnstile lead__turnstile" data-sitekey={turnstileSiteKey} data-theme="light" />
-    ) : (
-      <p class="lead__todo">
-        <span class="todo-badge">
-          TODO: add TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY in Cloudflare so spam filtering
-          turns on
-        </span>
-      </p>
-    )
+    ) : null
   }
 
   <div class="lead__actions">
-    <button class="btn btn--primary" type="submit">Send</button>
+    <button class="btn btn--primary" type="submit">{fs.send}</button>
     <span class="lead__status" role="status" aria-live="polite" data-status />
   </div>
 
   <p class="lead__fine">
-    We reply to every message ourselves. Nothing here is legal, tax, mortgage or investment
-    advice.
+    {lang === 'en' ? 'We reply to every message ourselves. Nothing here is legal, tax, mortgage or investment advice.' : fs.fine}
   </p>
 </form>
 
@@ -139,7 +153,7 @@ const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft))
       event.preventDefault();
       if (button) {
         button.disabled = true;
-        button.textContent = 'Sending';
+        button.textContent = form.dataset.sending ?? 'Sending';
       }
       if (status) {
         status.textContent = '';
@@ -156,8 +170,8 @@ const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft))
 
         if (response.ok && payload.ok) {
           form.reset();
-          if (status) status.textContent = 'Thank you. We will be in touch shortly.';
-          if (button) button.textContent = 'Sent';
+          if (status) status.textContent = form.dataset.success ?? 'Thank you. We will be in touch shortly.';
+          if (button) button.textContent = form.dataset.sent ?? 'Sent';
           return;
         }
         throw new Error(payload.error ?? 'Something went wrong');
@@ -165,13 +179,13 @@ const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft))
         if (status) {
           status.classList.add('is-error');
           status.textContent =
-            error instanceof Error
+            document.documentElement.lang.startsWith('en') && error instanceof Error
               ? `${error.message}. You can also call 416-305-8008.`
-              : 'Something went wrong. You can also call 416-305-8008.';
+              : (form.dataset.error ?? 'Something went wrong. You can also call 416-305-8008.');
         }
         if (button) {
           button.disabled = false;
-          button.textContent = 'Send';
+          button.textContent = form.dataset.send ?? 'Send';
         }
       }
     });
@@ -286,9 +300,6 @@ const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft))
     font-size: 0.74rem;
     line-height: 1.6;
     color: var(--text-muted);
-  }
-  .lead__todo {
-    font-size: 0.8rem;
   }
 
   @media (min-width: 640px) {

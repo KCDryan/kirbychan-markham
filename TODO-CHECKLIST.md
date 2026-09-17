@@ -15,7 +15,7 @@ requirements, not polish.
 | 1 | Done, confirm spelling | `src/data/site.json` &rarr; `brokerage.legalName` is `eXp Realty Brokerage`, shown on its own in the top bar, the footer and `/contact/` | Check it matches the RECO public register character for character, including any comma |
 | 2 | Done | Team name, brokerage and "Kirby Chan, Broker" in the footer, on `/contact/` and beside Kirby's photo | Ask eXp compliance whether they require any extra wording |
 | 3 | Have a lawyer read `/privacy/`, `/terms/` and `/accessibility/` | `src/pages/privacy.astro`, `terms.astro`, `accessibility.astro` | Written to align with PIPEDA, CASL and AODA, but not reviewed by counsel. Each page says so at the top. Remove that notice once reviewed |
-| 4 | Delete or replace the sample case study | `src/content/case-studies/sample-layout-buyer-on-a-deadline.mdx` | It is a layout sample, not a client. It is set to `noindex` and carries a visible warning, but it should not survive launch |
+| 4 | Done | The sample case study is gone. `/client-stories/` shows the stories published on kirbychanandco.com and `/case-studies/` redirects there |
 | 5 | Set `LEAD_WEBHOOK_URL` in Cloudflare | Cloudflare dashboard | Until this is set the form refuses submissions and tells visitors to phone. It does not silently lose leads, but it does not deliver them either |
 | 6 | Set `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` | Cloudflare dashboard | Without them there is no spam filtering beyond the honeypot and timing check |
 
@@ -25,13 +25,14 @@ requirements, not polish.
 
 | # | What | File |
 | --- | --- | --- |
-| 7 | Lofty IDX search URL | `src/data/site.json` &rarr; `links.loftySearch`. Every "Search Homes" button currently falls back to `/contact/` |
-| 8 | Booking link | `src/data/site.json` &rarr; `links.booking`. Every "Book a conversation" button falls back to `/contact/` |
-| 9 | Social URLs for Instagram, Facebook, YouTube and LinkedIn | `src/data/site.json` &rarr; `social`. Empty ones are hidden rather than linked to nothing. These also populate `sameAs` in the schema |
-| 10 | The four homepage stats: years in business, neighbourhoods covered, families helped, average rating | `src/data/stats.json`. All four render a visible TODO badge right now, on the homepage and on `/about/` |
-| 11 | Real testimonials with written permission | `src/data/testimonials.json`. Currently an empty array, so the whole section is hidden. Add objects with `quote`, `name` and optionally `context` and `neighbourhood` |
-| 12 | Kirby's biography, background and credentials | `src/pages/about.astro` and `src/components/TeamIntro.astro`. Both carry placeholder copy with a visible TODO |
-| 13 | Confirm or replace the article publishing plan | `src/pages/articles/index.astro` |
+| 7 | Done | Search Homes links to kirbychanandco.com/homes-for-sale-markham |
+| 8 | Optional booking link | `src/data/site.json` &rarr; `links.booking`. Booking buttons go to the contact page until a scheduling link is added |
+| 9 | Done, add Facebook if you have one | Instagram, YouTube and LinkedIn are set in `src/data/site.json` |
+| 10 | Done, keep current | 150+ five-star Google reviews, 5.0 rating, 10 languages, 12 guides, as published on kirbychanandco.com. Stored in `home.stats` in every `src/i18n/*.json` file |
+| 11 | Done, confirm you are happy to reuse them | Six excerpts from public Google reviews in `src/data/testimonials.json`, names shortened |
+| 12 | Done, review the wording | Meet Kirby copy is based on kirbychanandco.com/about and lives in `src/i18n/en.json` |
+| 13 | Done | The publishing plan list was removed |
+| 13a | Have a native speaker review each translation | `src/i18n/zh.json`, `fr.json`, `fa.json`, `ru.json`, `es.json`, `el.json`, `ja.json` |
 
 ---
 
@@ -41,11 +42,11 @@ Nothing in this section has been guessed. Every one renders as a visible placeho
 
 | # | What | File |
 | --- | --- | --- |
-| 14 | TRREB median or average price per neighbourhood, plus the source and the period | `src/data/market.json`. Set `source` to `TRREB` and `period` to the month and year. Neighbourhoods left `null` are skipped. If all are `null` the ticker band is hidden entirely |
-| 15 | Price range and commute time in the quick stats table, for all 12 neighbourhoods | `src/content/neighbourhoods/*.mdx` &rarr; `quickStats.priceRange` and `quickStats.commute` |
-| 16 | The four price bands for all 12 neighbourhoods | `src/content/neighbourhoods/*.mdx` &rarr; `priceBands` |
-| 17 | GO stations inside Markham, Unionville GO to Union Station time, community centre count | `src/data/why-markham.json`. Three of the four "Why Markham" figures are TODO. Verify against Metrolinx, the GO timetable and the City of Markham facility list |
-| 18 | Publish the first market report | Copy `src/content/market-reports/template.mdx`, fill it in, remove `draft: true` |
+| 14 | Done | Q1 2026 TRREB community medians. Refresh when TRREB publishes the next quarterly community report |
+| 15 | Done | TRREB Q1 2026 medians and GO timetable times (September 2026) |
+| 16 | Done | Price tables now show TRREB Q1 2026 medians by property type |
+| 17 | Done | 4 GO stations, 41 minutes from Unionville GO, 8 library branches |
+| 18 | Done | August 2026 report published |
 
 ---
 
@@ -55,9 +56,9 @@ Nothing in this section has been guessed. Every one renders as a visible placeho
 | --- | --- | --- |
 | 19 | Done | Logo recoloured from kirbychanandco.com is in `src/assets/logo/`. It is a 533 pixel wide raster, so a vector SVG from your designer would be sharper on large screens |
 | 20 | Done, could be improved | Headshot from kirbychanandco.com is in place but is only 532 pixels square. A larger original would look sharper |
-| 21 | Neighbourhood photography, 12 images | `src/assets/photos/neighbourhoods/<slug>.jpg`. Each replaces that page's placeholder and adds a card thumbnail and share image |
+| 21 | Done, could be improved | Freely licensed Wikimedia Commons photos with credits. Your own photos would be better: save over `src/assets/photos/neighbourhoods/<slug>.jpg` and remove the credit entry |
 | 22 | Done | Team photo from kirbychanandco.com. Add the second person's name to the alt text in `src/components/Hero.astro` if you want them named |
-| 23 | Record the three videos, then add each YouTube ID and transcript | `src/content/videos/*.mdx`. Pages render a labelled placeholder until `youtubeId` is filled |
+| 23 | Done | Eleven real videos from the Kirby Chan Real Estate YouTube channel |
 | 24 | Optional: replace the generated OG image with a designed one, 1200 x 630 | `public/og-default.png` |
 
 **Swapping a placeholder for a real photo needs no code.** Drop the file into `src/assets/photos/`

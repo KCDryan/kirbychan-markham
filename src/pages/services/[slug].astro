@@ -5,7 +5,6 @@ import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import FaqAccordion from '../../components/FaqAccordion.astro';
-import CaseStudyCard from '../../components/CaseStudyCard.astro';
 import ServiceGrid from '../../components/ServiceGrid.astro';
 import Cta from '../../components/Cta.astro';
 import { breadcrumbList, faqPage } from '../../lib/schema';
@@ -21,10 +20,6 @@ const d = entry.data;
 const { Content } = await render(entry);
 const path = `/services/${entry.id}/`;
 
-const caseStudies = await getCollection('case-studies', ({ data }) => !data.draft);
-const related = d.caseStudy
-  ? caseStudies.find((c) => c.id === d.caseStudy)
-  : caseStudies.find((c) => c.data.service === entry.id);
 
 const crumbs = [
   { name: 'Home', path: '/' },
@@ -86,29 +81,6 @@ const jsonLd = [breadcrumbList(crumbs), faqPage(d.faq)].filter(Boolean);
       <Content />
     </div>
   </section>
-
-  {
-    related && (
-      <section class="section section--alt">
-        <div class="wrap">
-          <div class="section-head">
-            <p class="eyebrow">From my side of the table</p>
-            <h2>
-              A real file, including the part that went wrong
-            </h2>
-          </div>
-          <CaseStudyCard
-            slug={related.id}
-            title={related.data.h1}
-            situation={related.data.situation}
-            result={related.data.result}
-            placeholder={related.data.placeholder}
-            feature
-          />
-        </div>
-      </section>
-    )
-  }
 
   <section class="section">
     <div class="wrap-narrow">

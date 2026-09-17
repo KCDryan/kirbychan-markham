@@ -1,6 +1,10 @@
 ---
 import site from '../data/site.json';
 import Photo from './Photo.astro';
+import { langFromPath, localePath, t } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const dict = t(lang);
 
 const searchHref = site.links.loftySearch || '/contact/';
 const searchExternal = searchHref.startsWith('http');
@@ -9,12 +13,9 @@ const searchExternal = searchHref.startsWith('http');
 <section class="hero">
   <div class="wrap hero__inner">
     <div class="hero__copy">
-      <p class="eyebrow">Markham, Ontario</p>
-      <h1>Twelve neighbourhoods, one honest read on each</h1>
-      <p class="lede">
-        Markham is not one market. What a house costs, how long it sits and who wants it changes
-        street by street, so this site covers each neighbourhood on its own terms.
-      </p>
+      <p class="eyebrow">{dict.home.eyebrow}</p>
+      <h1>{dict.home.h1}</h1>
+      <p class="lede">{dict.home.lede}</p>
       <div class="hero__actions">
         <a
           class="btn btn--primary"
@@ -22,17 +23,18 @@ const searchExternal = searchHref.startsWith('http');
           rel={searchExternal ? 'noopener' : undefined}
           target={searchExternal ? '_blank' : undefined}
         >
-          Search Homes{
-            searchExternal && <span class="visually-hidden"> (opens in a new tab)</span>
+          {dict.ui.nav.searchHomes}{
+            searchExternal && <span class="visually-hidden"> ({dict.ui.opensNewTab})</span>
           }
         </a>
-        <a class="btn btn--ghost" href="/neighbourhoods/">Explore Neighbourhoods</a>
+        {lang !== 'en' && <a class="btn btn--brass" href={localePath(lang, '/contact/')}>{dict.home.ctaContact}</a>}
+        <a class="btn btn--ghost" href={localePath(lang, '/neighbourhoods/')}>{dict.home.ctaNeighbourhoods}</a>
       </div>
     </div>
     <div class="hero__media">
       <Photo
         name="home-hero"
-        alt="Kirby Chan, Broker, smiling and pointing toward the headline"
+        alt={dict.home.photoAlt}
         label="Photo of Kirby Chan"
         ratio="873 / 1080"
         sizes="(min-width: 900px) 460px, 80vw"
@@ -62,7 +64,7 @@ const searchExternal = searchHref.startsWith('http');
     max-width: 52ch;
   }
   .hero h1 {
-    max-width: 16ch;
+    max-width: 18ch;
   }
   .hero__actions {
     display: flex;

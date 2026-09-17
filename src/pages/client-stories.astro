@@ -1,0 +1,118 @@
+---
+import Page from '../layouts/Page.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Cta from '../components/Cta.astro';
+import stories from '../data/client-stories.json';
+import { cad } from '../lib/format';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Client stories', path: '/client-stories/' },
+];
+---
+
+<Page
+  title="Client Stories | Kirby Chan & Co. Real Estate Team"
+  description="Real moves handled by Kirby Chan & Co. Real Estate Team in Markham, Thornhill and Richmond Hill, with the list and sale prices the team published for each home."
+  eyebrow="Client stories"
+  h1="Moves the team has handled"
+  lede="Downsizing after decades in one home, moving closer to family and funding a retirement move. These stories were published by the team on kirbychanandco.com."
+  crumbs={crumbs}
+>
+  <section class="section">
+    <div class="wrap">
+      <ul class="stories" role="list">
+        {
+          stories.stories.map((s) => (
+            <li class="story">
+              <p class="story__area">{s.area}</p>
+              <h2>{s.names}</h2>
+              <p>{s.situation}</p>
+              <dl class="story__prices">
+                <div>
+                  <dt>Listed</dt>
+                  <dd>{cad(s.listed)}</dd>
+                </div>
+                <div>
+                  <dt>Sold</dt>
+                  <dd>{cad(s.sold)}</dd>
+                </div>
+              </dl>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="disclaimer">
+        <p>
+          <strong>About these figures.</strong> List and sale prices are as published by Kirby Chan
+          &amp; Co. Real Estate Team on{' '}
+          <a href={stories.source} rel="noopener noreferrer" target="_blank">kirbychanandco.com</a>.
+          Every home and market is different. Past results do not predict the sale price of any
+          other property.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Testimonials />
+  <Cta />
+</Page>
+
+<style>
+  .stories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: var(--sp-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .story {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding: var(--sp-6);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--brass);
+    border-radius: var(--radius-lg);
+  }
+  .story h2 {
+    margin: 0;
+    font-size: var(--step-2);
+  }
+  .story > p {
+    color: var(--text-muted);
+  }
+  .story__area {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brand) !important;
+  }
+  .story__prices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-4);
+    margin: auto 0 0;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+  }
+  .story__prices dt {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .story__prices dd {
+    margin: 0.2rem 0 0;
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    font-weight: 600;
+    color: var(--brand);
+  }
+  .disclaimer {
+    margin-top: var(--sp-7);
+  }
+</style>

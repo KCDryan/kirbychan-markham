@@ -52,12 +52,13 @@ build command cannot be set there. The build step then gets skipped and the depl
 src/
   content/          all editable page content, as MDX
     neighbourhoods/ 12 pillar pages
-    services/       8 situation pages
+    services/       9 situation pages
     articles/       long form guides
     videos/         video pages
-    case-studies/   client stories
     market-reports/ monthly reports
-  data/             site settings, stats, market figures, testimonials, nav
+  data/             site settings, market figures, testimonials, client stories, photo credits, nav
+  i18n/             translations: en.json is the source, one file per language, index.ts routing
+  views/            pages shared by every language (home, Meet Kirby)
   components/       reusable pieces
   layouts/          page shells
   pages/            routes
@@ -115,12 +116,36 @@ that neighbourhood is skipped. If every price is `null` the whole ticker band is
 homepage never shows an empty or invented figure. Set `source` to `TRREB` and `period` to the month
 and year before you publish any figure.
 
-### Stats, testimonials and the "Why Markham" band
+### Stats, testimonials and client stories
 
-`src/data/stats.json`, `src/data/testimonials.json` and `src/data/why-markham.json`. Any value left
-as `TODO` renders as a visible marked placeholder rather than a made up number. `testimonials.json`
-is an empty array, so the testimonials section does not render at all until you add real, permitted
-quotes.
+The four homepage figures (Google reviews, rating, languages, guides) are the ones the team
+publishes on kirbychanandco.com. They live in `home.stats` in `src/i18n/en.json` and in each
+translation file, so change every file when a count changes. `src/data/testimonials.json` holds
+exact excerpts from public Google reviews and `src/data/client-stories.json` the client stories
+published on kirbychanandco.com. Never add an invented quote or figure.
+
+### Languages
+
+The site is published in English plus Simplified Chinese (`/zh/`), French (`/fr/`), Farsi
+(`/fa/`, right to left), Russian (`/ru/`), Spanish (`/es/`), Greek (`/el/`) and Japanese
+(`/ja/`). The home, Meet Kirby, services, neighbourhoods and contact pages exist in every language,
+with hreflang tags and sitemap alternates. Neighbourhood guides, articles, news and legal pages are
+English only and the language menu says so.
+
+All translated text lives in `src/i18n/<code>.json`, with the same keys as `en.json`. When you
+change English text in `en.json`, update the same key in the seven other files. Translated pages
+say which languages the team actually works in: Mandarin, Russian and Farsi are among them; French,
+Spanish, Greek and Japanese are not, and those pages say so plainly.
+
+Visitors whose browser prefers one of these languages see a small, dismissible bar on English
+pages offering their language. Nobody is redirected automatically.
+
+### Neighbourhood photos
+
+`src/assets/photos/neighbourhoods/<slug>.jpg` are freely licensed photos from Wikimedia Commons.
+Their authors and licences are in `src/data/photo-credits.json` and each photo carries its credit
+on the page, as the licences require. Replace any of them with your own photo by saving over the
+file and removing its entry from the credits file.
 
 ### Videos
 

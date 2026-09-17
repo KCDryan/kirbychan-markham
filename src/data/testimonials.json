@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "quote": "From start to finish, they were incredibly helpful and patient, taking the time to clearly explain every step of the home-buying process so we always felt informed and confident.",
+    "name": "Bin Z.",
+    "context": "Google review, buyer"
+  },
+  {
+    "quote": "Moving up into a bigger house took a lot of planning so Carrie's suggestion to sell first and then buy was perfect. We didn't have to stress about owning 2 homes had we bought first.",
+    "name": "Sam L.",
+    "context": "Google review, sold and bought"
+  },
+  {
+    "quote": "He was professional, knowledgeable and always responsive throughout the entire process. His communication was clear and he made everything feel smooth and stress-free.",
+    "name": "Norm H.",
+    "context": "Google review"
+  },
+  {
+    "quote": "Kirby was incredibly helpful as I navigated important decisions around selling or keeping my condo. He offered clear guidance and thoughtful insights.",
+    "name": "Tenzi F.",
+    "context": "Google review, condo owner"
+  },
+  {
+    "quote": "I found him to be very pleasant and a knowledgeable professional who is very easy to work with.",
+    "name": "Sharmaine C.",
+    "context": "Google review, family sale in Richmond Hill"
+  },
+  {
+    "quote": "He takes a highly organized and systematic approach to tracking the local real estate market.",
+    "name": "Andrew L.",
+    "context": "Google review"
+  }
+]
