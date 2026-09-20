@@ -41,7 +41,7 @@ export const GUIDES = {
     service: 'relocation',
     label: 'Markham Relocation Guide',
     short: 'Relocation',
-    langs: [],
+    langs: GUIDE_LANGS,
   },
   'upsizing-markham': {
     service: 'upsizing',
