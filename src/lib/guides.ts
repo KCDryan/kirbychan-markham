@@ -19,6 +19,42 @@ export const GUIDES = {
     short: 'New construction',
     langs: GUIDE_LANGS,
   },
+  'luxury-homes-markham': {
+    service: 'luxury',
+    label: 'Markham Luxury Home Guide',
+    short: 'Luxury homes',
+    langs: [],
+  },
+  'selling-an-estate-home-markham': {
+    service: 'estate-sales',
+    label: 'Markham Estate Home Guide',
+    short: 'Estate sales',
+    langs: [],
+  },
+  'investment-property-markham': {
+    service: 'investors',
+    label: 'Markham Investment Property Guide',
+    short: 'Investment property',
+    langs: [],
+  },
+  'relocating-to-markham': {
+    service: 'relocation',
+    label: 'Markham Relocation Guide',
+    short: 'Relocation',
+    langs: [],
+  },
+  'upsizing-markham': {
+    service: 'upsizing',
+    label: 'Markham Upsizing Guide',
+    short: 'Upsizing',
+    langs: [],
+  },
+  'selling-a-home-after-separation-markham': {
+    service: 'separation-and-divorce',
+    label: 'Markham Separation and Divorce Guide',
+    short: 'Separation and divorce',
+    langs: [],
+  },
   'first-time-home-buyers-markham': {
     service: 'first-time-buyers',
     label: 'Markham First Time Home Buyer Guide',
