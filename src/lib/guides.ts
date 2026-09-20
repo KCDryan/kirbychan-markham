@@ -9,6 +9,11 @@ export const GUIDES = {
     label: 'Markham Downsizing Guide',
     short: 'Downsizing',
   },
+  'first-time-home-buyers-markham': {
+    service: 'first-time-buyers',
+    label: 'Markham First Time Home Buyer Guide',
+    short: 'First time buyers',
+  },
 } as const;
 
 export type GuideSlug = keyof typeof GUIDES;

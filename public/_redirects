@@ -32,5 +32,7 @@
 /case-studies/ /client-stories/ 301
 /case-studies/* /client-stories/ 301
 /services/downsizing/ /downsizing-markham/ 301
-/first-time-buyers/ /services/first-time-buyers/ 301
+/first-time-buyers/ /first-time-home-buyers-markham/ 301
+/services/first-time-buyers/ /first-time-home-buyers-markham/ 301
+/first-time-home-buyers/ /first-time-home-buyers-markham/ 301
 /downsizing/ /downsizing-markham/ 301
