@@ -11,7 +11,7 @@ export const GUIDES = {
     service: 'downsizing',
     label: 'Markham Downsizing Guide',
     short: 'Downsizing',
-    langs: [],
+    langs: GUIDE_LANGS,
   },
   'new-construction-markham': {
     service: 'new-construction',

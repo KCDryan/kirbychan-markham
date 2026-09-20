@@ -15,10 +15,11 @@
     "check:links": "node scripts/check-links.mjs",
     "check:style": "node scripts/check-style.mjs",
     "clean:cache": "node -e \"const fs=require('fs');for(const d of ['.astro','node_modules/.astro','dist']) fs.rmSync(d,{recursive:true,force:true})\"",
-    "verify": "npm run clean:cache && npm run check:style && npm run check:blog && npm run check && npm run build && npm run check:links && npm run check:thin",
+    "verify": "npm run clean:cache && npm run check:style && npm run check:blog && npm run check:translations && npm run check && npm run build && npm run check:links && npm run check:thin",
     "astro": "astro",
     "check:blog": "node scripts/check-blog.mjs",
-    "check:thin": "node scripts/check-thin.mjs"
+    "check:thin": "node scripts/check-thin.mjs",
+    "check:translations": "node scripts/check-translations.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.0",

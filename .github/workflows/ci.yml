@@ -38,6 +38,9 @@ jobs:
       - name: Check blog SEO rules
         run: npm run check:blog
 
+      - name: Check translated guides
+        run: npm run check:translations
+
       - name: Type and content check
         run: npm run check
 
