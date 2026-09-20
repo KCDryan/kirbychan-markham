@@ -44,6 +44,10 @@ for (const hood of frontmatter('./src/content/neighbourhoods/')) {
   if (date) lastmod.set(`${SITE}/${hood.slug}-markham/`, date);
 }
 
+// The news index sets noindex while it has nothing to list, so the sitemap has
+// to agree with it rather than asking Google to crawl a page we told it to skip.
+const newsCount = frontmatter('./src/content/news/').filter((n) => n.get('draft') !== 'true').length;
+
 export default defineConfig({
   site: SITE,
   output: 'static',
@@ -54,6 +58,9 @@ export default defineConfig({
     sitemap({
       filter: (page) => {
         if (page.includes('/contact/thank-you/')) return false;
+        // The news index is noindex while the collection is empty, so listing it
+        // in the sitemap would ask Google to crawl a page we told it to skip.
+        if (/\/news\/$/.test(page) && newsCount === 0) return false;
         // Category pages with fewer than three posts are noindex, so they stay out.
         const category = page.match(/\/blog\/category\/([^/]+)\/$/)?.[1];
         if (category && (categoryCounts.get(category) ?? 0) < 3) return false;
