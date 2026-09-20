@@ -59,7 +59,7 @@ export const GUIDES = {
     service: 'first-time-buyers',
     label: 'Markham First Time Home Buyer Guide',
     short: 'First time buyers',
-    langs: [],
+    langs: GUIDE_LANGS,
   },
 } as const;
 

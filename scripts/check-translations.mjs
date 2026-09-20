@@ -19,6 +19,7 @@
  * Usage: node scripts/check-translations.mjs
  */
 import { readdir, readFile } from 'node:fs/promises';
+import { parse } from 'yaml';
 import { join } from 'node:path';
 
 const GUIDES = 'src/content/guides';
@@ -115,6 +116,18 @@ for (const lang of LANGS) {
     if (!source) {
       fail(file, `no English guide at ${GUIDES}/${slug}.mdx to check against`);
       continue;
+    }
+
+    // Frontmatter has to parse. A straight quote inside a quoted value is easy
+    // to introduce in Chinese or Farsi and otherwise only surfaces at build time.
+    const block = text.replace(/\r\n/g, '\n').match(/^---\n([\s\S]*?)\n---\n/);
+    if (!block) fail(file, 'no frontmatter block');
+    else {
+      try {
+        parse(block[1]);
+      } catch (error) {
+        fail(file, `frontmatter does not parse: ${error.message.split('\n')[0]}`);
+      }
     }
 
     for (const { name: script, re } of FOREIGN) {
