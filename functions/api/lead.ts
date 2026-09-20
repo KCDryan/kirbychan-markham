@@ -148,9 +148,10 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   const webhook = env.LEAD_WEBHOOK_URL ?? '';
   if (!webhook) {
     // Nothing to forward to yet. Do not pretend the lead was delivered.
-    console.error('LEAD_WEBHOOK_URL is not set. Lead was validated but not forwarded.', {
-      email: payload.email,
-    });
+    // Deliberately no personal data in the log line. Cloudflare logs are not
+    // the right place for a visitor's email address, and this branch fires on
+    // every submission while the webhook is unset.
+    console.error('LEAD_WEBHOOK_URL is not set. Lead was validated but not forwarded.');
     return reply(request, 500, {
       ok: false,
       error: 'The enquiry form is not connected yet. Please call 416-305-8008',
