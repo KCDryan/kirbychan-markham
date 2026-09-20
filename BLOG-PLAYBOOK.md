@@ -37,15 +37,38 @@ record the failure under "Needs owner attention" in `BLOG-LOG.md`, then commit a
 
 ## 3. Choosing the topic
 
+The blog runs once a day and each weekday has a fixed theme, so the reader always knows what
+Tuesday is for and the site builds depth in six areas rather than a scatter of one-off posts.
+
+| Day in Toronto | Theme | Section of `BLOG-TOPICS.md` |
+| --- | --- | --- |
+| Sunday | Downsizing in Markham | Sunday |
+| Monday | First time home buyers in Markham | Monday |
+| Tuesday | Probate and estate sales in Markham | Tuesday |
+| Wednesday | Selling a home in Markham | Wednesday |
+| Thursday | Relocating to Markham | Thursday |
+| Friday | Upsizing in Markham | Friday |
+| Saturday | Writer's choice, outside the six themes above | Saturday |
+
+Get the day with `TZ=America/Toronto date "+%Y-%m-%d %A"`. Never assume it from the UTC clock,
+because the run fires in the early afternoon UTC and the Toronto day can differ.
+
 1. List what already exists: `grep -h "^title:\|^h1:" src/content/blog/*.mdx`.
-2. Take the first unticked topic in `BLOG-TOPICS.md`.
+2. Take the first unticked topic from **today's section only**. Do not borrow from another day to
+   keep a streak going. A Sunday post also sets `guide: downsizing-markham` and links to the guide.
 3. Before writing, answer the test in `SEO-PLAYBOOK.md` section 1: what would be missing from the index if this post did not exist? If the honest answer is "very little", skip the topic and note why. Each post must be more specific than the ones already published, not another pass at the same ground.
 4. Skip it (leave it unticked and note why in the log) if an existing post already targets the same
    search intent, or if the facts it needs cannot be verified from the sources in section 4.
-5. If every topic is ticked or skipped, write five new topic ideas at the bottom of
-   `BLOG-TOPICS.md` in the same format, then use the first. Good topics answer one specific question
+5. If every topic in today's section is ticked or skipped, write five new ideas for that day at
+   the bottom of its section in the same format, then use the first. Good topics answer one specific question
    a Markham buyer, seller, owner or newcomer would type into Google. Mix the categories over a week.
    Never write a topic that duplicates a neighbourhood guide or a service page. Link to those instead.
+
+6. **A missed day is cheaper than a weak post.** Daily publishing only helps while each post is
+   genuinely different from the ones before it. Google judges the site as a whole, so a run of thin
+   or overlapping posts drags down the pages that already rank, the downsizing guide included. If
+   today's theme has nothing left worth writing, publish nothing, say so in `BLOG-LOG.md` and push
+   only the log. Nobody is counting the streak.
 
 ## 4. Research and sources
 
