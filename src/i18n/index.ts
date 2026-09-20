@@ -1,4 +1,5 @@
 import en from './en.json';
+import { guideLangs } from '../lib/guides';
 
 /**
  * Languages the site is published in. English is the default and lives at the
@@ -58,12 +59,24 @@ export function isTranslated(pathname: string): boolean {
 }
 
 /**
+ * Every language a given page exists in, English included. Site pages in
+ * TRANSLATED_PATHS exist in all of them. Guides carry the three languages in
+ * GUIDE_LANGS. Everything else is English only, which returns an empty list so
+ * no hreflang alternates are emitted.
+ */
+export function langsForPath(pathname: string): Lang[] {
+  const base = basePath(pathname);
+  if ((TRANSLATED_PATHS as readonly string[]).includes(base)) return LANGS;
+  return guideLangs(base) as Lang[];
+}
+
+/**
  * Where the switcher should send a reader of `pathname` who picks `lang`:
  * the same page when it is translated, otherwise that language's home page.
  */
 export function switchHref(pathname: string, lang: Lang): string {
   const base = basePath(pathname);
-  if (isTranslated(pathname)) return localePath(lang, base);
+  if (langsForPath(pathname).includes(lang)) return localePath(lang, base);
   if (base === '/404/') return localePath(lang, '/');
   return lang === 'en' ? base : localePath(lang, '/');
 }

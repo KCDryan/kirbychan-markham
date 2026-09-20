@@ -31,7 +31,10 @@
 /search/ /contact/ 302
 /case-studies/ /client-stories/ 301
 /case-studies/* /client-stories/ 301
-/services/downsizing/ /downsizing-markham/ 301
+/services/services/new-construction/ /new-construction-markham/ 301
+/new-construction/ /new-construction-markham/ 301
+/pre-construction/ /new-construction-markham/ 301
+/downsizing/ /downsizing-markham/ 301
 /first-time-buyers/ /first-time-home-buyers-markham/ 301
 /services/first-time-buyers/ /first-time-home-buyers-markham/ 301
 /first-time-home-buyers/ /first-time-home-buyers-markham/ 301

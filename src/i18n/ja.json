@@ -333,5 +333,27 @@
       "error": "エラーが発生しました。416-305-8008 までお電話いただくこともできます。",
       "fine": "このページの内容は、法律、税務、住宅ローン、投資に関するアドバイスではありません。"
     }
+  },
+  "guide": {
+    "talk": "Talk to Kirby",
+    "trustReviews": "five-star Google reviews",
+    "trustLanguages": "languages spoken by the team",
+    "updated": "Updated",
+    "broker": "Broker",
+    "quickAnswer": "The quick answer",
+    "faqHeading": "Common questions",
+    "relatedGuides": "Related guides",
+    "sources": "Sources",
+    "checkedOn": "Rules and figures were checked against these sources on",
+    "notAdviceLabel": "Not advice.",
+    "notAdvice": "This guide is general information only. It is not legal, tax, financial or mortgage advice. Confirm the details for your own situation with a qualified professional before acting.",
+    "marketDataLabel": "Market data.",
+    "marketData": "Prices quoted are general information for the period stated. They are not an appraisal or an opinion of value for any specific property.",
+    "asideHeading": "Talk it through",
+    "asideBody": "No pressure and no obligation. Kirby and the team speak ten languages.",
+    "sendMessage": "Send a message",
+    "leadHeading": "Talk to Kirby about your move in Markham",
+    "quickContact": "Quick contact",
+    "barCta": "Get a free plan"
   }
 }

@@ -15,22 +15,31 @@ import { photo } from '../lib/photos';
 import site from '../data/site.json';
 import stories from '../data/client-stories.json';
 import { cad, longDate, neighbourhoodPath } from '../lib/format';
+import TranslationNotice from '../components/TranslationNotice.astro';
 import { GUIDES, servicePath, type GuideSlug } from '../lib/guides';
+import { localePath, t, type Lang } from '../i18n';
 import { publishedPosts } from '../lib/blog-posts';
 import { blogPosting, breadcrumbList, faqPage, service } from '../lib/schema';
 
 interface Props {
   entry: CollectionEntry<'guides'>;
   headings: MarkdownHeading[];
+  /** Translated guides live in <slug>.<lang>.mdx and render at /<lang>/<slug>/. */
+  lang?: Lang;
 }
-const { entry, headings } = Astro.props;
+const { entry, headings, lang = 'en' } = Astro.props;
 const d = entry.data;
-const slug = entry.id as GuideSlug;
+// A translated entry's id carries the language folder, for example zh/luxury-markham.
+const slug = entry.id.replace(/^[a-z]{2}\//, '') as GuideSlug;
 const guide = GUIDES[slug];
-const path = `/${slug}/`;
+const en = lang === 'en';
+const dict = t(lang);
+const gd = dict.guide;
+const englishPath = `/${slug}/`;
+const path = localePath(lang, englishPath);
 
 // The topic cluster: every blog post that names this guide, newest first.
-const clusterPosts = (await publishedPosts()).filter((p) => p.data.guide === slug);
+const clusterPosts = en ? (await publishedPosts()).filter((p) => p.data.guide === slug) : [];
 
 const allHoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
 const linkedHoods = d.related
@@ -43,7 +52,7 @@ const linkedServices = d.relatedServices
   .filter((s): s is CollectionEntry<'services'> => Boolean(s));
 
 // Client stories published by the team are downsizing and later-life moves.
-const showStories = slug === 'downsizing-markham';
+const showStories = en && slug === 'downsizing-markham';
 
 // Share image: a Markham streetscape instead of the generic card.
 const sharePhoto = photo('neighbourhoods/markham-village');
@@ -52,8 +61,8 @@ const ogImage = sharePhoto
   : undefined;
 
 const crumbs = [
-  { name: 'Home', path: '/' },
-  { name: guide.label, path },
+  { name: dict.ui.nav.home, path: localePath(lang, '/') },
+  { name: en ? guide.label : d.h1, path },
 ];
 
 const article = { ...blogPosting({ headline: d.h1, description: d.description, path, published: d.updated, updated: d.updated, image: ogImage }) } as Record<string, unknown>;
@@ -71,6 +80,12 @@ const jsonLd = [
 <Base title={d.title} description={d.description} noindex={d.noindex} ogImage={ogImage} ogType="article" jsonLd={jsonLd} article={{ published: d.updated, modified: d.updated, section: guide.short }}>
   <Breadcrumbs crumbs={crumbs} />
 
+  {!en && (
+    <div class="wrap">
+      <TranslationNotice />
+    </div>
+  )}
+
   <article>
     <header class="guide-hero">
       <div class="wrap guide-hero__inner">
@@ -79,19 +94,19 @@ const jsonLd = [
           <h1>{d.h1}</h1>
           <p class="lede">{d.lede}</p>
           <div class="page-hero__actions">
-            <a class="btn btn--primary" href="#guide-contact">Talk to Kirby</a>
-            <a class="btn btn--ghost" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
+            <a class="btn btn--primary" href="#guide-contact">{gd.talk}</a>
+            <a class="btn btn--ghost" href={site.contact.phoneHref}>{dict.ui.callUs} {site.contact.phone}</a>
           </div>
           <ul class="guide-trust" role="list">
-            <li><strong>150+</strong> five-star Google reviews</li>
-            <li><strong>10</strong> languages spoken by the team</li>
-            <li>Updated <time datetime={d.updated.toISOString()}>{longDate(d.updated)}</time></li>
+            <li><strong>150+</strong> {gd.trustReviews}</li>
+            <li><strong>10</strong> {gd.trustLanguages}</li>
+            <li>{gd.updated} <time datetime={d.updated.toISOString()}>{longDate(d.updated)}</time></li>
           </ul>
         </div>
         <div class="guide-hero__media">
           <Photo name="kirby-portrait" alt="Kirby Chan, Broker" label="Portrait of Kirby Chan" ratio="1 / 1" priority sizes="(min-width: 900px) 300px, 60vw" />
           <p class="guide-byline">
-            <strong>Kirby Chan</strong>, Broker<br />
+            <strong>Kirby Chan</strong>, {gd.broker}<br />
             {site.name}<br />
             {site.brokerage.legalName}
           </p>
@@ -103,13 +118,19 @@ const jsonLd = [
       <div class="guide-shell">
         <div class="guide-main">
           <div class="takeaway">
-            <h2>The quick answer</h2>
+            <h2>{gd.quickAnswer}</h2>
             <p>{d.takeaway}</p>
           </div>
 
           <div class="prose">
             <slot />
           </div>
+
+          {!en && (
+            <p class="guide-english">
+              <a href={englishPath}>{dict.ui.englishGuide}</a>
+            </p>
+          )}
 
           {
             showStories && (
@@ -136,7 +157,7 @@ const jsonLd = [
             )
           }
 
-          <FaqAccordion faq={d.faq} heading={`${guide.short} questions`} />
+          <FaqAccordion faq={d.faq} heading={gd.faqHeading} />
 
           {
             clusterPosts.length > 0 && (
@@ -156,7 +177,7 @@ const jsonLd = [
           {
             (linkedHoods.length > 0 || linkedServices.length > 0) && (
               <section class="guide-links" aria-labelledby="guide-links-heading">
-                <h2 id="guide-links-heading">Related guides</h2>
+                <h2 id="guide-links-heading">{gd.relatedGuides}</h2>
                 <ul>
                   {linkedHoods.map((h) => (
                     <li>
@@ -176,7 +197,7 @@ const jsonLd = [
           }
 
           <section class="guide-sources" aria-labelledby="guide-sources-heading">
-            <h2 id="guide-sources-heading">Sources</h2>
+            <h2 id="guide-sources-heading">{gd.sources}</h2>
             <ul>
               {d.sources.map((src) => (
                 <li>
@@ -184,18 +205,15 @@ const jsonLd = [
                 </li>
               ))}
             </ul>
-            <p>Rules and figures were checked against these sources on {longDate(d.updated)}.</p>
+            <p>{gd.checkedOn} {longDate(d.updated)}.</p>
           </section>
 
           <div class="disclaimer">
             <p>
-              <strong>Not advice.</strong> This guide is general information only. It is not legal,
-              tax, financial or mortgage advice. Confirm the details for your own situation with a
-              qualified professional before acting.
+              <strong>{gd.notAdviceLabel}</strong> {gd.notAdvice}
             </p>
             <p>
-              <strong>Market data.</strong> Prices quoted are general information for the period stated.
-              They are not an appraisal or an opinion of value for any specific property.
+              <strong>{gd.marketDataLabel}</strong> {gd.marketData}
             </p>
           </div>
         </div>
@@ -203,9 +221,9 @@ const jsonLd = [
         <aside class="guide-aside">
           <Toc headings={headings} />
           <div class="aside-cta on-dark">
-            <h2>Talk it through</h2>
-            <p>No pressure and no obligation. Kirby and the team speak ten languages.</p>
-            <a class="btn btn--brass btn--sm btn--wide" href="#guide-contact">Send a message</a>
+            <h2>{gd.asideHeading}</h2>
+            <p>{gd.asideBody}</p>
+            <a class="btn btn--brass btn--sm btn--wide" href="#guide-contact">{gd.sendMessage}</a>
             <a class="aside-cta__phone" href={site.contact.phoneHref}>{site.contact.phone}</a>
           </div>
         </aside>
@@ -218,7 +236,7 @@ const jsonLd = [
   <section class="section" id="guide-contact">
     <div class="wrap-narrow">
       <LeadForm
-        heading={slug === 'downsizing-markham' ? 'Get your free downsizing plan' : `Talk to Kirby about ${guide.short.toLowerCase()} in Markham`}
+        heading={en && slug === 'downsizing-markham' ? 'Get your free downsizing plan' : gd.leadHeading}
         intro="Tell us a little about your home and your plans. Kirby will reply personally, with no pressure and no obligation."
         source={`guide-${slug}`}
         defaultIntent="Both"
@@ -226,9 +244,9 @@ const jsonLd = [
       />
     </div>
   </section>
-  <div class="guide-bar" aria-label="Quick contact">
-    <a class="btn btn--ghost btn--sm" href={site.contact.phoneHref}>Call</a>
-    <a class="btn btn--primary btn--sm" href="#guide-contact">Get a free plan</a>
+  <div class="guide-bar" aria-label={gd.quickContact}>
+    <a class="btn btn--ghost btn--sm" href={site.contact.phoneHref}>{dict.ui.callUs}</a>
+    <a class="btn btn--primary btn--sm" href="#guide-contact">{gd.barCta}</a>
   </div>
 </Base>
 
@@ -298,6 +316,12 @@ const jsonLd = [
   }
 
   .guide-stories h2,
+  .guide-english {
+    margin-top: var(--sp-6);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--rule);
+    font-weight: 600;
+  }
   .guide-cluster h2,
   .guide-links h2,
   .guide-sources h2 {

@@ -13,7 +13,8 @@ import GuideLayout from '../layouts/GuideLayout.astro';
 export const getStaticPaths = (async () => {
   const hoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
 
-  const guides = await getCollection('guides', ({ data }) => !data.draft);
+  // Translated guides (<slug>.<lang>.mdx) are served by [lang]/[slug].astro instead.
+  const guides = await getCollection('guides', (e) => !e.data.draft && !e.id.includes('/'));
 
   return [
     ...hoods.map((entry) => ({

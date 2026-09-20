@@ -6,7 +6,7 @@ import site from '../data/site.json';
 import { canonical, absolute, DEFAULT_OG } from '../lib/seo';
 import { realEstateAgent } from '../lib/schema';
 import LangSuggest from '../components/LangSuggest.astro';
-import { LANGS, LOCALES, basePath, isTranslated, langFromPath, localePath, t } from '../i18n';
+import { LANGS, LOCALES, basePath, langFromPath, langsForPath, localePath, t } from '../i18n';
 
 interface Props {
   title: string;
@@ -42,8 +42,9 @@ const locale = LOCALES[lang];
 const dict = t(lang);
 
 // hreflang alternates for pages that exist in every language.
-const alternates = isTranslated(Astro.url.pathname)
-  ? LANGS.map((l) => ({ hreflang: LOCALES[l].hreflang, href: canonical(localePath(l, basePath(Astro.url.pathname))) }))
+const pageLangs = langsForPath(Astro.url.pathname);
+const alternates = pageLangs.length > 0
+  ? pageLangs.map((l) => ({ hreflang: LOCALES[l].hreflang, href: canonical(localePath(l, basePath(Astro.url.pathname))) }))
   : [];
 const image = absolute(ogImage);
 
@@ -91,7 +92,7 @@ const graphs = [agent, ...jsonLd].filter(Boolean);
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content={locale.ogLocale} />
-    {alternates.length > 0 && LANGS.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={LOCALES[l].ogLocale} />)}
+    {alternates.length > 0 && pageLangs.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={LOCALES[l].ogLocale} />)}
 
     {article && <meta property="article:published_time" content={article.published.toISOString()} />}
     {article && <meta property="article:modified_time" content={(article.modified ?? article.published).toISOString()} />}

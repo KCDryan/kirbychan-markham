@@ -3,12 +3,22 @@ import { glob } from 'astro/loaders';
 import { CATEGORY_SLUGS } from './lib/blog';
 import { GUIDE_SLUGS } from './lib/guides';
 
+/**
+ * Chinese, Japanese, Farsi and Arabic carry far more meaning per character than
+ * English, so a translated field that reads at the right length is much shorter
+ * by `.length`. Minimum lengths drop for those scripts. Maximums stay, because
+ * they exist to stop Google truncating the snippet.
+ */
+const DENSE_SCRIPT = /[\u4e00-\u9fff\u3040-\u30ff\u0600-\u06ff]/;
+export const atLeast = (min: number) => (s: string) =>
+  s.length >= (DENSE_SCRIPT.test(s) ? Math.ceil(min * 0.3) : min);
+
 const seo = {
   title: z.string().max(60, 'Keep titles under 60 characters'),
   description: z
     .string()
-    .min(140, "Meta descriptions should run about 150 to 160 characters")
-    .max(168, "Meta descriptions should run about 150 to 160 characters"),
+    .refine(atLeast(140), 'Meta descriptions should run about 150 to 160 characters')
+    .refine((s) => s.length <= 168, 'Meta descriptions should run about 150 to 160 characters'),
   ogImage: z.string().optional(),
   noindex: z.boolean().default(false),
 };
@@ -190,10 +200,10 @@ const guides = defineCollection({
   loader: glob({ base: './src/content/guides', pattern: '**/[^_]*.mdx' }),
   schema: z.object({
     ...seo,
-    h1: z.string().min(20).max(90),
+    h1: z.string().refine(atLeast(20)).refine((s) => s.length <= 90),
     eyebrow: z.string(),
-    lede: z.string().min(60).max(320),
-    takeaway: z.string().min(120),
+    lede: z.string().refine(atLeast(60)).refine((s) => s.length <= 320),
+    takeaway: z.string().refine(atLeast(120)),
     updated: z.coerce.date(),
     related: z.array(z.string()).default([]),
     relatedServices: z.array(z.string()).default([]),

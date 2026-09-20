@@ -3,16 +3,27 @@
  * cluster: blog posts with `guide: <slug>` link up to it and the guide lists
  * them. Guides live in src/content/guides/ and are served at /<slug>/.
  */
+export const GUIDE_LANGS = ['zh', 'fr', 'fa'] as const;
+export type GuideLang = (typeof GUIDE_LANGS)[number];
+
 export const GUIDES = {
   'downsizing-markham': {
     service: 'downsizing',
     label: 'Markham Downsizing Guide',
     short: 'Downsizing',
+    langs: [],
+  },
+  'new-construction-markham': {
+    service: 'new-construction',
+    label: 'Markham New Construction Guide',
+    short: 'New construction',
+    langs: GUIDE_LANGS,
   },
   'first-time-home-buyers-markham': {
     service: 'first-time-buyers',
     label: 'Markham First Time Home Buyer Guide',
     short: 'First time buyers',
+    langs: [],
   },
 } as const;
 
@@ -31,4 +42,16 @@ export function servicePath(serviceSlug: string): string {
 
 export function hasGuide(serviceSlug: string): boolean {
   return serviceSlug in SERVICE_TO_GUIDE;
+}
+
+/**
+ * The languages a root level path is published in, for example
+ * /new-construction-markham/. Empty when the path is not a guide, or when the
+ * guide has no translations yet, so no hreflang alternates are emitted for it.
+ */
+export function guideLangs(path: string): readonly string[] {
+  const slug = path.replace(/^\/|\/$/g, '') as GuideSlug;
+  const guide = GUIDES[slug];
+  if (!guide || guide.langs.length === 0) return [];
+  return ['en', ...guide.langs];
 }

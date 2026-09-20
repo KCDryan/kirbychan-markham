@@ -333,5 +333,27 @@
       "error": "Une erreur s'est produite. Vous pouvez aussi appeler au 416-305-8008.",
       "fine": "Rien sur cette page ne constitue un conseil juridique, fiscal, hypothécaire ou en placement."
     }
+  },
+  "guide": {
+    "talk": "Parler à Kirby",
+    "trustReviews": "avis Google cinq étoiles",
+    "trustLanguages": "langues parlées par l’équipe",
+    "updated": "Mise à jour le",
+    "broker": "courtier",
+    "quickAnswer": "La réponse courte",
+    "faqHeading": "Questions fréquentes",
+    "relatedGuides": "Guides connexes",
+    "sources": "Sources",
+    "checkedOn": "Les règles et les chiffres ont été vérifiés auprès de ces sources le",
+    "notAdviceLabel": "Ceci n’est pas un conseil professionnel.",
+    "notAdvice": "Ce guide est fourni à titre d’information générale seulement. Il ne constitue pas un conseil juridique, fiscal, financier ou hypothécaire. Confirmez les détails de votre situation auprès d’un professionnel qualifié avant d’agir.",
+    "marketDataLabel": "Données du marché.",
+    "marketData": "Les prix cités sont des renseignements généraux pour la période indiquée. Ils ne constituent ni une évaluation ni une opinion de valeur pour une propriété donnée.",
+    "asideHeading": "Parlons-en",
+    "asideBody": "Aucune pression ni obligation. Kirby et son équipe parlent dix langues.",
+    "sendMessage": "Envoyer un message",
+    "leadHeading": "Parlez à Kirby de votre projet immobilier à Markham",
+    "quickContact": "Contact rapide",
+    "barCta": "Obtenir un plan gratuit"
   }
 }

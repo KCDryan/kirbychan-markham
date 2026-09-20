@@ -1,0 +1,34 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import { getCollection, render } from 'astro:content';
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import { GUIDE_LANGS } from '../../lib/guides';
+import type { Lang } from '../../i18n';
+
+/**
+ * Translated pillar guides at /<lang>/<slug>/. The source file is
+ * src/content/guides/<lang>/<slug>.mdx, so the entry id carries the language
+ * and the layout strips it back off.
+ */
+export const getStaticPaths = (async () => {
+  const guides = await getCollection('guides', ({ data }) => !data.draft);
+  const langs = GUIDE_LANGS as readonly string[];
+
+  return guides
+    .map((entry) => {
+      const match = entry.id.match(/^([a-z]{2})\/(.+)$/);
+      return match && langs.includes(match[1])
+        ? { params: { lang: match[1], slug: match[2] }, props: { entry, lang: match[1] as Lang } }
+        : null;
+    })
+    .filter((route): route is NonNullable<typeof route> => route !== null);
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { entry, lang } = Astro.props as Props;
+const { Content, headings } = await render(entry);
+---
+
+<GuideLayout entry={entry} headings={headings} lang={lang}>
+  <Content />
+</GuideLayout>

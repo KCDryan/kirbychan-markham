@@ -333,5 +333,27 @@
       "error": "出了点问题。您也可以直接致电 416-305-8008。",
       "fine": "本网站内容不构成法律、税务、贷款或投资建议。"
     }
+  },
+  "guide": {
+    "talk": "联系 Kirby",
+    "trustReviews": "条五星 Google 评价",
+    "trustLanguages": "种团队可用语言",
+    "updated": "更新于",
+    "broker": "经纪人 (Broker)",
+    "quickAnswer": "简要答案",
+    "faqHeading": "常见问题",
+    "relatedGuides": "相关指南",
+    "sources": "资料来源",
+    "checkedOn": "本文的规则与数字已于以下日期核对上述资料来源：",
+    "notAdviceLabel": "本文不构成专业建议。",
+    "notAdvice": "本指南仅供一般参考，并非法律、税务、财务或按揭建议。在采取行动之前，请就您的具体情况向具备资格的专业人士确认相关细节。",
+    "marketDataLabel": "市场数据。",
+    "marketData": "文中价格为所述期间的一般参考信息，并非任何特定物业的估价或价值意见。",
+    "asideHeading": "与我们谈谈",
+    "asideBody": "没有压力，也没有任何义务。Kirby 与团队可提供十种语言服务。",
+    "sendMessage": "发送信息",
+    "leadHeading": "就您在万锦的置业计划联系 Kirby",
+    "quickContact": "快速联系",
+    "barCta": "获取免费方案"
   }
 }
