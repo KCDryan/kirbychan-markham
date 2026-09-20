@@ -10,6 +10,9 @@ add the slug. New ideas go at the bottom.
 - [x] Markham neighbourhoods downsizers consider | downsizing | downsizing neighbourhoods markham | markham-neighbourhoods-for-downsizing
 - [x] Bungalow, condo or townhouse for downsizing | downsizing | bungalow vs condo downsizing | bungalow-condo-or-townhouse-downsizing
 - [x] Senior downsizing checklist for Markham homeowners | downsizing | senior downsizing checklist markham | senior-downsizing-checklist-markham
+- [x] Sell first or buy first when you downsize | downsizing | sell first or buy first | sell-first-or-buy-first-downsizing-markham
+- [x] How long downsizing takes in Markham | downsizing | downsizing timeline | how-long-downsizing-takes-markham
+- [x] What downsizing clients have taught our team | downsizing | downsizing specialist markham | what-downsizing-clients-taught-us
 
 - [x] Unionville or Markham Village | neighbourhoods | unionville vs markham village | unionville-vs-markham-village
 - [x] Land transfer tax on a Markham home and the first-time buyer refund | costs-and-taxes | land transfer tax markham | land-transfer-tax-markham
@@ -24,8 +27,6 @@ add the slug. New ideas go at the bottom.
 Priority: the downsizing cluster. Posts marked (guide: downsizing-markham) must set `guide: downsizing-markham` in frontmatter and link to /downsizing-markham/ in the body.
 
 - [ ] Markham townhouses: freehold or condo, and what each costs | buying | markham townhouse for sale
-- [ ] Selling and buying at the same time when you downsize | downsizing | sell and buy at the same time ontario (guide: downsizing-markham)
-- [ ] How long downsizing takes and what sets the timeline | downsizing | downsizing timeline (guide: downsizing-markham)
 - [ ] Real estate agent or move manager: who does what when you downsize | downsizing | downsizing move manager markham (guide: downsizing-markham)
 - [ ] Downsizing to a condo in Downtown Markham: what to check | downsizing | downsize to condo markham (guide: downsizing-markham)
 - [ ] Downsizing from a Thornhill detached home on the Markham side | downsizing | downsizing thornhill markham (guide: downsizing-markham)
