@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { photo } from '../lib/photos';
+import { photo, photoAlt } from '../lib/photos';
 
 // The two pillar guides, featured high on the home page so they carry the
 // most internal link weight on the site.
@@ -12,6 +12,7 @@ const cards = [
     body: 'Planning the move from a long-time family home: timing, costs, where people move in Markham and how to sell well without rushing.',
     cta: 'Read the downsizing guide',
     image: photo('neighbourhoods/markham-village'),
+    imageAlt: photoAlt('markham-village'),
   },
   {
     href: '/first-time-home-buyers-markham/',
@@ -20,6 +21,7 @@ const cards = [
     body: 'A real budget, a realistic neighbourhood list and no surprises at closing, plus our posts on land transfer tax, closing costs and the FHSA.',
     cta: 'How we help first-time buyers',
     image: photo('neighbourhoods/cornell'),
+    imageAlt: photoAlt('cornell'),
   },
 ];
 ---
@@ -36,7 +38,7 @@ const cards = [
           <li>
             <a class="gfeat__card" href={c.href}>
               {c.image && (
-                <Image class="gfeat__img" src={c.image} alt="" widths={[480, 800]} sizes="(min-width: 900px) 560px, 100vw" loading="lazy" />
+                <Image class="gfeat__img" src={c.image} alt={c.imageAlt ?? ''} widths={[480, 800]} sizes="(min-width: 900px) 560px, 100vw" loading="lazy" />
               )}
               <span class="gfeat__body">
                 <span class="eyebrow">{c.eyebrow}</span>

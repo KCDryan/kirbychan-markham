@@ -2,17 +2,20 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import { neighbourhoodPath } from '../lib/format';
-import { neighbourhoodPhoto } from '../lib/photos';
+import { neighbourhoodPhoto, photoAlt } from '../lib/photos';
 import { langFromPath, t } from '../i18n';
 
 interface Props {
   limit?: number;
   exclude?: string;
   heading?: boolean;
+  /** Heading level for the card names, so each page keeps a correct outline. */
+  level?: 2 | 3;
   /** Show the short introduction under each name (translated pages). */
   detailed?: boolean;
 }
-const { limit, exclude, heading = true, detailed = false } = Astro.props;
+const { limit, exclude, heading = true, detailed = false, level = 3 } = Astro.props;
+const Name = `h${level}` as 'h2' | 'h3';
 const lang = langFromPath(Astro.url.pathname);
 const dict = t(lang);
 const items = dict.neighbourhoods.items as Record<string, { tagline: string; body: string }>;
@@ -37,7 +40,7 @@ if (limit) hoods = hoods.slice(0, limit);
             <Image
               class="hood__img"
               src={thumb}
-              alt=""
+              alt={photoAlt(h.id) ?? ''}
               widths={[320, 560]}
               sizes="(min-width: 700px) 280px, 100vw"
               loading="lazy"
@@ -45,7 +48,7 @@ if (limit) hoods = hoods.slice(0, limit);
             />
           )}
           <span class="hood__num">N&deg; {String(h.data.order).padStart(2, '0')}</span>
-          {heading ? <h3 class="hood__name">{h.data.name}</h3> : <span class="hood__name">{h.data.name}</span>}
+          {heading ? <Name class="hood__name">{h.data.name}</Name> : <span class="hood__name">{h.data.name}</span>}
           <span class="hood__line">{lang === 'en' ? h.data.personality : (items[h.id]?.tagline ?? h.data.personality)}</span>
           {detailed && lang !== 'en' && items[h.id] && <span class="hood__body">{items[h.id].body}</span>}
           <span class="hood__cta">{lang === 'en' ? `Explore ${h.data.name}` : dict.ui.englishGuide}</span>

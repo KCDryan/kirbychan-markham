@@ -9,8 +9,11 @@ interface Props {
   only?: string[];
   /** Show the longer description under each card title. */
   detailed?: boolean;
+  /** Heading level for the card names. */
+  level?: 2 | 3;
 }
-const { limit, exclude, only, detailed = false } = Astro.props;
+const { limit, exclude, only, detailed = false , level = 3 } = Astro.props;
+const Name = `h${level}` as 'h2' | 'h3';
 
 const lang = langFromPath(Astro.url.pathname);
 const dict = t(lang);
@@ -72,7 +75,7 @@ const fallbackIcon = '<circle cx="12" cy="12" r="8"/>';
           <span class="svc__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="26" height="26" set:html={icons[c.key] ?? fallbackIcon} />
           </span>
-          <h3 class="svc__name">{c.name}</h3>
+          <Name class="svc__name">{c.name}</Name>
           <p class="svc__line">{c.summary}</p>
           {detailed && c.body && <p class="svc__body">{c.body}</p>}
           <span class="svc__cta">

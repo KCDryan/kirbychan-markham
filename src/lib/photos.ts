@@ -1,4 +1,5 @@
 import type { ImageMetadata } from 'astro';
+import credits from '../data/photo-credits.json';
 
 /**
  * Drop-in photo lookup.
@@ -33,4 +34,13 @@ export function photo(key: string): ImageMetadata | undefined {
 
 export function neighbourhoodPhoto(slug: string): ImageMetadata | undefined {
   return photo(`neighbourhoods/${slug}`);
+}
+
+/**
+ * What a neighbourhood photo shows, from src/data/photo-credits.json. Used as
+ * alt text: the card's link already names the place, so the alt describes the
+ * picture instead of repeating the name.
+ */
+export function photoAlt(slug: string): string | undefined {
+  return credits.find((c) => c.slug === slug)?.shows;
 }

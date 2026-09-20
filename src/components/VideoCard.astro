@@ -6,8 +6,11 @@ interface Props {
   minutes: number;
   youtubeId: string;
   summary?: string;
+  /** Heading level for the card title. */
+  level?: 2 | 3;
 }
-const { slug, title, category, minutes, youtubeId, summary } = Astro.props;
+const { slug, title, category, minutes, youtubeId, summary , level = 3 } = Astro.props;
+const Title = `h${level}` as 'h2' | 'h3';
 ---
 
 <a class="vcard" href={`/videos/${slug}/`}>
@@ -30,7 +33,7 @@ const { slug, title, category, minutes, youtubeId, summary } = Astro.props;
   </span>
   <span class="vcard__body">
     <span class="vcard__cat">{category}</span>
-    <h3 class="vcard__title">{title}</h3>
+    <Title class="vcard__title">{title}</Title>
     {summary && <span class="vcard__sum">{summary}</span>}
   </span>
 </a>
