@@ -53,7 +53,7 @@ export const GUIDES = {
     service: 'separation-and-divorce',
     label: 'Markham Separation and Divorce Guide',
     short: 'Separation and divorce',
-    langs: [],
+    langs: GUIDE_LANGS,
   },
   'first-time-home-buyers-markham': {
     service: 'first-time-buyers',
@@ -88,6 +88,8 @@ export function hasGuide(serviceSlug: string): boolean {
 export function guideLangs(path: string): readonly string[] {
   const slug = path.replace(/^\/|\/$/g, '') as GuideSlug;
   const guide = GUIDES[slug];
-  if (!guide || guide.langs.length === 0) return [];
+  // Every guide is translated today, so TypeScript narrows langs.length to 3.
+  // The guard still has to hold for a future guide added with langs: [].
+  if (!guide || (guide.langs as readonly string[]).length === 0) return [];
   return ['en', ...guide.langs];
 }
