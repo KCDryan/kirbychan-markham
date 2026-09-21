@@ -28,3 +28,10 @@
 
 /api/*
   Cache-Control: no-store
+
+# TinaCMS editor. It loads its own scripts and talks to Tina Cloud, so it needs
+# a looser policy than the public site. Never indexed.
+/admin/*
+  X-Robots-Tag: noindex, nofollow
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; frame-ancestors 'self'; object-src 'none'; img-src 'self' data: blob: https:; font-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; connect-src 'self' https://*.tinajs.io https://*.tina.io; frame-src 'self'

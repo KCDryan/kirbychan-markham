@@ -27,6 +27,8 @@ async function walk(dir) {
 
 const pages = [];
 for (const file of await walk('dist')) {
+  // The TinaCMS editor at /admin/ is not a content page and is served with noindex.
+  if (relative('dist', file).split(sep)[0] === 'admin') continue;
   const html = await readFile(file, 'utf8');
   const body = (html.match(/<main[^>]*>([\s\S]*?)<\/main>/) ?? ['', ''])[1];
   const words = body

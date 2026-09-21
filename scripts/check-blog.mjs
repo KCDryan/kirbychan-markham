@@ -108,7 +108,8 @@ for (const name of files) {
   const title = String(data.title ?? '');
   if (title.length < 30 || title.length > 60) fail(file, `title is ${title.length} characters, keep it between 30 and 60`);
 
-  const iso = (v) => (v instanceof Date ? v.toISOString().slice(0, 10) : String(v ?? ''));
+  // TinaCMS saves dates as full ISO timestamps, so compare the date part only.
+  const iso = (v) => (v instanceof Date ? v.toISOString() : String(v ?? '')).slice(0, 10);
   const published = iso(data.published);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(published)) fail(file, 'published must be a YYYY-MM-DD date');
   else if (published > today) fail(file, `published ${published} is in the future`);

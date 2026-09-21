@@ -28,3 +28,7 @@ npm-debug.log*
 
 # graphify knowledge graph cache
 graphify-out/
+
+# TinaCMS: the built editor and generated client
+public/admin/
+tina/__generated__/
