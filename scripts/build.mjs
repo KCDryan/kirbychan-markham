@@ -15,7 +15,13 @@ run('node scripts/check-blog.mjs');
 
 if (process.env.TINA_CLIENT_ID && process.env.TINA_TOKEN) {
   console.log('Tina Cloud credentials found, building the editor at /admin/');
-  run('npx tinacms build');
+  // A Tina Cloud problem (branch not indexed yet, revoked token, outage) must
+  // not stop content from deploying, so the site builds without the editor.
+  try {
+    run('npx tinacms build');
+  } catch {
+    console.warn('WARNING: tinacms build failed. Deploying the site without the /admin/ editor.');
+  }
 } else {
   console.log('No Tina Cloud credentials, skipping the editor build');
 }
