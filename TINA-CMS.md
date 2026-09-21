@@ -1,7 +1,9 @@
 # TinaCMS (test)
 
-A visual editor for blog posts, the English pillar guides and the neighbourhood pages. It lives on
-the `tina-cms-test` branch only. Nothing here is on `main` or the live site.
+A visual editor for blog posts, the English pillar guides and the neighbourhood pages, at
+`https://kirbychanmarkham.com/admin/index.html`. **A save commits straight to `main` and goes live
+within minutes.** The Cloudflare build runs the house style and blog checks first, so an edit that
+breaks them fails to deploy and the site keeps its last good version.
 
 ## What it edits
 
@@ -22,18 +24,17 @@ npm run dev:cms
 Then open `http://localhost:4321/admin/index.html`. Saves write straight to the files on disk. Run
 `git diff` to see what changed and `git checkout -- src/content` to throw the edits away.
 
-## Try it on a Cloudflare preview
+## Turn it on for the live site
 
 1. Create a free project at [app.tina.io](https://app.tina.io), connect the GitHub repository and
-   allow the `tina-cms-test` branch.
+   index the `main` branch. Add `https://kirbychanmarkham.com` under Site URLs.
 2. Copy the project's **Client ID** and a **read only token**.
-3. In the Cloudflare Pages project, under **Settings > Variables and secrets**, add to **Preview**
-   only: `TINA_CLIENT_ID` (plain) and `TINA_TOKEN` (secret). Do not add them to Production.
-4. Retry the latest `tina-cms-test` deployment. The editor appears at
-   `<preview-url>/admin/index.html`.
+3. In the Cloudflare Pages project, under **Settings > Variables and secrets**, add to
+   **Production**: `TINA_CLIENT_ID` (plain) and `TINA_TOKEN` (secret).
+4. Retry the latest production deployment. The editor appears at `/admin/index.html`.
 
-The editor commits to the branch it was built from, so edits on the preview land on
-`tina-cms-test`, never on `main`.
+The editor commits to the branch it was built from, which for the live site is `main`. If a save
+publishes something wrong, revert that commit on GitHub or use **Rollback** in Cloudflare.
 
 ## What we learned testing it
 
@@ -43,8 +44,8 @@ The editor commits to the branch it was built from, so edits on the preview land
 - **Tina reformats the file.** It switches YAML quotes, pads tables to line up, writes bullets as `*`
   and saves dates as full timestamps. The rendered pages are the same, but the first save of each
   file produces a large diff. `scripts/check-blog.mjs` now compares only the date part.
-- **Tina does not enforce the house style.** Em dashes, commas before "and" or "or", title lengths
-  and sources are only checked by `npm run verify`. Before any of this goes near `main`, the
-  Cloudflare build command should run the checks so a bad edit fails instead of going live.
+- **Tina does not enforce the house style in the editor.** Em dashes, commas before "and" or
+  "or", title lengths and sources are checked when Cloudflare builds, so a bad edit is saved to
+  GitHub but fails to deploy. Fix it in Tina and save again.
 - **Every field must be listed in `tina/config.ts`.** Tina drops any frontmatter field it does not
   know about when it saves. If a field is added to `src/content.config.ts`, add it here too.
