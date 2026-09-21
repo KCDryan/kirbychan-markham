@@ -24,3 +24,12 @@ One entry per blog run, newest at the bottom. See `BLOG-PLAYBOOK.md`, section 9.
 - Claims verified: 18. Claims removed because they could not be verified: 1 (that renewing with the same lender needs no stress test). FCAC's down payment page still says insurance is unavailable at $1 million or more, which contradicts its own table and Finance Canada, so the post cites Finance Canada for the cap
 - Worked example payments and incomes recalculated in code
 - Needs owner attention: none
+
+## 2026-09-21, closing-day-ontario-markham
+
+- Written on the owner's request in a session on a second computer, as a second Monday post the same day
+- Primary keyword: closing day ontario
+- Words: about 1,490 in the body
+- Sources checked: CMHC newcomer guide PDF (closing day sequence, certified cheque, 30 to 90 day closing), CMHC closing and moving day page, CMHC home cost page (insurance in place on closing, adjustments), LawPRO buying and selling guide (6:00 p.m. deadline, business day, busy dates, title searches, undertakings, tax split, rental equipment, Toronto only municipal LTT), ontario.ca land registry overview (electronic registration), ontario.ca land transfer tax and first-time buyer refund pages ($4,000, electronic affidavit, 9 months, 18 months), RECO pre-closing visits, RECO Bulletin 7.1 (lockbox codes), RECO buyer's checklist, FCAC home insurance (loss payee clause), City of Markham property tax FAQ (supplementary bill on new homes), tax account changes and water billing pages
+- Claims verified: 24. Claims removed because they could not be verified: 4 (lenders requiring insurance as a general statement, late funds as the most common cause of delays, closings usually finishing well before 6:00 p.m., pre-closing visit clauses being common). FSRA's title insurance page returned 403, so title insurance is covered only by a link to the closing costs post. LawPRO's statement that registry offices close at 5:00 p.m. was left out as likely outdated under electronic registration
+- Needs owner attention: none

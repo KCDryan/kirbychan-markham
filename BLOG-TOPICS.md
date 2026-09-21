@@ -40,6 +40,7 @@ and record why in `BLOG-LOG.md`. A near duplicate of an existing post is worse t
 - [x] How property tax works on a Markham home | costs-and-taxes | markham property tax | markham-property-tax
 - [x] Status certificates when buying a condo in Markham | condos | status certificate ontario condo | condo-status-certificate-markham
 - [x] The mortgage stress test explained for Markham buyers | buying | mortgage stress test canada | mortgage-stress-test-markham
+- [x] What happens on closing day when you buy a home in Ontario | buying | closing day ontario | closing-day-ontario-markham
 
 ## Sunday: downsizing in Markham
 
@@ -60,7 +61,6 @@ in the body. This is the cluster that feeds the pillar guide, so it stays the pr
 
 ## Monday: first time home buyers in Markham
 
-- [ ] What happens on closing day when you buy a home in Ontario | buying | closing day ontario
 - [ ] Home inspections in Markham: what they cover and what they miss | buying | home inspection markham
 - [ ] Offer dates and bidding in Ontario: how multiple offers work | buying | multiple offers ontario
 - [ ] York Region schools: how to confirm a school boundary before you buy | buying | yrdsb school boundary
