@@ -39,6 +39,7 @@ and record why in `BLOG-LOG.md`. A near duplicate of an existing post is worse t
 - [x] Commuting from Markham to downtown Toronto by GO train | moving-to-markham | markham go train to union station | markham-go-train-commute
 - [x] How property tax works on a Markham home | costs-and-taxes | markham property tax | markham-property-tax
 - [x] Status certificates when buying a condo in Markham | condos | status certificate ontario condo | condo-status-certificate-markham
+- [x] The mortgage stress test explained for Markham buyers | buying | mortgage stress test canada | mortgage-stress-test-markham
 
 ## Sunday: downsizing in Markham
 
@@ -59,7 +60,6 @@ in the body. This is the cluster that feeds the pillar guide, so it stays the pr
 
 ## Monday: first time home buyers in Markham
 
-- [ ] The mortgage stress test explained for Markham buyers | buying | mortgage stress test canada
 - [ ] What happens on closing day when you buy a home in Ontario | buying | closing day ontario
 - [ ] Home inspections in Markham: what they cover and what they miss | buying | home inspection markham
 - [ ] Offer dates and bidding in Ontario: how multiple offers work | buying | multiple offers ontario
