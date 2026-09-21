@@ -68,6 +68,9 @@ function values(text) {
 
   // French writes decimals with a comma: 1,5 million is 1.5 million.
   t = t.replace(/(\d),(\d)(?!\d\d)/g, '$1.$2');
+  // Chinese dates are written as digits before 年, 月 and 日, so "10 月" is a
+  // month, not a figure of ten. Drop the month and day parts.
+  t = t.replace(/\d{1,2}\s*[月日]/g, ' ');
 
   const out = new Set();
   const add = (n) => {

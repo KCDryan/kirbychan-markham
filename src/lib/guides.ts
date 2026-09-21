@@ -23,19 +23,19 @@ export const GUIDES = {
     service: 'luxury',
     label: 'Markham Luxury Home Guide',
     short: 'Luxury homes',
-    langs: [],
+    langs: GUIDE_LANGS,
   },
   'selling-an-estate-home-markham': {
     service: 'estate-sales',
     label: 'Markham Estate Home Guide',
     short: 'Estate sales',
-    langs: [],
+    langs: GUIDE_LANGS,
   },
   'investment-property-markham': {
     service: 'investors',
     label: 'Markham Investment Property Guide',
     short: 'Investment property',
-    langs: [],
+    langs: GUIDE_LANGS,
   },
   'relocating-to-markham': {
     service: 'relocation',
@@ -47,7 +47,7 @@ export const GUIDES = {
     service: 'upsizing',
     label: 'Markham Upsizing Guide',
     short: 'Upsizing',
-    langs: [],
+    langs: GUIDE_LANGS,
   },
   'selling-a-home-after-separation-markham': {
     service: 'separation-and-divorce',
