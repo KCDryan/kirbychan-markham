@@ -125,12 +125,37 @@ different. When two ideas are contextually the same, write one page, not two.
   which is exactly what Google reads, and mixed script text is itself a spam signal. Provenance has
   been detectable in images since 2023 and has never been what decides rankings. So: write accurate,
   specific, sourced content and leave the watermark alone.
-- **Chasing a separate AI or "GEO" strategy.** Showing up in ChatGPT, Claude and AI Overviews
-  follows from the same work: a clean technical base, accurate entities, real local specifics and
-  reviews. `public/llms.txt` states who the business is and links the main pages, and that is the
-  extent of the special handling.
+- **A separate AI or "GEO" strategy built on tricks.** Showing up in ChatGPT, Claude, Perplexity
+  and AI Overviews follows from the same work as ranking: a clean technical base, accurate
+  entities, real local specifics, sourced figures and reviews. What we do on top is small and
+  honest, and it is listed in section 7. Nothing there is a trick.
 
-## 7. Monthly review
+## 7. Answer engines and AI assistants
+
+What an assistant needs is the same as what a careful reader needs, delivered in a form it can lift
+and cite. The site does these things, and each one is generated from the content so it cannot drift:
+
+1. **Crawlers are welcomed by name.** `public/robots.txt` names OAI-SearchBot and ChatGPT-User
+   (ChatGPT search and browsing), ClaudeBot and Claude-SearchBot, PerplexityBot, Google-Extended,
+   Applebot-Extended and Bingbot, and allows each one. Bing also feeds Copilot and ChatGPT search,
+   which is why `scripts/indexnow.mjs` pings it on every publish.
+2. **`/llms.txt` leads with answers.** Built at `src/pages/llms.txt.ts`. It opens with the quick
+   answer from every guide, each with the URL to cite and the date it was updated, then lists every
+   guide, neighbourhood and post. `/llms-full.txt` carries the quick answer, every FAQ and every
+   source for each guide and post.
+3. **Every guide opens with a quick answer** that stands on its own out of context: it names the
+   place, the situation and the figures, so a quoted paragraph still makes sense.
+4. **FAQs are real questions with complete answers**, marked up as `FAQPage`. An assistant can lift
+   a question and its answer together.
+5. **Entities are explicit.** The `RealEstateAgent` node carries `knowsAbout`, every guide and post
+   carries `about`, the author is a named `Person` with a page and profiles, and the office address
+   is the real one in Richmond Hill with Markham as `areaServed`.
+6. **Figures are dated and sourced on the page.** Assistants prefer claims they can trace.
+
+What we do not do: hidden text for bots, pages that exist only for assistants, invented "as seen
+in" mentions, or any content the reader cannot see.
+
+## 8. Monthly review
 
 1. Search Console, Pages report: compare "crawled, currently not indexed" against last month, and
    group the URLs by what produced them (blog, neighbourhood guide, service, translated page).

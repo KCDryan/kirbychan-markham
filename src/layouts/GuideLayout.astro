@@ -65,7 +65,7 @@ const crumbs = [
   { name: en ? guide.label : d.h1, path },
 ];
 
-const article = { ...blogPosting({ headline: d.h1, description: d.description, path, published: d.updated, updated: d.updated, image: ogImage }) } as Record<string, unknown>;
+const article = { ...blogPosting({ headline: d.h1, description: d.description, path, published: d.updated, updated: d.updated, image: ogImage, about: guide.label.replace(' Guide', '') }) } as Record<string, unknown>;
 article['@type'] = 'Article';
 delete article.isPartOf;
 

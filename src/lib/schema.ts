@@ -1,6 +1,7 @@
 import site from '../data/site.json';
 import { absolute, canonical } from './seo';
 import { isoDate, isoDuration, isTodo } from './format';
+import { GUIDES } from './guides';
 
 const AGENT_ID = `${site.url}/#realestateagent`;
 const ORG_ID = `${site.url}/#organization`;
@@ -60,6 +61,12 @@ export function realEstateAgent(areaServed: string[]) {
       },
     })),
     ...(sameAs.length > 0 ? { sameAs } : {}),
+    // The topics this business publishes on, so an assistant matching a
+    // question to an entity has the list in one place.
+    knowsAbout: [
+      ...Object.values(GUIDES).map((g) => g.label.replace(' Guide', '')),
+      ...areaServed.map((name) => `${name} real estate`),
+    ],
     employee: person(),
     ...(isTodo(site.brokerage.legalName)
       ? {}
@@ -114,6 +121,8 @@ export function blogPosting(input: {
   image?: string;
   section?: string;
   wordCount?: number;
+  /** The subject of the piece, so a citation carries the topic, not just a title. */
+  about?: string;
 }) {
   return {
     '@context': 'https://schema.org',
@@ -128,6 +137,7 @@ export function blogPosting(input: {
     image: absolute(input.image ?? '/og-default.png'),
     ...(input.section ? { articleSection: input.section } : {}),
     ...(input.wordCount ? { wordCount: input.wordCount } : {}),
+    ...(input.about ? { about: { '@type': 'Thing', name: input.about } } : {}),
     isPartOf: { '@type': 'Blog', '@id': `${site.url}/blog/#blog` },
     author: { '@type': 'Person', '@id': PERSON_ID, name: site.brokerage.registrant, url: canonical('/about/') },
     publisher: {

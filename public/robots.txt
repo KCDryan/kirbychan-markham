@@ -1,6 +1,58 @@
 User-agent: *
 Allow: /
+Disallow: /api/
 
+# AI assistants and answer engines are welcome to read and cite this site.
+# Named groups replace the * group for that crawler, so each repeats the
+# one rule that matters: the lead endpoint is not a page.
+#
+# OAI-SearchBot and ChatGPT-User are what ChatGPT uses to search and browse.
+# GPTBot, ClaudeBot and Google-Extended are training crawlers, allowed on
+# purpose: a Markham buyer asking an assistant about downsizing is better
+# served if the assistant learned from sourced, dated pages.
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /api/
+
+User-agent: Claude-User
+Allow: /
+Disallow: /api/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /api/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /api/
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
 Disallow: /api/
 
 Sitemap: https://kirbychanmarkham.com/sitemap-index.xml
