@@ -31,6 +31,7 @@ and record why in `BLOG-LOG.md`. A near duplicate of an existing post is worse t
 - [x] Sell first or buy first when you downsize | downsizing | sell first or buy first | sell-first-or-buy-first-downsizing-markham
 - [x] How long downsizing takes in Markham | downsizing | downsizing timeline | how-long-downsizing-takes-markham
 - [x] What downsizing clients have taught our team | downsizing | downsizing specialist markham | what-downsizing-clients-taught-us
+- [x] Who helps with downsizing in Markham: who does what | downsizing | who helps with downsizing in markham | who-helps-with-downsizing-markham
 - [x] Unionville or Markham Village | neighbourhoods | unionville vs markham village | unionville-vs-markham-village
 - [x] Land transfer tax on a Markham home and the first-time buyer refund | costs-and-taxes | land transfer tax markham | land-transfer-tax-markham
 - [x] Closing costs when you buy a home in Markham | costs-and-taxes | closing costs ontario home buyer | closing-costs-buying-home-markham
@@ -44,7 +45,6 @@ and record why in `BLOG-LOG.md`. A near duplicate of an existing post is worse t
 Every Sunday post sets `guide: downsizing-markham` in frontmatter and links to `/downsizing-markham/`
 in the body. This is the cluster that feeds the pillar guide, so it stays the priority.
 
-- [ ] Real estate agent or move manager: who does what when you downsize | downsizing | downsizing move manager markham
 - [ ] Downsizing to a condo in Downtown Markham: what to check | downsizing | downsize to condo markham
 - [ ] Capital gains and the principal residence exemption when you downsize | downsizing | principal residence exemption downsizing
 - [ ] Pricing a long-time family home in Markham | downsizing | how to price family home markham
