@@ -1,4 +1,5 @@
 import { defineConfig, type TinaField } from 'tinacms';
+import { ImportHtmlField } from './import-html';
 
 /**
  * TinaCMS for agents: Quick posts only. Full blog posts, guides and
@@ -80,6 +81,7 @@ export default defineConfig({
                 .toLowerCase()
                 .normalize('NFKD')
                 .replace(/[\u0300-\u036f]/g, '')
+                .replace(/['\u2019]/g, '')
                 .replace(/&/g, ' and ')
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-+|-+$/g, '')
@@ -89,6 +91,13 @@ export default defineConfig({
           },
         },
         fields: [
+          {
+            // Never saved: the box converts pasted HTML into the fields below.
+            type: 'string',
+            name: 'importHtml',
+            label: 'Import from HTML',
+            ui: { component: ImportHtmlField as any },
+          },
           {
             type: 'string',
             name: 'headline',

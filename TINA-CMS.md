@@ -19,6 +19,16 @@ agent's name in the byline and in the `BlogPosting` author. `scripts/check-blog.
 rules to quick posts (300 words minimum, a real summary, an author, a unique address) and the house
 style check applies as usual. The steps for agents are in `AGENT-BLOG-GUIDE.md`.
 
+## Import from HTML
+
+`tina/import-html.ts` is the **Import from HTML** box at the top of the Quick post form. It parses
+pasted HTML in the browser, keeps the article (or `main`, or `body`), drops styles, scripts and
+navigation, moves the first `h1` into Headline, pulls sections headed Quick answer, FAQ and Sources
+into their fields, converts the rest to Markdown with turndown (GFM tables) and loads it into the
+body with Tina's own `parseMDX`. It removes long dashes and commas before "and" or "or" and reports
+what it changed. The editor only redraws on a form reset, so the import resets the form with the new
+values and marks it changed.
+
 ## Try it on this computer (no account needed)
 
 ```bash

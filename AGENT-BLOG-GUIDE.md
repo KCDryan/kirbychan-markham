@@ -6,6 +6,16 @@ To have Claude or ChatGPT write the whole post in the right format, use the prom
 You write the post. The website does the rest: the page layout, the web address, Google's search
 snippet, the date and the byline all come from the few boxes below.
 
+## Have the post as an HTML page?
+
+Paste the whole HTML code into **Import from HTML** at the top of the form and click **Convert**.
+It fills in the post with its headings, bold, bullet points, tables and links, plus the headline,
+summary, quick answer, FAQ and sources when it can find them. It also removes long dashes and
+commas before "and" or "or", which the site does not allow, and tells you what it changed. Then
+pick a category, add your name, read it through and **Save**.
+
+Pasting HTML straight into **Your post** does not work: bold, bullet points and tables are lost.
+
 ## Steps
 
 1. Go to `https://kirbychanmarkham.com/admin/` and log in.
