@@ -136,7 +136,7 @@ if (apply) {
 <style>body{font:16px/1.6 system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 16px;color:#1b2320}h1{font-size:1.5rem}h2{font-size:1.1rem;margin-top:2rem}li{margin:.4rem 0}.held li strong{color:#b45309}code{background:#eef2f1;padding:1px 4px;border-radius:3px}</style></head>
 <body><h1>Quick post status</h1><p>From the site build on ${esc(when.replace(/\.$/, ''))}.</p>
 <h2>Held back, not on the site</h2><ul class="held">${heldHtml}</ul>
-<p>To publish a held-back post, open it in the editor, fix what is listed and save. The house style does not allow the phrases "not just", "not only", "more than just" or "it's not about".</p>
+<p>To publish a held-back post, open it in the editor, fix what is listed and save.</p>
 <h2>Fixed automatically</h2><ul>${fixedHtml}</ul>
 <p><a href="/admin/">Back to the editor</a></p></body></html>`;
   // The editor build empties public/admin/, so scripts/build.mjs copies this in afterwards.

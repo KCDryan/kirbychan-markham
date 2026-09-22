@@ -42,7 +42,7 @@ switch is turned off again.
 
 ## If your post does not appear
 
-Give it five minutes after **Save**. Then open `https://kirbychanmarkham.com/admin/status.html`.
+Give it five minutes after **Save**. The editor does not show a live preview of quick posts, because a new post is only on the site once the build has finished. Then open `https://kirbychanmarkham.com/admin/status.html`.
 
 The site fixes some things for you when it publishes: long dashes (em dash or en dash), a comma
 directly before "and" or "or", and American spellings such as "neighborhood" or "center". The
@@ -52,8 +52,6 @@ A post it cannot fix is held back, and only that post: the rest of the site keep
 status page lists it with the reason. The usual ones:
 
 - the post is under 300 words, or the summary is shorter than 50 characters
-- one of the phrases the site does not allow: "not just", "not only", "more than just",
-  "it's not about" and similar
 - a filler phrase such as "In today's market", "nestled" or "dream home"
 - the same headline as another post
 

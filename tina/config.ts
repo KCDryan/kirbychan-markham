@@ -72,7 +72,8 @@ export default defineConfig({
         match: { exclude: '_*' },
         defaultItem: () => ({ published: new Date().toISOString(), category: 'buying' }),
         ui: {
-          router: ({ document }) => `/blog/${document._sys.filename}/`,
+          // No router: a new post is not on the site until the build finishes a few
+          // minutes after Save, so a live preview would only ever show a 404.
           // The web address comes from the headline, so agents never type a file name.
           filename: {
             readonly: true,

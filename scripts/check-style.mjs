@@ -22,6 +22,9 @@ const RULES = [
   {
     name: 'machine-sounding contrast phrase',
     re: /\b(not just|isn't just|is not just|not only|not simply|more than just|isn't about|is not about|it's not about)\b/gi,
+    // A preference for the team's researched posts. Agents' quick posts are
+    // their own writing and are not held back for it.
+    skip: (file) => file.includes('content/blog/quick/'),
   },
   {
     name: 'American spelling',
@@ -77,6 +80,7 @@ for (const file of files) {
   const lines = text.split('\n');
   lines.forEach((line, i) => {
     for (const rule of RULES) {
+      if (rule.skip?.(file.split('\\').join('/'))) continue;
       rule.re.lastIndex = 0;
       if (rule.re.test(line)) {
         problems.push(`${relative('.', file)}:${i + 1}  ${rule.name}  ->  ${line.trim().slice(0, 110)}`);
