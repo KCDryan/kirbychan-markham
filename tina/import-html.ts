@@ -15,6 +15,7 @@ import React from 'react';
 import TurndownService from 'turndown';
 import { tables, strikethrough } from 'turndown-plugin-gfm';
 import { parseMDX } from '@tinacms/mdx';
+import { Button, TextArea, wrapFieldsWithMeta } from 'tinacms';
 
 const SITE = /^https?:\/\/(www\.)?kirbychanmarkham\.com/i;
 
@@ -191,7 +192,7 @@ export function convertHtml(html: string): Imported {
 const bodyField = { type: 'rich-text', name: 'body', templates: [] } as any;
 
 /** The editor box. Paste, click Convert, check the boxes below, then Save. */
-export function ImportHtmlField(props: any) {
+function ImportHtmlInput(props: any) {
   const [html, setHtml] = React.useState('');
   const [report, setReport] = React.useState<string[] | null>(null);
   const [error, setError] = React.useState('');
@@ -228,38 +229,33 @@ export function ImportHtmlField(props: any) {
   };
 
   const h = React.createElement;
+  const ready = Boolean(html.trim());
   return h(
     'div',
-    { style: { marginBottom: '1.5rem', padding: '1rem', border: '1px dashed #94a3b8', borderRadius: 8, background: '#f8fafc' } },
-    h('label', { style: { display: 'block', fontWeight: 600, fontSize: 13, marginBottom: 4 } }, 'Import from HTML (optional)'),
-    h(
-      'p',
-      { style: { fontSize: 12, color: '#64748b', margin: '0 0 8px' } },
-      'Have the post as an HTML page? Paste the whole HTML code here and click Convert. It fills in the post with its headings, bold, lists, tables and links, plus any headline, summary, quick answer, FAQ and sources it finds.'
-    ),
-    h('textarea', {
+    null,
+    h(TextArea as any, {
       value: html,
       onChange: (e: any) => setHtml(e.target.value),
-      rows: 5,
-      placeholder: '<html> ... paste the HTML code here ... </html>',
-      style: { width: '100%', fontFamily: 'monospace', fontSize: 12, padding: 8, border: '1px solid #cbd5e1', borderRadius: 6 },
+      placeholder: 'Paste the HTML code here, starting with <html> or <article>',
+      style: { minHeight: '120px', fontFamily: 'ui-monospace, Menlo, monospace', fontSize: '13px' },
     }),
     h(
-      'button',
-      {
-        type: 'button',
-        onClick: run,
-        disabled: !html.trim(),
-        style: { marginTop: 8, padding: '6px 14px', borderRadius: 6, border: 0, background: html.trim() ? '#1F5045' : '#94a3b8', color: '#fff', fontWeight: 600, cursor: html.trim() ? 'pointer' : 'default' },
-      },
-      'Convert'
+      'div',
+      { style: { display: 'flex', alignItems: 'center', gap: '12px', marginTop: '10px' } },
+      h(Button as any, { type: 'button', variant: 'primary', size: 'medium', disabled: !ready, onClick: run }, 'Convert'),
+      h('span', { style: { fontSize: '13px', color: '#6b7280' } }, ready ? 'Replaces anything already in Your post.' : 'Paste HTML above to enable.')
     ),
-    error && h('p', { style: { color: '#b91c1c', fontSize: 12, marginTop: 8 } }, error),
+    error && h('p', { style: { color: '#b91c1c', fontSize: '13px', marginTop: '10px' } }, error),
     report &&
       h(
         'ul',
-        { style: { fontSize: 12, marginTop: 8, paddingLeft: 18 } },
-        ...report.map((line, i) => h('li', { key: i, style: { color: line.startsWith('Fix before') ? '#b45309' : '#166534' } }, line))
+        { style: { fontSize: '13px', marginTop: '10px', paddingLeft: '18px', listStyle: 'disc' } },
+        ...report.map((line: string, i: number) =>
+          h('li', { key: i, style: { margin: '4px 0', color: line.startsWith('Fix before') ? '#b45309' : '#166534' } }, line)
+        )
       )
   );
 }
+
+/** Wrapped so the label, description and spacing match every other field. */
+export const ImportHtmlField = wrapFieldsWithMeta(ImportHtmlInput as any);

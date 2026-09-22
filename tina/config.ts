@@ -95,7 +95,9 @@ export default defineConfig({
             // Never saved: the box converts pasted HTML into the fields below.
             type: 'string',
             name: 'importHtml',
-            label: 'Import from HTML',
+            label: 'Import from HTML (optional)',
+            description:
+              'Have the post as an HTML page? Paste the whole HTML code and click Convert. It fills in the post with its headings, bold, lists, tables and links, plus any headline, summary, quick answer, FAQ and sources it finds.',
             ui: { component: ImportHtmlField as any },
           },
           {

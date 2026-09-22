@@ -109,8 +109,8 @@ const blogSources = z
   );
 
 const author = {
-  author: z.string().optional().describe('Name shown in the byline. Blank means the team'),
-  authorTitle: z.string().optional().describe('For example "Sales Representative"'),
+  author: z.string().trim().optional().describe('Name shown in the byline. Blank means the team'),
+  authorTitle: z.string().trim().optional().describe('For example "Sales Representative"'),
 };
 
 const fullPost = z.object({
