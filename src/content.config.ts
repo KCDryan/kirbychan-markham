@@ -142,8 +142,11 @@ const quickPost = z.object({
   category: z.enum(CATEGORY_SLUGS),
   published: z.coerce.date(),
   updated: z.coerce.date().optional(),
+  quickAnswer: z.string().optional().describe('Optional quick answer box at the top of the post'),
   sources: blogSources.default([]),
   faq: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
+  related: z.array(z.string()).default([]).describe('Neighbourhood slugs linked at the end'),
+  relatedServices: z.array(z.string()).default([]),
   draft: z.boolean().default(false),
   ...author,
 });
@@ -173,20 +176,19 @@ const blog = defineCollection({
       z.discriminatedUnion('quick', [fullPost, quickPost])
     )
     .transform((d) => {
-      if (!d.quick) return d;
-      const { headline, summary, ...rest } = d;
+      if (!d.quick) return { ...d, showTakeaway: true };
+      const { headline, summary, quickAnswer, ...rest } = d;
       return {
         ...rest,
+        showTakeaway: Boolean(quickAnswer?.trim()),
         title: clip(headline, 60),
         description: clip(summary, 160),
         ogImage: undefined,
         noindex: false,
         h1: headline,
         subtitle: summary,
-        takeaway: summary,
+        takeaway: quickAnswer?.trim() || summary,
         neighbourhood: undefined,
-        related: [] as string[],
-        relatedServices: [] as string[],
         guide: undefined,
       };
     }),

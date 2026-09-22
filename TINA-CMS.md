@@ -1,24 +1,19 @@
 # TinaCMS (test)
 
-A visual editor for blog posts, the English pillar guides and the neighbourhood pages, at
+A visual editor for agents' quick posts, at
 `https://kirbychanmarkham.com/admin/index.html`. **A save commits straight to `main` and goes live
 within minutes.** The Cloudflare build runs the house style and blog checks first, so an edit that
 breaks them fails to deploy and the site keeps its last good version.
 
 ## What it edits
 
-| Collection | Files | Not included |
-| --- | --- | --- |
-| Quick posts (agents) | `src/content/blog/quick/*.mdx` | |
-| Blog posts | `src/content/blog/*.mdx` | |
-| Guides (English) | `src/content/guides/*.mdx` | the `fa`, `fr` and `zh` translations |
-| Neighbourhoods | `src/content/neighbourhoods/*.mdx` | |
-
-Services, videos, market reports, news, `src/data/` and `src/i18n/` are deliberately left out.
+Only **Quick posts (agents)**, the files in `src/content/blog/quick/`. Full blog posts, guides,
+neighbourhood pages and everything else are edited in the repository, so an agent cannot change
+them from the editor.
 
 ## Quick posts for agents
 
-A short form: headline, summary, category, author, date and the post. Everything else is derived in
+A short form: headline, summary, category, author, date and the post, plus optional quick answer box, FAQ, sources and related neighbourhoods and services so a quick post can carry every section a full post has. `AGENT-BLOG-PROMPT.md` is a prompt that has Claude or ChatGPT produce each part in the right format. Everything else is derived in
 `src/content.config.ts`, so a quick post renders with the same layout as a full post and shows the
 agent's name in the byline and in the `BlogPosting` author. `scripts/check-blog.mjs` applies lighter
 rules to quick posts (300 words minimum, a real summary, an author, a unique address) and the house

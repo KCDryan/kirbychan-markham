@@ -1,5 +1,8 @@
 # Posting a blog as an agent
 
+To have Claude or ChatGPT write the whole post in the right format, use the prompt in
+`AGENT-BLOG-PROMPT.md`.
+
 You write the post. The website does the rest: the page layout, the web address, Google's search
 snippet, the date and the byline all come from the few boxes below.
 
@@ -16,7 +19,12 @@ snippet, the date and the byline all come from the few boxes below.
    - **Date** is filled in with today. Leave it.
 4. Write or paste the post into **Your post**. At least 300 words. For section titles, click
    **Paragraph** in the toolbar and choose **Heading 2**.
-5. Click **Save**. The post is live within about five minutes at
+   If Claude or ChatGPT wrote it, click the **Markdown** button at the right end of the toolbar
+   and paste the Markdown there, so headings, lists, tables and links come through exactly.
+5. Optional, but it makes the post look like the team's full posts: fill the **Quick answer
+   box**, add **FAQ** questions and **Sources**, and tick the **Neighbourhoods** and
+   **Services** it relates to.
+6. Click **Save**. The post is live within about five minutes at
    `kirbychanmarkham.com/blog/<your-headline>/`.
 
 Want someone to look at it first? Switch on **Save as draft**. It stays off the site until the

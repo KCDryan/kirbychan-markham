@@ -202,6 +202,15 @@ for (const name of quickFiles) {
   for (const l of [...body.matchAll(/\]\(([^)\s]+)\)/g)].map((m) => m[1])) {
     if (/^[a-z]+:/i.test(l) && !/^(https|mailto|tel):/i.test(l)) fail(file, `link ${l} must use https`);
   }
+  for (const item of data.faq ?? []) {
+    if (!String(item.q ?? '').trim().endsWith('?')) fail(file, `FAQ question "${item.q}" must end with a question mark`);
+    if (!String(item.a ?? '').trim()) fail(file, `FAQ question "${item.q}" has no answer`);
+  }
+  for (const src of data.sources ?? []) {
+    if (!String(src.url ?? '').startsWith('https://')) fail(file, `source ${src.url} must be a full https link`);
+  }
+  for (const r of data.related ?? []) if (!hoodSlugs.includes(r)) fail(file, `related "${r}" is not a neighbourhood slug`);
+  for (const r of data.relatedServices ?? []) if (!serviceSlugs.includes(r)) fail(file, `relatedServices "${r}" is not a service slug`);
   const placeholder = `${JSON.stringify(data)}\n${body}`.match(/\b(TODO|TBD|FIXME|lorem ipsum)\b|\[insert/i);
   if (placeholder) fail(file, `contains the placeholder "${placeholder[0]}"`);
 }
