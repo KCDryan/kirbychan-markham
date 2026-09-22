@@ -183,7 +183,13 @@ export default defineConfig({
               { value: 'separation-and-divorce', label: 'Separation and divorce' },
             ],
           },
-          { type: 'boolean', name: 'draft', label: 'Save as draft (not published yet)' },
+          {
+            type: 'boolean',
+            name: 'draft',
+            label: 'Save as draft (not published yet)',
+            description:
+              'Leave off to publish. The post is live about five minutes after Save. Long dashes, commas before "and" or "or" and American spellings are fixed automatically. If it does not appear, kirbychanmarkham.com/admin/status.html says why.',
+          },
           {
             ...body(),
             label: 'Your post',

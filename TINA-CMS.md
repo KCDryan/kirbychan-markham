@@ -29,6 +29,15 @@ body with Tina's own `parseMDX`. It removes long dashes and commas before "and" 
 what it changed. The editor only redraws on a form reset, so the import resets the form with the new
 values and marks it changed.
 
+## One post never blocks a deploy
+
+`scripts/prepare-quick-posts.mjs` runs first in `scripts/build.mjs` and in CI. In a throwaway checkout
+(`CF_PAGES` or `CI` set) it fixes long dashes, commas before "and" or "or" and American spellings in
+quick posts, re-runs the style and blog checks, and moves any quick post that still fails to
+`.held-quick-posts/` so the rest of the site deploys. The report is published at
+`/admin/status.html`. Run locally without those variables it only reports, and never rewrites a file.
+Full blog posts are unaffected: their problems still fail the build.
+
 ## Try it on this computer (no account needed)
 
 ```bash

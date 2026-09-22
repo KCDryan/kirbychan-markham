@@ -35,6 +35,10 @@ jobs:
             npm install
           fi
 
+      - name: Fix or hold back agents' quick posts
+        # Same step as the Cloudflare build: one quick post must not fail the run.
+        run: node scripts/prepare-quick-posts.mjs --apply
+
       - name: Check blog SEO rules
         run: npm run check:blog
 

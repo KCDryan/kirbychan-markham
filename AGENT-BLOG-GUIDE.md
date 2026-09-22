@@ -42,13 +42,18 @@ switch is turned off again.
 
 ## If your post does not appear
 
-The site checks every post before publishing. When a post breaks a rule it is saved but not
-published, and the site keeps working as before. The usual reasons:
+Give it five minutes after **Save**. Then open `https://kirbychanmarkham.com/admin/status.html`.
+
+The site fixes some things for you when it publishes: long dashes (em dash or en dash), a comma
+directly before "and" or "or", and American spellings such as "neighborhood" or "center". The
+status page lists what it fixed.
+
+A post it cannot fix is held back, and only that post: the rest of the site keeps publishing. The
+status page lists it with the reason. The usual ones:
 
 - the post is under 300 words, or the summary is shorter than 50 characters
-- a long dash (em dash or en dash) anywhere. Use a comma, a colon or a new sentence
-- a comma directly before "and" or "or". Write "A, B and C", not "A, B, and C"
-- American spellings the site does not use, such as "neighborhood" or "center"
+- one of the phrases the site does not allow: "not just", "not only", "more than just",
+  "it's not about" and similar
 - a filler phrase such as "In today's market", "nestled" or "dream home"
 - the same headline as another post
 
