@@ -1,8 +1,8 @@
 import { defineConfig, type TinaField } from 'tinacms';
 
 /**
- * TinaCMS, test setup. Edits blog posts, the English pillar guides and the
- * neighbourhood pages. Every frontmatter field the site uses is listed here,
+ * TinaCMS. Agents write quick posts with a short form. The team edits full
+ * blog posts, the English pillar guides and the neighbourhood pages. Every frontmatter field the site uses is listed here,
  * because Tina drops any field it does not know about when it saves a file.
  *
  * Edits are committed to the branch the admin was built from. On a Cloudflare
@@ -72,11 +72,82 @@ export default defineConfig({
   schema: {
     collections: [
       {
-        name: 'blog',
-        label: 'Blog posts',
-        path: 'src/content/blog',
+        name: 'quickPosts',
+        label: 'Quick posts (agents)',
+        path: 'src/content/blog/quick',
         format: 'mdx',
         match: { exclude: '_*' },
+        defaultItem: () => ({ published: new Date().toISOString(), category: 'buying' }),
+        ui: {
+          router: ({ document }) => `/blog/${document._sys.filename}/`,
+          // The web address comes from the headline, so agents never type a file name.
+          filename: {
+            readonly: true,
+            slugify: (values) =>
+              String(values?.headline ?? '')
+                .toLowerCase()
+                .normalize('NFKD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/&/g, ' and ')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .split('-')
+                .slice(0, 8)
+                .join('-') || 'new-post',
+          },
+        },
+        fields: [
+          {
+            type: 'string',
+            name: 'headline',
+            label: 'Headline',
+            description: 'The title of your post, 10 to 90 characters. It also becomes the web address.',
+            isTitle: true,
+            required: true,
+          },
+          {
+            type: 'string',
+            name: 'summary',
+            label: 'Summary',
+            description: 'One or two sentences, 50 to 300 characters. Shown under the headline, on the blog page and in Google.',
+            required: true,
+            ui: { component: 'textarea' },
+          },
+          {
+            type: 'string',
+            name: 'category',
+            label: 'Category',
+            required: true,
+            options: [
+              { value: 'buying', label: 'Buying' },
+              { value: 'selling', label: 'Selling' },
+              { value: 'neighbourhoods', label: 'Neighbourhoods' },
+              { value: 'market', label: 'Market' },
+              { value: 'condos', label: 'Condos' },
+              { value: 'new-construction', label: 'New construction' },
+              { value: 'moving-to-markham', label: 'Moving to Markham' },
+              { value: 'downsizing', label: 'Downsizing' },
+              { value: 'investing', label: 'Investing' },
+              { value: 'costs-and-taxes', label: 'Costs and taxes' },
+            ],
+          },
+          { type: 'string', name: 'author', label: 'Your name', description: 'Shown as the author of the post.', required: true },
+          { type: 'string', name: 'authorTitle', label: 'Your title (optional)', description: 'For example Sales Representative or Broker.' },
+          date('published', 'Date'),
+          { type: 'boolean', name: 'draft', label: 'Save as draft (not published yet)' },
+          {
+            ...body(),
+            label: 'Your post',
+            description: 'At least 300 words. Paste from Word, Google Docs or anywhere else. Use Heading 2 for section titles.',
+          } as TinaField,
+        ],
+      },
+      {
+        name: 'blog',
+        label: 'Blog posts (full)',
+        path: 'src/content/blog',
+        format: 'mdx',
+        match: { exclude: '{_*,quick/**}' },
         ui: { router: ({ document }) => `/blog/${document._sys.filename}/` },
         fields: [
           ...seo,

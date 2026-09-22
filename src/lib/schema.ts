@@ -123,6 +123,8 @@ export function blogPosting(input: {
   wordCount?: number;
   /** The subject of the piece, so a citation carries the topic, not just a title. */
   about?: string;
+  /** An agent who wrote a quick post. Omitted means Kirby Chan, the team's broker. */
+  author?: string;
 }) {
   return {
     '@context': 'https://schema.org',
@@ -139,7 +141,9 @@ export function blogPosting(input: {
     ...(input.wordCount ? { wordCount: input.wordCount } : {}),
     ...(input.about ? { about: { '@type': 'Thing', name: input.about } } : {}),
     isPartOf: { '@type': 'Blog', '@id': `${site.url}/blog/#blog` },
-    author: { '@type': 'Person', '@id': PERSON_ID, name: site.brokerage.registrant, url: canonical('/about/') },
+    author: input.author
+      ? { '@type': 'Person', name: input.author, worksFor: { '@id': AGENT_ID } }
+      : { '@type': 'Person', '@id': PERSON_ID, name: site.brokerage.registrant, url: canonical('/about/') },
     publisher: {
       '@type': 'RealEstateAgent',
       '@id': AGENT_ID,

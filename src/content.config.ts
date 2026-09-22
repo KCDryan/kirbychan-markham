@@ -89,38 +89,107 @@ const services = defineCollection({
 
 
 /**
- * Blog posts at /blog/<slug>/. The file name is the slug. Every post must cite
- * at least one source and scripts/check-blog.mjs enforces the rest of the SEO
- * rules (unique titles, length, internal links, structure) before a build.
+ * Blog posts at /blog/<slug>/. The file name is the slug.
+ *
+ * Two kinds of post share the collection and the layout:
+ *
+ * - Full posts in src/content/blog/. Researched and sourced, with every SEO
+ *   field set by hand. scripts/check-blog.mjs enforces the strict rules.
+ * - Quick posts in src/content/blog/quick/, written by agents in TinaCMS with a
+ *   short form: headline, summary, category, date, author and body. The
+ *   missing fields are derived below, so every page and feed sees the same
+ *   shape of data. A file is a quick post when it has `headline` and no `h1`.
  */
+const blogSources = z
+  .array(
+    z.object({
+      name: z.string().min(2),
+      url: z.string().url('Every source needs a full https URL'),
+    })
+  );
+
+const author = {
+  author: z.string().optional().describe('Name shown in the byline. Blank means the team'),
+  authorTitle: z.string().optional().describe('For example "Sales Representative"'),
+};
+
+const fullPost = z.object({
+  quick: z.literal(false),
+  ...seo,
+  h1: z.string().min(20).max(90),
+  subtitle: z.string().min(40).max(200),
+  category: z.enum(CATEGORY_SLUGS),
+  published: z.coerce.date(),
+  updated: z.coerce.date().optional(),
+  takeaway: z.string().min(120).describe('The quick answer box at the top'),
+  neighbourhood: z.string().optional().describe('Main neighbourhood slug, used for the share image'),
+  related: z.array(z.string()).default([]).describe('Neighbourhood slugs linked at the end'),
+  relatedServices: z.array(z.string()).default([]),
+  guide: z.enum(GUIDE_SLUGS).optional().describe('The pillar guide this post supports'),
+  faq: z
+    .array(z.object({ q: z.string(), a: z.string() }))
+    .min(3)
+    .max(8),
+  sources: blogSources.min(1, 'Every blog post must cite at least one source'),
+  draft: z.boolean().default(false),
+  ...author,
+});
+
+const quickPost = z.object({
+  quick: z.literal(true),
+  headline: z.string().min(10, 'The headline needs at least 10 characters').max(90, 'Keep the headline under 90 characters'),
+  summary: z.string().min(50, 'The summary needs at least 50 characters').max(300, 'Keep the summary under 300 characters'),
+  category: z.enum(CATEGORY_SLUGS),
+  published: z.coerce.date(),
+  updated: z.coerce.date().optional(),
+  sources: blogSources.default([]),
+  faq: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
+  draft: z.boolean().default(false),
+  ...author,
+});
+
+/** Shorten to at most `max` characters on a word boundary. */
+const clip = (text: string, max: number) => {
+  const t = text.replace(/\s+/g, ' ').trim();
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max + 1);
+  return cut.slice(0, Math.max(cut.lastIndexOf(' '), 1)).replace(/[\s,;:.]+$/, '');
+};
+
 const blog = defineCollection({
-  loader: glob({ base: './src/content/blog', pattern: '**/[^_]*.mdx' }),
-  schema: z.object({
-    ...seo,
-    h1: z.string().min(20).max(90),
-    subtitle: z.string().min(40).max(200),
-    category: z.enum(CATEGORY_SLUGS),
-    published: z.coerce.date(),
-    updated: z.coerce.date().optional(),
-    takeaway: z.string().min(120).describe('The quick answer box at the top'),
-    neighbourhood: z.string().optional().describe('Main neighbourhood slug, used for the share image'),
-    related: z.array(z.string()).default([]).describe('Neighbourhood slugs linked at the end'),
-    relatedServices: z.array(z.string()).default([]),
-    guide: z.enum(GUIDE_SLUGS).optional().describe('The pillar guide this post supports'),
-    faq: z
-      .array(z.object({ q: z.string(), a: z.string() }))
-      .min(3)
-      .max(8),
-    sources: z
-      .array(
-        z.object({
-          name: z.string().min(2),
-          url: z.string().url('Every source needs a full https URL'),
-        })
-      )
-      .min(1, 'Every blog post must cite at least one source'),
-    draft: z.boolean().default(false),
+  loader: glob({
+    base: './src/content/blog',
+    pattern: '**/[^_]*.mdx',
+    // Quick posts live in quick/ but are served at /blog/<file-name>/ like any other post.
+    generateId: ({ entry }) => entry.replace(/\.mdx$/, '').split('/').pop()!,
   }),
+  schema: z
+    .preprocess(
+      (raw) => {
+        if (!raw || typeof raw !== 'object') return raw;
+        const r = raw as Record<string, unknown>;
+        return { ...r, quick: 'headline' in r && !('h1' in r) };
+      },
+      z.discriminatedUnion('quick', [fullPost, quickPost])
+    )
+    .transform((d) => {
+      if (!d.quick) return d;
+      const { headline, summary, ...rest } = d;
+      return {
+        ...rest,
+        title: clip(headline, 60),
+        description: clip(summary, 160),
+        ogImage: undefined,
+        noindex: false,
+        h1: headline,
+        subtitle: summary,
+        takeaway: summary,
+        neighbourhood: undefined,
+        related: [] as string[],
+        relatedServices: [] as string[],
+        guide: undefined,
+      };
+    }),
 });
 
 const videos = defineCollection({

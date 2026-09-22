@@ -74,6 +74,7 @@ const jsonLd = [
     section: categoryName,
     wordCount: words,
     about: d.guide ? GUIDES[d.guide].label.replace(' Guide', '') : `${categoryName} in Markham`,
+    author: d.author,
   }),
   faqPage(d.faq),
 ].filter(Boolean);
@@ -97,7 +98,7 @@ const jsonLd = [
         <h1>{d.h1}</h1>
         <p class="lede">{d.subtitle}</p>
         <p class="post-meta">
-          <span>By {site.name}</span>
+          <span>By {d.author ? (d.authorTitle ? `${d.author}, ${d.authorTitle}` : d.author) : site.name}</span>
           <span aria-hidden="true">&middot;</span>
           <span>Published <time datetime={d.published.toISOString()}>{longDate(d.published)}</time></span>
           {
@@ -117,10 +118,14 @@ const jsonLd = [
     <div class="wrap post-body">
       <div class="post-shell">
         <div class="post-main">
-          <div class="takeaway">
-            <h2>The quick answer</h2>
-            <p>{d.takeaway}</p>
-          </div>
+          {
+            !d.quick && (
+              <div class="takeaway">
+                <h2>The quick answer</h2>
+                <p>{d.takeaway}</p>
+              </div>
+            )
+          }
 
           {
             guide && (
@@ -160,6 +165,7 @@ const jsonLd = [
             )
           }
 
+          {d.sources.length > 0 && (
           <section class="post-sources" aria-labelledby="post-sources-heading">
             <h2 id="post-sources-heading">Sources</h2>
             <ul>
@@ -175,6 +181,7 @@ const jsonLd = [
             </ul>
             <p>Figures and rules were checked against these sources on the date this post was published or last updated.</p>
           </section>
+          )}
 
           <div class="disclaimer">
             <p>

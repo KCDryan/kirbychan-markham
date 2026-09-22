@@ -9,11 +9,20 @@ breaks them fails to deploy and the site keeps its last good version.
 
 | Collection | Files | Not included |
 | --- | --- | --- |
+| Quick posts (agents) | `src/content/blog/quick/*.mdx` | |
 | Blog posts | `src/content/blog/*.mdx` | |
 | Guides (English) | `src/content/guides/*.mdx` | the `fa`, `fr` and `zh` translations |
 | Neighbourhoods | `src/content/neighbourhoods/*.mdx` | |
 
 Services, videos, market reports, news, `src/data/` and `src/i18n/` are deliberately left out.
+
+## Quick posts for agents
+
+A short form: headline, summary, category, author, date and the post. Everything else is derived in
+`src/content.config.ts`, so a quick post renders with the same layout as a full post and shows the
+agent's name in the byline and in the `BlogPosting` author. `scripts/check-blog.mjs` applies lighter
+rules to quick posts (300 words minimum, a real summary, an author, a unique address) and the house
+style check applies as usual. The steps for agents are in `AGENT-BLOG-GUIDE.md`.
 
 ## Try it on this computer (no account needed)
 

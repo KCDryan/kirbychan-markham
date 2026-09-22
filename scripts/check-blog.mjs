@@ -159,9 +159,56 @@ for (const name of files) {
   if (placeholder) fail(file, `contains the placeholder "${placeholder[0]}"`);
 }
 
+// Quick posts, written by agents in TinaCMS. Lighter rules: the site still
+// needs a real headline, a real summary, a named author, a sensible length and
+// a unique address, but not the sourcing and linking rules of a full post.
+const QUICK = `${BLOG}/quick`;
+const quickFiles = (await readdir(QUICK).catch(() => [])).filter((n) => n.endsWith('.mdx') && !n.startsWith('_'));
+const fullSlugs = new Set(files.map((n) => n.replace(/\.mdx$/, '')));
+for (const name of quickFiles) {
+  const file = `${QUICK}/${name}`;
+  const slug = name.replace(/\.mdx$/, '');
+  const parsed = split(await readFile(file, 'utf8'));
+  if (!parsed) {
+    fail(file, 'no frontmatter block');
+    continue;
+  }
+  const { data, body } = parsed;
+  if (data.draft) continue;
+
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 70) {
+    fail(file, 'file name must be lowercase kebab-case, 70 characters or fewer');
+  }
+  if (fullSlugs.has(slug)) fail(file, `a post already uses the address /blog/${slug}/, choose a different headline`);
+
+  const headline = String(data.headline ?? '').trim();
+  if (headline.length < 10 || headline.length > 90) fail(file, `headline is ${headline.length} characters, keep it between 10 and 90`);
+  const key = headline.toLowerCase();
+  if (key && seen.h1.has(key)) fail(file, `headline duplicates ${seen.h1.get(key)}`);
+  else if (key) seen.h1.set(key, file);
+  const summary = String(data.summary ?? '').trim();
+  if (summary.length < 50 || summary.length > 300) fail(file, `summary is ${summary.length} characters, keep it between 50 and 300`);
+  if (!String(data.author ?? '').trim()) fail(file, 'add the author name so the post shows who wrote it');
+
+  const iso = (v) => (v instanceof Date ? v.toISOString() : String(v ?? '')).slice(0, 10);
+  const published = iso(data.published);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(published)) fail(file, 'published must be a date');
+  else if (published > today) fail(file, `published ${published} is in the future`);
+
+  const count = words(body);
+  if (count < 300) fail(file, `body is ${count} words, the minimum for a quick post is 300`);
+  if (/^#\s/m.test(body)) fail(file, 'use Heading 2 or smaller in the body. The headline is already the page title');
+
+  for (const l of [...body.matchAll(/\]\(([^)\s]+)\)/g)].map((m) => m[1])) {
+    if (/^[a-z]+:/i.test(l) && !/^(https|mailto|tel):/i.test(l)) fail(file, `link ${l} must use https`);
+  }
+  const placeholder = `${JSON.stringify(data)}\n${body}`.match(/\b(TODO|TBD|FIXME|lorem ipsum)\b|\[insert/i);
+  if (placeholder) fail(file, `contains the placeholder "${placeholder[0]}"`);
+}
+
 if (problems.length > 0) {
   console.error(`Blog check failed with ${problems.length} problem(s):`);
   console.error(problems.join('\n'));
   process.exit(1);
 }
-console.log(`Blog check passed for ${files.length} post(s).`);
+console.log(`Blog check passed for ${files.length} post(s) and ${quickFiles.length} quick post(s).`);
