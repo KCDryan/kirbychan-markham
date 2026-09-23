@@ -120,6 +120,16 @@ const graphs = [agent, ...jsonLd].filter(Boolean);
         <script is:inline type="application/ld+json" set:html={JSON.stringify(graph)} />
       ))
     }
+
+    {/* Google Analytics 4. Off until a measurement ID is set in src/data/site.json. */}
+    {
+      site.ga4 && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${site.ga4}`} />
+          <script is:inline define:vars={{ id: site.ga4 }} set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config',id)`} />
+        </>
+      )
+    }
   </head>
   <body class={bodyClass}>
     <a class="skip-link" href="#main">{dict.ui.skip}</a>
