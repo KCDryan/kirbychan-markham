@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 # AI assistants and answer engines are welcome to read and cite this site.
 # Named groups replace the * group for that crawler, so each repeats the
@@ -14,45 +15,56 @@ Disallow: /api/
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 User-agent: ChatGPT-User
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 User-agent: GPTBot
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 User-agent: ClaudeBot
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 User-agent: Claude-SearchBot
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 User-agent: Claude-User
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 User-agent: PerplexityBot
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 User-agent: Perplexity-User
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 User-agent: Google-Extended
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 User-agent: Applebot-Extended
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 User-agent: Bingbot
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 Sitemap: https://kirbychanmarkham.com/sitemap-index.xml
