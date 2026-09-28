@@ -1,0 +1,245 @@
+---
+import Page from '../layouts/Page.astro';
+import { cad } from '../lib/format';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Mortgage Calculator', path: '/mortgage-calculator-markham/' },
+];
+
+/** Minimum down payment in Canada (FCAC). */
+function minDown(price: number): number {
+  if (price >= 1500000) return price * 0.2;
+  if (price > 500000) return 25000 + (price - 500000) * 0.1;
+  return price * 0.05;
+}
+
+/** Monthly payment with the rate compounded semi-annually. */
+function payment(principal: number, rate: number, years: number): number {
+  const r = Math.pow(1 + rate / 2, 1 / 6) - 1;
+  const n = years * 12;
+  return r === 0 ? principal / n : (principal * r) / (1 - Math.pow(1 + r, -n));
+}
+
+// ponytail: self-check against the worked example in the stress test post ($600,000, 25 years, 4% -> $3,156; qualifying at 6% -> $3,839).
+if (Math.round(payment(600000, 0.04, 25)) !== 3156 || Math.round(payment(600000, 0.06, 25)) !== 3839) {
+  throw new Error('Mortgage payment formula is wrong');
+}
+
+const examples = [700000, 900000, 1100000, 1400000].map((price) => {
+  const down = Math.round(minDown(price));
+  const loan = price - down;
+  return { price, down, loan, pay: Math.round(payment(loan, 0.04, 25)), pay30: Math.round(payment(loan, 0.04, 30)) };
+});
+
+const faq = [
+  {
+    q: 'What is the minimum down payment on a Markham home?',
+    a: 'Under $500,000 it is 5% of the price. From $500,000 to $1.5 million it is 5% of the first $500,000 plus 10% of the portion above $500,000. At $1.5 million or more it is 20% of the price.',
+  },
+  {
+    q: 'Does this calculator include mortgage loan insurance?',
+    a: 'No. With less than 20% down you will typically need mortgage loan insurance, and the premium is usually added to the mortgage. Your lender or broker will quote it, so the real mortgage and payment will be somewhat higher than shown here.',
+  },
+  {
+    q: 'What is the stress test payment?',
+    a: 'A federally regulated lender must check that you could afford your payments at the higher of 5.25% or your contract rate plus 2%. The calculator shows that qualifying payment so you can see what a lender will test you against.',
+  },
+  {
+    q: 'Why does the calculator compound semi-annually?',
+    a: 'The federal Interest Act requires a mortgage to state its rate calculated yearly or half-yearly, not in advance. This calculator uses half-yearly compounding. Ask your lender how your own mortgage is calculated.',
+  },
+  {
+    q: 'Is this a mortgage quote?',
+    a: 'No. It is an estimate for planning. The rate you enter is your own assumption, and your lender or mortgage broker sets the real rate, fees and approval.',
+  },
+];
+
+const sources = [
+  { name: 'Financial Consumer Agency of Canada, Saving for a down payment', url: 'https://www.canada.ca/en/financial-consumer-agency/services/mortgages/down-payment.html' },
+  { name: 'OSFI, Minimum qualifying rate for uninsured mortgages', url: 'https://www.osfi-bsif.gc.ca/en/supervision/financial-institutions/banks/minimum-qualifying-rate-uninsured-mortgages' },
+  { name: 'Interest Act, section 6', url: 'https://laws-lois.justice.gc.ca/eng/acts/I-15/page-1.html' },
+];
+---
+
+<Page
+  title="Markham Mortgage Calculator with Stress Test"
+  description="Estimate the monthly mortgage payment on a Markham home, the minimum down payment and the stress test payment a lender will qualify you at, in a few seconds."
+  eyebrow="Markham, Ontario"
+  h1="Markham mortgage payment calculator"
+  lede="Enter a price, your down payment and a rate to estimate the monthly payment, the minimum down payment and the stress test payment your lender will qualify you against."
+  crumbs={crumbs}
+  faq={faq}
+>
+  <section class="section">
+    <div class="wrap-narrow">
+      <form class="calc" onsubmit="return false">
+        <div class="calc__row">
+          <label for="m-price">Purchase price</label>
+          <div class="calc__input"><span aria-hidden="true">$</span><input id="m-price" inputmode="numeric" autocomplete="off" value="1,100,000" /></div>
+        </div>
+        <div class="calc__row">
+          <label for="m-down">Down payment</label>
+          <div class="calc__input"><span aria-hidden="true">$</span><input id="m-down" inputmode="numeric" autocomplete="off" value="85,000" /></div>
+        </div>
+        <div class="calc__pair">
+          <div class="calc__row">
+            <label for="m-rate">Interest rate</label>
+            <div class="calc__input"><input id="m-rate" inputmode="decimal" autocomplete="off" value="4.00" /><span aria-hidden="true">%</span></div>
+          </div>
+          <div class="calc__row">
+            <label for="m-years">Amortization</label>
+            <select id="m-years" class="calc__input">
+              <option value="25" selected>25 years</option>
+              <option value="30">30 years</option>
+            </select>
+          </div>
+        </div>
+        <dl class="calc__out" aria-live="polite">
+          <div><dt>Minimum down payment</dt><dd id="m-min">$85,000</dd></div>
+          <div><dt>Mortgage amount, before insurance</dt><dd id="m-loan">{cad(1015000)}</dd></div>
+          <div class="calc__total"><dt>Monthly payment</dt><dd id="m-pay">{cad(Math.round(payment(1015000, 0.04, 25)))}</dd></div>
+          <div><dt>Stress test rate</dt><dd id="m-qrate">6.00%</dd></div>
+          <div><dt>Payment you must qualify at</dt><dd id="m-qpay">{cad(Math.round(payment(1015000, 0.06, 25)))}</dd></div>
+        </dl>
+        <p class="calc__warn" id="m-warn" hidden>This is below the minimum down payment for that price.</p>
+        <p class="calc__note">
+          An estimate, not a quote. It leaves out mortgage loan insurance, which is typically needed
+          with less than 20% down and raises the payment. The rate is your own assumption.
+        </p>
+      </form>
+
+      <div class="prose">
+        <h2>Minimum down payment in Canada</h2>
+        <table>
+          <thead><tr><th>Purchase price</th><th>Minimum down payment</th></tr></thead>
+          <tbody>
+            <tr><td>Under $500,000</td><td>5% of the price</td></tr>
+            <tr><td>$500,000 to $1.5 million</td><td>5% of the first $500,000, plus 10% of the rest</td></tr>
+            <tr><td>$1.5 million or more</td><td>20% of the price</td></tr>
+          </tbody>
+        </table>
+        <p>
+          With less than 20% down you will typically need mortgage loan insurance. Our
+          <a href="/first-time-home-buyers-markham/">first time home buyer guide</a> works these rules
+          through at Markham prices.
+        </p>
+
+        <h2>Payments at common Markham prices</h2>
+        <p>
+          With the minimum down payment and an illustrative 4.00% rate, before mortgage loan
+          insurance. These are examples, not quotes.
+        </p>
+        <table>
+          <thead><tr><th>Price</th><th>Minimum down</th><th>Mortgage</th><th>25 years</th><th>30 years</th></tr></thead>
+          <tbody>
+            {
+              examples.map((e) => (
+                <tr>
+                  <td>{cad(e.price)}</td>
+                  <td>{cad(e.down)}</td>
+                  <td>{cad(e.loan)}</td>
+                  <td>{cad(e.pay)}</td>
+                  <td>{cad(e.pay30)}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+
+        <h2>The stress test sets your ceiling</h2>
+        <p>
+          To approve you, a federally regulated lender checks that you could still pay at the higher of
+          5.25% or your contract rate plus 2%. That qualifying payment, not the one you will actually
+          make, decides how much you can borrow. The
+          <a href="/blog/mortgage-stress-test-markham/">mortgage stress test explained</a> walks through
+          the income limits lenders apply.
+        </p>
+
+        <h2>What else to budget for</h2>
+        <p>
+          The payment is only part of the cost of owning. Add property tax, utilities, insurance and any
+          condo fees, plus land transfer tax and closing costs up front. Try the
+          <a href="/land-transfer-tax-calculator-markham/">land transfer tax calculator</a> or
+          <a href="/contact/">ask us</a> to run the full numbers on a home you are considering.
+        </p>
+
+        <h2>Sources</h2>
+        <ul>
+          {sources.map((s) => <li><a href={s.url} rel="noopener noreferrer" target="_blank">{s.name}</a></li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+</Page>
+
+<script is:inline>
+  (() => {
+    const $ = (id) => document.getElementById(id);
+    const num = (id) => Number(($(id).value || '').replace(/[^0-9.]/g, '')) || 0;
+    const money = (n) => '$' + Math.round(n).toLocaleString('en-CA');
+    const minDown = (p) => (p >= 1500000 ? p * 0.2 : p > 500000 ? 25000 + (p - 500000) * 0.1 : p * 0.05);
+    const pay = (P, rate, yrs) => {
+      const r = Math.pow(1 + rate / 2, 1 / 6) - 1, n = yrs * 12;
+      return r === 0 ? P / n : (P * r) / (1 - Math.pow(1 + r, -n));
+    };
+    let downTouched = false;
+    const run = () => {
+      const price = num('m-price');
+      const min = minDown(price);
+      if (!downTouched) $('m-down').value = Math.round(min).toLocaleString('en-CA');
+      const down = num('m-down');
+      const rate = num('m-rate') / 100;
+      const yrs = Number($('m-years').value);
+      const loan = Math.max(0, price - down);
+      const q = Math.max(0.0525, rate + 0.02);
+      $('m-min').textContent = money(min);
+      $('m-loan').textContent = money(loan);
+      $('m-pay').textContent = money(pay(loan, rate, yrs));
+      $('m-qrate').textContent = (q * 100).toFixed(2) + '%';
+      $('m-qpay').textContent = money(pay(loan, q, yrs));
+      $('m-warn').hidden = !(price && down < Math.round(min));
+    };
+    for (const id of ['m-price', 'm-rate', 'm-years']) $(id).addEventListener('input', run);
+    $('m-down').addEventListener('input', () => { downTouched = true; run(); });
+    for (const id of ['m-price', 'm-down']) {
+      $(id).addEventListener('blur', () => { const v = num(id); if (v) $(id).value = v.toLocaleString('en-CA'); });
+    }
+    run();
+  })();
+</script>
+
+<style>
+  .calc {
+    display: grid;
+    gap: var(--sp-3);
+    padding: var(--sp-5);
+    margin-bottom: var(--sp-6);
+    background: var(--mist);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+  }
+  .calc__row { display: grid; gap: 0.35rem; }
+  .calc__row label { font-weight: 700; }
+  .calc__pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+  .calc__input {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.8rem;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    font: inherit;
+    font-size: 1.15rem;
+  }
+  .calc__input input { flex: 1; border: 0; font: inherit; background: transparent; min-width: 0; }
+  .calc__input:focus-within { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .calc__out { display: grid; gap: var(--sp-2); margin: 0; }
+  .calc__out div { display: flex; justify-content: space-between; gap: var(--sp-3); border-bottom: 1px solid var(--rule); padding-bottom: var(--sp-2); }
+  .calc__out dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .calc__total { font-size: 1.2rem; color: var(--brand); }
+  .calc__warn { color: #9a3412; font-weight: 700; margin: 0; }
+  .calc__note { font-size: 0.875rem; margin: 0; }
+  @media (max-width: 480px) { .calc__pair { grid-template-columns: 1fr; } }
+</style>
