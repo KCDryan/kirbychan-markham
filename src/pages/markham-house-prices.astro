@@ -1,0 +1,149 @@
+---
+import Page from '../layouts/Page.astro';
+import DownsizingPromo from '../components/DownsizingPromo.astro';
+import market from '../data/market.json';
+import { cad, neighbourhoodPath } from '../lib/format';
+import { CITIES, MARKHAM } from '../lib/comparisons';
+
+/**
+ * Markham house prices, from TRREB. Update each month from the new Market Watch: the period, the
+ * by-type table and MARKHAM in src/lib/comparisons.ts. Neighbourhood medians come from
+ * src/data/market.json, which the biweekly updater refreshes from the quarterly community reports.
+ */
+const PERIOD = 'August 2026';
+const REPORT = '/market-reports/august-2026/';
+const BY_TYPE = [
+  { type: 'Detached', sales: 137, average: 1611773, median: 1488000 },
+  { type: 'Semi-detached', sales: 15, average: 958133, median: 945000 },
+  { type: 'Freehold townhouse', sales: 39, average: 1031119, median: 995000 },
+  { type: 'Condo townhouse', sales: 28, average: 812567, median: 750000 },
+  { type: 'Condo apartment', sales: 57, average: 638332, median: 563800 },
+];
+const hoods = market.neighbourhoods
+  .filter((n): n is typeof n & { price: number } => typeof n.price === 'number')
+  .sort((a, b) => b.price - a.price);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Markham House Prices', path: '/markham-house-prices/' },
+];
+
+const faq = [
+  {
+    q: 'What is the average house price in Markham?',
+    a: `TRREB recorded an average of ${cad(MARKHAM.average)} across all property types in Markham in ${PERIOD}, from ${MARKHAM.sales} sales. The average detached price was ${cad(BY_TYPE[0].average)}.`,
+  },
+  {
+    q: 'What is the median home price in Markham?',
+    a: `${cad(MARKHAM.median)} across all property types in ${PERIOD}, according to TRREB. The detached median was ${cad(BY_TYPE[0].median)} and the condo apartment median was ${cad(BY_TYPE[4].median)}.`,
+  },
+  {
+    q: 'Which Markham neighbourhood has the highest prices?',
+    a: `Of the neighbourhoods TRREB reports on this site, ${hoods[0].name} had the highest median across all property types for January to March 2026, at ${cad(hoods[0].price)}. For a single property type, compare the figures in each neighbourhood guide.`,
+  },
+  {
+    q: 'Why is the median lower than the average?',
+    a: 'A handful of very expensive sales pull the average up, while the median is the middle sale. In a market with many detached homes over $1.5 million, the average usually sits above the median.',
+  },
+  {
+    q: 'What is my Markham home worth?',
+    a: 'Area figures cannot tell you that. A home value depends on its size, condition, lot and the comparable sales on nearby streets. Ask us for a free valuation built from those sales.',
+  },
+];
+
+const sources = [
+  { name: `TRREB Market Watch, ${PERIOD}`, url: 'https://trreb.ca/wp-content/files/market-stats/market-watch/mw2608.pdf' },
+  { name: `TRREB Community Housing Market Report, Markham, ${market.period}`, url: market.sourceUrl },
+];
+---
+
+<Page
+  title="Markham House Prices 2026: Latest TRREB Figures"
+  description={`Markham house prices from TRREB for ${PERIOD}: median and average by property type, prices in 10 Markham neighbourhoods and how Markham compares with nearby cities.`}
+  eyebrow="Markham, Ontario"
+  h1="Markham house prices"
+  lede={`The latest TRREB figures for Markham: ${cad(MARKHAM.median)} median and ${cad(MARKHAM.average)} average across ${MARKHAM.sales} sales in ${PERIOD}, by property type and by neighbourhood.`}
+  crumbs={crumbs}
+  faq={faq}
+>
+  <section class="section">
+    <div class="wrap-narrow prose">
+      <h2>Markham home prices by property type, {PERIOD}</h2>
+      <table>
+        <thead><tr><th>Property type</th><th>Sales</th><th>Average</th><th>Median</th></tr></thead>
+        <tbody>
+          {BY_TYPE.map((r) => <tr><td>{r.type}</td><td>{r.sales}</td><td>{cad(r.average)}</td><td>{cad(r.median)}</td></tr>)}
+          <tr><td><strong>All property types</strong></td><td>{MARKHAM.sales}</td><td>{cad(MARKHAM.average)}</td><td>{cad(MARKHAM.median)}</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Look at the row for the home you are actually buying or selling. The overall median mixes
+        condo apartments with detached houses and in {PERIOD} the detached median was more than two
+        and a half times the condo apartment median. The <a href={REPORT}>{PERIOD} Markham market report</a> has
+        the full month, including listings and days on market.
+      </p>
+
+      <h2>Prices by Markham neighbourhood</h2>
+      <p>
+        TRREB medians across all property types for {market.period}, the latest quarterly community
+        figures. A lower median can reflect more condo sales rather than cheaper houses.
+      </p>
+      <table>
+        <thead><tr><th>Neighbourhood</th><th>Median, all property types</th></tr></thead>
+        <tbody>
+          {hoods.map((n) => <tr><td><a href={neighbourhoodPath(n.slug)}>{n.name}</a></td><td>{cad(n.price)}</td></tr>)}
+        </tbody>
+      </table>
+      <p>
+        TRREB reports Milliken Mills as two communities and does not report Downtown Markham as one,
+        so they are not in this table. Each <a href="/neighbourhoods/">neighbourhood guide</a> has the
+        figures by property type.
+      </p>
+
+      <h2>Markham compared with nearby cities</h2>
+      <table>
+        <thead><tr><th>City, {PERIOD}</th><th>Sales</th><th>Median</th><th>Average</th></tr></thead>
+        <tbody>
+          <tr><td>Markham</td><td>{MARKHAM.sales}</td><td>{cad(MARKHAM.median)}</td><td>{cad(MARKHAM.average)}</td></tr>
+          {
+            CITIES.map((c) => (
+              <tr>
+                <td><a href={`/markham-vs-${c.slug}/`}>{c.name}</a></td>
+                <td>{c.stats.sales.toLocaleString('en-CA')}</td>
+                <td>{cad(c.stats.median)}</td>
+                <td>{cad(c.stats.average)}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+
+      <h2>Median or average: which to use</h2>
+      <p>
+        The median is the middle sale, so half sold for more and half for less. The average adds every
+        price and divides, so a few very expensive sales pull it up. For planning a purchase or a sale,
+        the median for your property type is usually the more useful number. Neither is an appraisal:
+        what a specific home is worth depends on its size, condition, lot and the sales on nearby streets.
+      </p>
+
+      <h2>What these prices mean for you</h2>
+      <ul>
+        <li>Selling: <a href="/home-valuation/">get a free valuation</a> built from comparable sales near your home.</li>
+        <li>Downsizing: see <a href="/best-markham-neighbourhoods-for-downsizing/">where to downsize in Markham</a> and what the smaller homes cost.</li>
+        <li>Buying: run the <a href="/mortgage-calculator-markham/">mortgage calculator</a> and the <a href="/land-transfer-tax-calculator-markham/">land transfer tax calculator</a> on the price you are considering.</li>
+      </ul>
+    </div>
+
+    <div class="wrap-narrow" style="margin-top: var(--sp-6)">
+      <DownsizingPromo />
+    </div>
+
+    <div class="wrap-narrow prose">
+      <h2>Sources</h2>
+      <ul>
+        {sources.map((s) => <li><a href={s.url} rel="noopener noreferrer" target="_blank">{s.name}</a></li>)}
+      </ul>
+      <p>General information from TRREB for the periods stated. Not an appraisal or an opinion of the value of any property.</p>
+    </div>
+  </section>
+</Page>

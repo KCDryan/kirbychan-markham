@@ -1,25 +1,75 @@
 {
   "primary": [
-    { "label": "Neighbourhoods", "href": "/neighbourhoods/", "mega": true },
-    { "label": "Services", "href": "/services/" },
-    { "label": "Downsizing", "href": "/downsizing-markham/" },
-    { "label": "Meet Kirby", "href": "/about/" },
-    { "label": "Blog", "href": "/blog/" }
+    {
+      "label": "Neighbourhoods",
+      "href": "/neighbourhoods/",
+      "mega": true
+    },
+    {
+      "label": "Services",
+      "href": "/services/"
+    },
+    {
+      "label": "Downsizing",
+      "href": "/downsizing-markham/"
+    },
+    {
+      "label": "Meet Kirby",
+      "href": "/about/"
+    },
+    {
+      "label": "Blog",
+      "href": "/blog/"
+    }
   ],
   "footer": {
     "connect": [
-      { "label": "Contact", "href": "/contact/" },
-      { "label": "Meet Kirby", "href": "/about/" },
-      { "label": "Markham news", "href": "/news/" },
-      { "label": "Market reports", "href": "/market-reports/" },
-      { "label": "Client stories", "href": "/client-stories/" },
-      { "label": "Videos", "href": "/videos/" },
-      { "label": "Blog", "href": "/blog/" }
+      {
+        "label": "Contact",
+        "href": "/contact/"
+      },
+      {
+        "label": "Meet Kirby",
+        "href": "/about/"
+      },
+      {
+        "label": "Markham news",
+        "href": "/news/"
+      },
+      {
+        "label": "Markham house prices",
+        "href": "/markham-house-prices/"
+      },
+      {
+        "label": "Market reports",
+        "href": "/market-reports/"
+      },
+      {
+        "label": "Client stories",
+        "href": "/client-stories/"
+      },
+      {
+        "label": "Videos",
+        "href": "/videos/"
+      },
+      {
+        "label": "Blog",
+        "href": "/blog/"
+      }
     ],
     "legal": [
-      { "label": "Privacy", "href": "/privacy/" },
-      { "label": "Terms", "href": "/terms/" },
-      { "label": "Accessibility", "href": "/accessibility/" }
+      {
+        "label": "Privacy",
+        "href": "/privacy/"
+      },
+      {
+        "label": "Terms",
+        "href": "/terms/"
+      },
+      {
+        "label": "Accessibility",
+        "href": "/accessibility/"
+      }
     ]
   }
 }

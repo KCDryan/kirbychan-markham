@@ -1,0 +1,122 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import Page from '../layouts/Page.astro';
+import DownsizingPromo from '../components/DownsizingPromo.astro';
+import { neighbourhoodPath } from '../lib/format';
+import { HUBS } from '../lib/neighbourhood-hubs';
+
+export const getStaticPaths = (() => HUBS.map((hub) => ({ params: { who: hub.slug }, props: { hub } }))) satisfies GetStaticPaths;
+
+const { hub } = Astro.props as { hub: (typeof HUBS)[number] };
+const all = await getCollection('neighbourhoods', ({ data }) => !data.draft);
+const bySlug = new Map(all.map((n) => [n.id, n]));
+const need = (slug: string) => {
+  const n = bySlug.get(slug);
+  if (!n) throw new Error(`Hub "${hub.slug}" names unknown neighbourhood "${slug}"`);
+  return n;
+};
+const picks = hub.picks.map((p) => ({ ...p, n: need(p.slug) }));
+const harder = hub.harder?.slugs.map(need) ?? [];
+
+// Sources: every source the chosen neighbourhood guides cite, once each.
+const seen = new Set<string>();
+const sources = picks
+  .flatMap((p) => p.n.data.sources)
+  .filter((s) => !seen.has(s.url) && seen.add(s.url));
+
+const path = `/best-markham-neighbourhoods-for-${hub.slug}/`;
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Neighbourhoods', path: '/neighbourhoods/' },
+  { name: hub.h1, path },
+];
+const others = HUBS.filter((h) => h.slug !== hub.slug);
+const outroLinks: Record<string, [string, string][]> = {
+  downsizing: [['/downsizing-markham/', 'Markham downsizing guide'], ['/blog/markham-downsizing-costs/', 'what downsizing costs in Markham'], ['/blog/markham-neighbourhoods-for-downsizing/', 'downsizing neighbourhoods by property type']],
+  families: [['/upsizing-markham/', 'upsizing guide'], ['/mortgage-calculator-markham/', 'mortgage calculator']],
+  commuters: [['/blog/markham-go-train-commute/', 'Markham GO train guide'], ['/markham-vs-toronto/', 'Markham vs Toronto']],
+};
+---
+
+<Page title={hub.title} description={hub.description} eyebrow="Markham neighbourhoods" h1={hub.h1} lede={hub.lede} crumbs={crumbs} faq={hub.faq}>
+  <section class="section">
+    <div class="wrap-narrow prose">
+      {hub.intro.map((p) => <p>{p}</p>)}
+
+      <h2>At a glance</h2>
+      <table>
+        <thead><tr><th>Neighbourhood</th><th>Housing</th><th>{hub.bandLabel}</th></tr></thead>
+        <tbody>
+          {
+            picks.map(({ n }) => (
+              <tr>
+                <td><a href={neighbourhoodPath(n.id)}>{n.data.name}</a></td>
+                <td>{n.data.quickStats.propertyTypes}</td>
+                <td>
+                  {n.data.priceBands.filter((b) => hub.bands.test(b.band)).map((b) => (
+                    <div>{b.band}: {b.range}</div>
+                  ))}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <p>
+        Prices are the TRREB medians in each neighbourhood guide: community figures for January to March
+        2026 or Markham-wide figures where TRREB does not report the neighbourhood as a community.
+        Commute times are scheduled weekday morning GO trains to Union Station.
+      </p>
+
+      {
+        picks.map(({ n, why }) => (
+          <>
+            <h2>{n.data.name}</h2>
+            <p>{why}</p>
+            <p><strong>Getting around:</strong> {n.data.quickStats.commute}.</p>
+            <p><a href={neighbourhoodPath(n.id)}>Read the {n.data.name} neighbourhood guide</a></p>
+          </>
+        ))
+      }
+
+      {
+        hub.harder && (
+          <>
+            <h2>{hub.harder.heading}</h2>
+            <p>{hub.harder.text}</p>
+            <ul>
+              {harder.map((n) => (
+                <li><a href={neighbourhoodPath(n.id)}>{n.data.name}</a>: {n.data.quickStats.propertyTypes}.</li>
+              ))}
+            </ul>
+          </>
+        )
+      }
+
+      <h2>{hub.outro.heading}</h2>
+      {hub.outro.paragraphs.map((p) => <p>{p}</p>)}
+      <ul>
+        {outroLinks[hub.slug]?.map(([href, label]) => <li><a href={href}>{label.charAt(0).toUpperCase() + label.slice(1)}</a></li>)}
+        <li><a href="/neighbourhoods/">All twelve Markham neighbourhood guides</a></li>
+        {others.map((o) => <li><a href={`/best-markham-neighbourhoods-for-${o.slug}/`}>{o.h1}</a></li>)}
+      </ul>
+
+      <p>
+        Every neighbourhood is open to every buyer. These pages group them by the homes and commutes
+        people in each situation ask us about. <a href="/contact/">Talk to us</a> about your own list.
+      </p>
+    </div>
+
+    <div class="wrap-narrow" style="margin-top: var(--sp-6)">
+      <DownsizingPromo />
+    </div>
+
+    <div class="wrap-narrow prose">
+      <h2>Sources</h2>
+      <ul>
+        {sources.map((s) => <li><a href={s.url} rel="noopener noreferrer" target="_blank">{s.name}</a></li>)}
+      </ul>
+    </div>
+  </section>
+</Page>
