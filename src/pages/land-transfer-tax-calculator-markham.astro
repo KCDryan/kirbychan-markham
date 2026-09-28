@@ -1,0 +1,250 @@
+---
+import Page from '../layouts/Page.astro';
+import { cad } from '../lib/format';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Land Transfer Tax Calculator', path: '/land-transfer-tax-calculator-markham/' },
+];
+
+/** Ontario land transfer tax on a home with one or two single family residences (ontario.ca, rates from January 1, 2017). */
+function ontario(v: number): number {
+  if (v <= 55000) return v * 0.005;
+  if (v <= 250000) return 275 + (v - 55000) * 0.01;
+  if (v <= 400000) return 2225 + (v - 250000) * 0.015;
+  if (v <= 2000000) return v * 0.02 - 3525;
+  return v * 0.025 - 13525;
+}
+
+/** Toronto municipal land transfer tax, same property type (toronto.ca, rates from April 1, 2026). */
+const TORONTO = [
+  [55000, 0.005],
+  [250000, 0.01],
+  [400000, 0.015],
+  [2000000, 0.02],
+  [3000000, 0.025],
+  [4000000, 0.044],
+  [5000000, 0.0545],
+  [10000000, 0.065],
+  [20000000, 0.0755],
+  [Infinity, 0.086],
+] as const;
+function toronto(v: number): number {
+  let tax = 0;
+  let floor = 0;
+  for (const [top, rate] of TORONTO) {
+    if (v <= floor) break;
+    tax += (Math.min(v, top) - floor) * rate;
+    floor = top;
+  }
+  return tax;
+}
+
+// ponytail: self-check against the worked example ontario.ca publishes ($400,000 -> $4,475).
+if (Math.round(ontario(400000)) !== 4475) throw new Error('Ontario land transfer tax formula is wrong');
+
+const examples = [600000, 900000, 1100000, 1500000, 2500000].map((price) => {
+  const ltt = Math.round(ontario(price));
+  return {
+    price,
+    ltt,
+    firstTime: Math.max(0, ltt - 4000),
+    toronto: ltt + Math.round(toronto(price)),
+  };
+});
+
+const faq = [
+  {
+    q: 'Does Markham have a municipal land transfer tax?',
+    a: 'No. A Markham buyer pays Ontario land transfer tax only. The City of Toronto is the Ontario municipality that charges its own municipal land transfer tax on top of the provincial one.',
+  },
+  {
+    q: 'How much land transfer tax will I pay on a $1,100,000 Markham home?',
+    a: `Ontario land transfer tax on $1,100,000 is ${cad(Math.round(ontario(1100000)))}. An eligible first-time buyer can have up to $4,000 of that refunded, leaving ${cad(Math.round(ontario(1100000)) - 4000)}.`,
+  },
+  {
+    q: 'How much is the first-time buyer land transfer tax refund in Ontario?',
+    a: 'Up to $4,000, which covers the full provincial tax on the first $368,000 of the price. You must never have owned a home anywhere in the world, occupy the home as your principal residence within nine months and apply within 18 months of registration.',
+  },
+  {
+    q: 'When is land transfer tax paid?',
+    a: 'On closing, when the transfer is registered. Your lawyer pays it from the funds you provide and can claim the first-time buyer refund at the same time.',
+  },
+  {
+    q: 'Is this calculator exact?',
+    a: 'It applies the published rates for a home with one or two single family residences. Your lawyer confirms the final amount, which can differ for other property types, for vacant land or where the value of consideration includes more than the purchase price.',
+  },
+];
+
+const sources = [
+  { name: 'Ontario Ministry of Finance, Calculating land transfer tax', url: 'https://www.ontario.ca/document/land-transfer-tax/calculating-land-transfer-tax' },
+  { name: 'Ontario Ministry of Finance, Land transfer tax refunds for first-time homebuyers', url: 'https://www.ontario.ca/document/land-transfer-tax/land-transfer-tax-refunds-first-time-homebuyers' },
+  { name: 'City of Toronto, Municipal land transfer tax rates and fees', url: 'https://www.toronto.ca/services-payments/property-taxes-utilities/municipal-land-transfer-tax-mltt/municipal-land-transfer-tax-mltt-rates-and-fees/' },
+  { name: 'City of Toronto, Municipal land transfer tax rebate opportunities', url: 'https://www.toronto.ca/services-payments/property-taxes-utilities/municipal-land-transfer-tax-mltt/municipal-land-transfer-tax-mltt-rebate-opportunities/' },
+];
+---
+
+<Page
+  title="Markham Land Transfer Tax Calculator (2026)"
+  description="Calculate Ontario land transfer tax on a Markham home, with the $4,000 first-time buyer refund, and compare it with what the same home would cost in Toronto."
+  eyebrow="Markham, Ontario"
+  h1="Markham land transfer tax calculator"
+  lede="Enter a purchase price to see the Ontario land transfer tax on a Markham home, what an eligible first-time buyer pays after the refund and what the same price would cost in Toronto."
+  crumbs={crumbs}
+  faq={faq}
+>
+  <section class="section">
+    <div class="wrap-narrow">
+      <form class="calc" id="ltt" onsubmit="return false">
+        <label for="ltt-price">Purchase price</label>
+        <div class="calc__input">
+          <span aria-hidden="true">$</span>
+          <input id="ltt-price" inputmode="numeric" autocomplete="off" value="1,100,000" aria-describedby="ltt-note" />
+        </div>
+        <label class="calc__check"><input type="checkbox" id="ltt-first" /> I qualify as a first-time buyer</label>
+        <dl class="calc__out" aria-live="polite">
+          <div><dt>Ontario land transfer tax</dt><dd id="ltt-on">{cad(Math.round(ontario(1100000)))}</dd></div>
+          <div><dt>First-time buyer refund</dt><dd id="ltt-refund">$0</dd></div>
+          <div class="calc__total"><dt>You pay in Markham</dt><dd id="ltt-total">{cad(Math.round(ontario(1100000)))}</dd></div>
+          <div><dt>The same home in Toronto</dt><dd id="ltt-to">{cad(Math.round(ontario(1100000) + toronto(1100000)))}</dd></div>
+        </dl>
+        <p id="ltt-note" class="calc__note">
+          For a home with one or two single family residences, at the rates published by Ontario and
+          the City of Toronto. Your lawyer confirms the final amount.
+        </p>
+      </form>
+
+      <div class="prose">
+        <h2>Why a Markham home costs less in land transfer tax than Toronto</h2>
+        <p>
+          Every buyer in Ontario pays the provincial land transfer tax when the transfer is registered
+          on closing. Buyers in the City of Toronto pay a second, municipal land transfer tax on top.
+          Markham does not charge one, so a Markham buyer pays the provincial tax only. On most
+          prices that roughly halves the bill compared with buying the same home in Toronto.
+        </p>
+
+        <h2>Land transfer tax on common Markham prices</h2>
+        <table>
+          <thead>
+            <tr><th>Purchase price</th><th>Markham</th><th>Markham, first-time buyer</th><th>Toronto</th></tr>
+          </thead>
+          <tbody>
+            {
+              examples.map((e) => (
+                <tr>
+                  <td>{cad(e.price)}</td>
+                  <td>{cad(e.ltt)}</td>
+                  <td>{cad(e.firstTime)}</td>
+                  <td>{cad(e.toronto)}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <p>
+          The Toronto column is before Toronto's own first-time buyer rebate, which is up to $4,475
+          on the municipal tax.
+        </p>
+
+        <h2>Ontario land transfer tax rates</h2>
+        <p>For a home with one or two single family residences, in effect since January 1, 2017:</p>
+        <table>
+          <thead><tr><th>Portion of the price</th><th>Rate</th></tr></thead>
+          <tbody>
+            <tr><td>Up to $55,000</td><td>0.5%</td></tr>
+            <tr><td>$55,000 to $250,000</td><td>1.0%</td></tr>
+            <tr><td>$250,000 to $400,000</td><td>1.5%</td></tr>
+            <tr><td>$400,000 to $2,000,000</td><td>2.0%</td></tr>
+            <tr><td>Over $2,000,000</td><td>2.5%</td></tr>
+          </tbody>
+        </table>
+
+        <h2>The first-time buyer refund</h2>
+        <p>
+          Ontario refunds up to $4,000 of the provincial tax to an eligible first-time buyer, which
+          covers the whole tax on the first $368,000 of the price. You must never have owned a home
+          or an interest in one anywhere in the world, you must move in as your principal residence
+          within nine months and the refund must be claimed within 18 months of registration. Most
+          buyers claim it through their lawyer on closing. Our
+          <a href="/blog/land-transfer-tax-markham/">land transfer tax guide</a> covers the rules in
+          full and the <a href="/first-time-home-buyers-markham/">first time home buyer guide</a> puts
+          the refund alongside the FHSA and the Home Buyers' Plan.
+        </p>
+
+        <h2>Budgeting for closing</h2>
+        <p>
+          Land transfer tax is usually the largest closing cost, but not the only one. Legal fees,
+          title insurance, adjustments and moving costs come on top. See
+          <a href="/blog/closing-costs-buying-home-markham/">closing costs for Markham buyers</a> or
+          <a href="/contact/">talk to us</a> about what your purchase would cost in total.
+        </p>
+
+        <h2>Sources</h2>
+        <ul>
+          {sources.map((s) => <li><a href={s.url} rel="noopener noreferrer" target="_blank">{s.name}</a></li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+</Page>
+
+<script is:inline>
+  (() => {
+    const ON = [[55000, 0.005], [250000, 0.01], [400000, 0.015], [2000000, 0.02], [Infinity, 0.025]];
+    const TO = [[55000, 0.005], [250000, 0.01], [400000, 0.015], [2000000, 0.02], [3000000, 0.025], [4000000, 0.044], [5000000, 0.0545], [10000000, 0.065], [20000000, 0.0755], [Infinity, 0.086]];
+    const tax = (v, table) => {
+      let t = 0, floor = 0;
+      for (const [top, rate] of table) { if (v <= floor) break; t += (Math.min(v, top) - floor) * rate; floor = top; }
+      return Math.round(t);
+    };
+    const money = (n) => '$' + n.toLocaleString('en-CA');
+    const $ = (id) => document.getElementById(id);
+    const run = () => {
+      const v = Number(($('ltt-price').value || '').replace(/[^0-9.]/g, '')) || 0;
+      const on = tax(v, ON);
+      const refund = $('ltt-first').checked ? Math.min(on, 4000) : 0;
+      $('ltt-on').textContent = money(on);
+      $('ltt-refund').textContent = money(refund);
+      $('ltt-total').textContent = money(on - refund);
+      $('ltt-to').textContent = money(on + tax(v, TO));
+    };
+    $('ltt-price').addEventListener('input', run);
+    $('ltt-price').addEventListener('blur', () => {
+      const v = Number(($('ltt-price').value || '').replace(/[^0-9.]/g, ''));
+      if (v) $('ltt-price').value = v.toLocaleString('en-CA');
+    });
+    $('ltt-first').addEventListener('change', run);
+    run();
+  })();
+</script>
+
+<style>
+  .calc {
+    display: grid;
+    gap: var(--sp-3);
+    padding: var(--sp-5);
+    margin-bottom: var(--sp-6);
+    background: var(--mist);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+  }
+  .calc label { font-weight: 700; }
+  .calc__input {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.8rem;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    font-size: 1.25rem;
+  }
+  .calc__input input { flex: 1; border: 0; font: inherit; background: transparent; min-width: 0; }
+  .calc__input:focus-within { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .calc__check { font-weight: 400 !important; display: flex; gap: 0.5rem; align-items: center; }
+  .calc__out { display: grid; gap: var(--sp-2); margin: 0; }
+  .calc__out div { display: flex; justify-content: space-between; gap: var(--sp-3); border-bottom: 1px solid var(--rule); padding-bottom: var(--sp-2); }
+  .calc__out dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .calc__total { font-size: 1.2rem; color: var(--brand); }
+  .calc__note { font-size: 0.875rem; margin: 0; }
+</style>
