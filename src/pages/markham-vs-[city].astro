@@ -1,0 +1,99 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Page from '../layouts/Page.astro';
+import { cad } from '../lib/format';
+import { ontarioLtt, torontoMltt } from '../lib/ltt';
+import { CITIES, MARKHAM, type Stats } from '../lib/comparisons';
+
+export const getStaticPaths = (() => CITIES.map((c) => ({ params: { city: c.slug }, props: { c } }))) satisfies GetStaticPaths;
+
+const { c } = Astro.props as { c: (typeof CITIES)[number] };
+const path = `/markham-vs-${c.slug}/`;
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: `Markham vs ${c.name}`, path },
+];
+const lttAt = (median: number, toronto: boolean) => ontarioLtt(median) + (toronto ? torontoMltt(median) : 0);
+const rows: [string, (s: Stats) => string | null][] = [
+  ['Sales, all property types', (s) => s.sales.toLocaleString('en-CA')],
+  ['Median price, all property types', (s) => cad(s.median)],
+  ['Average price, all property types', (s) => cad(s.average)],
+  ['Detached sales', (s) => s.detSales.toLocaleString('en-CA')],
+  ['Average detached price', (s) => cad(s.detAvg)],
+  ['Condo apartment sales', (s) => s.condoSales.toLocaleString('en-CA')],
+  ['Average condo apartment price', (s) => cad(s.condoAvg)],
+];
+const others = CITIES.filter((o) => o.slug !== c.slug);
+const faq = [
+  ...c.faq,
+  { q: `What is the median home price in Markham?`, a: `TRREB recorded a median of ${cad(MARKHAM.median)} across all property types in Markham in August 2026, from ${MARKHAM.sales} sales.` },
+];
+---
+
+<Page
+  title={c.title}
+  description={c.description}
+  eyebrow="Compare"
+  h1={`Markham vs ${c.name}: where to buy`}
+  lede={c.intro}
+  crumbs={crumbs}
+  faq={faq}
+>
+  <section class="section">
+    <div class="wrap-narrow prose">
+      <h2>At a glance, August 2026</h2>
+      <table>
+        <thead><tr><th>TRREB, August 2026</th><th>Markham</th><th>{c.name}</th></tr></thead>
+        <tbody>
+          {rows.map(([label, f]) => <tr><td>{label}</td><td>{f(MARKHAM)}</td><td>{f(c.stats)}</td></tr>)}
+          <tr>
+            <td>Land transfer tax at the median</td>
+            <td>{cad(lttAt(MARKHAM.median, false))}</td>
+            <td>{cad(lttAt(c.stats.median, c.toronto))}</td>
+          </tr>
+          <tr><td>Municipal land transfer tax</td><td>No</td><td>{c.toronto ? 'Yes' : 'No'}</td></tr>
+        </tbody>
+      </table>
+      <p>
+        One month of sales moves around, especially in smaller categories, so treat these as a snapshot
+        rather than a trend. Our <a href="/market-reports/">Markham market reports</a> follow the numbers
+        month by month.
+      </p>
+
+      {
+        c.sections.map((s) => (
+          <>
+            <h2>{s.h}</h2>
+            {s.p.map((para) => <p>{para}</p>)}
+          </>
+        ))
+      }
+
+      <h2>Choosing within Markham</h2>
+      <p>
+        Markham itself varies a great deal from one neighbourhood to the next, from condo towers in
+        Downtown Markham to heritage streets in Unionville and family crescents in Berczy Village. Our
+        <a href="/neighbourhoods/">Markham neighbourhood guides</a> compare all twelve and the
+        <a href="/relocating-to-markham/">relocating to Markham guide</a> covers the move itself.
+      </p>
+
+      <h2>Run your own numbers</h2>
+      <p>
+        Use the <a href="/land-transfer-tax-calculator-markham/">land transfer tax calculator</a> and the
+        <a href="/mortgage-calculator-markham/">mortgage calculator</a> on a specific price, read the
+        <a href="/blog/markham-go-train-commute/">Markham GO train commute guide</a> or
+        <a href="/contact/">ask us</a> to compare two homes you are considering.
+      </p>
+
+      <h2>More comparisons</h2>
+      <ul>
+        {others.map((o) => <li><a href={`/markham-vs-${o.slug}/`}>Markham vs {o.name}</a></li>)}
+      </ul>
+
+      <h2>Sources</h2>
+      <ul>
+        {c.sources.map((s) => <li><a href={s.url} rel="noopener noreferrer" target="_blank">{s.name}</a></li>)}
+      </ul>
+    </div>
+  </section>
+</Page>

@@ -1,47 +1,15 @@
 ---
 import Page from '../layouts/Page.astro';
 import { cad } from '../lib/format';
+import { ontarioLtt, torontoMltt } from '../lib/ltt';
 
 const crumbs = [
   { name: 'Home', path: '/' },
   { name: 'Land Transfer Tax Calculator', path: '/land-transfer-tax-calculator-markham/' },
 ];
 
-/** Ontario land transfer tax on a home with one or two single family residences (ontario.ca, rates from January 1, 2017). */
-function ontario(v: number): number {
-  if (v <= 55000) return v * 0.005;
-  if (v <= 250000) return 275 + (v - 55000) * 0.01;
-  if (v <= 400000) return 2225 + (v - 250000) * 0.015;
-  if (v <= 2000000) return v * 0.02 - 3525;
-  return v * 0.025 - 13525;
-}
-
-/** Toronto municipal land transfer tax, same property type (toronto.ca, rates from April 1, 2026). */
-const TORONTO = [
-  [55000, 0.005],
-  [250000, 0.01],
-  [400000, 0.015],
-  [2000000, 0.02],
-  [3000000, 0.025],
-  [4000000, 0.044],
-  [5000000, 0.0545],
-  [10000000, 0.065],
-  [20000000, 0.0755],
-  [Infinity, 0.086],
-] as const;
-function toronto(v: number): number {
-  let tax = 0;
-  let floor = 0;
-  for (const [top, rate] of TORONTO) {
-    if (v <= floor) break;
-    tax += (Math.min(v, top) - floor) * rate;
-    floor = top;
-  }
-  return tax;
-}
-
-// ponytail: self-check against the worked example ontario.ca publishes ($400,000 -> $4,475).
-if (Math.round(ontario(400000)) !== 4475) throw new Error('Ontario land transfer tax formula is wrong');
+const ontario = ontarioLtt;
+const toronto = torontoMltt;
 
 const examples = [600000, 900000, 1100000, 1500000, 2500000].map((price) => {
   const ltt = Math.round(ontario(price));
