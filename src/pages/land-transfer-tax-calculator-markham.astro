@@ -1,4 +1,5 @@
 ---
+import CreditedPhoto from '../components/CreditedPhoto.astro';
 import Page from '../layouts/Page.astro';
 import { cad } from '../lib/format';
 import { ontarioLtt, torontoMltt } from '../lib/ltt';
@@ -81,6 +82,8 @@ const sources = [
           the City of Toronto. Your lawyer confirms the final amount.
         </p>
       </form>
+
+      <CreditedPhoto slug="angus-glen" />
 
       <div class="prose">
         <h2>Why a Markham home costs less in land transfer tax than Toronto</h2>

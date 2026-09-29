@@ -1,4 +1,5 @@
 ---
+import CreditedPhoto from '../components/CreditedPhoto.astro';
 import type { GetStaticPaths } from 'astro';
 import Page from '../layouts/Page.astro';
 import { cad } from '../lib/format';
@@ -9,6 +10,8 @@ export const getStaticPaths = (() => CITIES.map((c) => ({ params: { city: c.slug
 
 const { c } = Astro.props as { c: (typeof CITIES)[number] };
 const path = `/markham-vs-${c.slug}/`;
+// A Markham photo that fits each comparison: Main Street for the two suburbs, the skyline against Toronto.
+const PHOTO: Record<string, string> = { 'richmond-hill': 'unionville', vaughan: 'markham-village', toronto: 'downtown' };
 const crumbs = [
   { name: 'Home', path: '/' },
   { name: `Markham vs ${c.name}`, path },
@@ -41,6 +44,7 @@ const faq = [
 >
   <section class="section">
     <div class="wrap-narrow prose">
+      <CreditedPhoto slug={PHOTO[c.slug] ?? 'downtown'} priority />
       <h2>At a glance, August 2026</h2>
       <table>
         <thead><tr><th>TRREB, August 2026</th><th>Markham</th><th>{c.name}</th></tr></thead>

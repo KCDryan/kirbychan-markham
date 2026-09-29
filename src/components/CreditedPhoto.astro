@@ -1,0 +1,36 @@
+---
+/**
+ * A neighbourhood photo with the credit its licence requires. Credits and alt text come from
+ * src/data/photo-credits.json, so every page that shows a photo credits it the same way.
+ */
+import Photo from './Photo.astro';
+import credits from '../data/photo-credits.json';
+
+interface Props {
+  slug: string;
+  ratio?: string;
+  priority?: boolean;
+  sizes?: string;
+  class?: string;
+}
+const { slug, ratio = '16 / 9', priority = false, sizes = '(min-width: 900px) 760px, 100vw', class: cls = '' } = Astro.props;
+const credit = credits.find((c) => c.slug === slug);
+---
+
+<figure class:list={['cphoto', cls]}>
+  <Photo name={`neighbourhoods/${slug}`} alt={credit?.shows ?? 'Markham, Ontario'} label="Markham photo" ratio={ratio} priority={priority} sizes={sizes} />
+  {
+    credit && (
+      <figcaption>
+        Photo: <a href={credit.source} rel="noopener noreferrer" target="_blank">{credit.author}</a>,{' '}
+        <a href={credit.licenseUrl} rel="noopener noreferrer license" target="_blank">{credit.license}</a>, resized
+      </figcaption>
+    )
+  }
+</figure>
+
+<style>
+  .cphoto { margin: 0 0 var(--sp-5); }
+  .cphoto figcaption { margin-top: var(--sp-2); font-size: 0.75rem; color: var(--text-muted); }
+  .cphoto figcaption a { color: inherit; }
+</style>

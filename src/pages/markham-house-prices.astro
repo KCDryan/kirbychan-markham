@@ -1,4 +1,5 @@
 ---
+import CreditedPhoto from '../components/CreditedPhoto.astro';
 import Page from '../layouts/Page.astro';
 import DownsizingPromo from '../components/DownsizingPromo.astro';
 import market from '../data/market.json';
@@ -68,6 +69,7 @@ const sources = [
 >
   <section class="section">
     <div class="wrap-narrow prose">
+      <CreditedPhoto slug="downtown" priority />
       <h2>Markham home prices by property type, {PERIOD}</h2>
       <table>
         <thead><tr><th>Property type</th><th>Sales</th><th>Average</th><th>Median</th></tr></thead>

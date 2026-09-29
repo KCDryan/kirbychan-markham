@@ -1,4 +1,5 @@
 ---
+import CreditedPhoto from '../components/CreditedPhoto.astro';
 import type { GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
 import Page from '../layouts/Page.astro';
@@ -73,6 +74,7 @@ const outroLinks: Record<string, [string, string][]> = {
         picks.map(({ n, why }) => (
           <>
             <h2>{n.data.name}</h2>
+            <CreditedPhoto slug={n.id} />
             <p>{why}</p>
             <p><strong>Getting around:</strong> {n.data.quickStats.commute}.</p>
             <p><a href={neighbourhoodPath(n.id)}>Read the {n.data.name} neighbourhood guide</a></p>
