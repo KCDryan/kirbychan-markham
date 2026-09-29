@@ -16,6 +16,8 @@ export type Hub = {
   bands: RegExp;
   bandLabel: string;
   intro: string[];
+  /** Optional lead photo, a slug from src/data/photo-credits.json. */
+  photo?: string;
   picks: { slug: string; why: string }[];
   harder?: { heading: string; text: string; slugs: string[] };
   outro: { heading: string; paragraphs: string[] };
@@ -96,6 +98,7 @@ export const HUBS: Hub[] = [
   },
   {
     slug: 'commuters',
+    photo: 'go-train',
     title: 'Best Markham Neighbourhoods for Commuters (2026)',
     description: 'Markham neighbourhoods by GO train commute: scheduled times to Union Station from each station, bus rapid transit and highway access, with TRREB prices.',
     h1: 'Markham neighbourhoods by commute',

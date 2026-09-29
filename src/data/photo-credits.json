@@ -106,5 +106,45 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "source": "https://commons.wikimedia.org/wiki/File:Bur_Oak_Avenue_Wismer_Comms_4272014.jpg",
     "title": "Bur Oak Avenue Wismer Comms 4272014.jpg"
+  },
+  {
+    "slug": "richmond-hill",
+    "file": "places/richmond-hill",
+    "shows": "Sunset clouds over detached brick homes on a residential street in Richmond Hill, Ontario.",
+    "author": "David Zhang",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Richmond_Hill,_Ontario.jpg",
+    "title": "Richmond Hill, Ontario.jpg"
+  },
+  {
+    "slug": "vaughan",
+    "file": "places/vaughan",
+    "shows": "The round glass entrance of Vaughan Metropolitan Centre subway station on TTC Line 1 in Vaughan, Ontario.",
+    "author": "Jason Zhang",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Vaughan_Metropolitan_Centre_station_exterior,_July_2018.jpg",
+    "title": "Vaughan Metropolitan Centre station exterior, July 2018.jpg"
+  },
+  {
+    "slug": "toronto",
+    "file": "places/toronto",
+    "shows": "The downtown Toronto skyline and the CN Tower seen across the harbour from Lake Ontario.",
+    "author": "Erik Drost",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Toronto_skyline_2025.jpg",
+    "title": "Toronto skyline 2025.jpg"
+  },
+  {
+    "slug": "go-train",
+    "file": "places/go-train",
+    "shows": "A northbound Stouffville line GO train at the platform of Unionville GO station in Markham.",
+    "author": "Dillan Payne",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Stouffville_GO_Train_at_Unionville_GO_Station,_October_25_2025_(01).jpg",
+    "title": "Stouffville GO Train at Unionville GO Station, October 25 2025 (01).jpg"
   }
 ]

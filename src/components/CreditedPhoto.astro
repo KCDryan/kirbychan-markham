@@ -1,6 +1,7 @@
 ---
 /**
- * A neighbourhood photo with the credit its licence requires. Credits and alt text come from
+ * A licensed photo with the credit its licence requires. Neighbourhood photos live in
+ * src/assets/photos/neighbourhoods/; others name their file in photo-credits.json. Credits and alt text come from
  * src/data/photo-credits.json, so every page that shows a photo credits it the same way.
  */
 import Photo from './Photo.astro';
@@ -18,7 +19,7 @@ const credit = credits.find((c) => c.slug === slug);
 ---
 
 <figure class:list={['cphoto', cls]}>
-  <Photo name={`neighbourhoods/${slug}`} alt={credit?.shows ?? 'Markham, Ontario'} label="Markham photo" ratio={ratio} priority={priority} sizes={sizes} />
+  <Photo name={(credit && 'file' in credit && credit.file) || `neighbourhoods/${slug}`} alt={credit?.shows ?? 'Markham, Ontario'} label="Markham photo" ratio={ratio} priority={priority} sizes={sizes} />
   {
     credit && (
       <figcaption>

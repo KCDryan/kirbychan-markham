@@ -44,6 +44,7 @@ const outroLinks: Record<string, [string, string][]> = {
   <section class="section">
     <div class="wrap-narrow prose">
       {hub.intro.map((p) => <p>{p}</p>)}
+      {hub.photo && <CreditedPhoto slug={hub.photo} priority />}
 
       <h2>At a glance</h2>
       <table>
