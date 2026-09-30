@@ -5,7 +5,7 @@
  * by .github/workflows/refresh-listing-counts.yml, which saves it to src/data/listing-counts.json
  * so the counts are in the static pages. Counts only: no prices or other listing data.
  */
-import { PROPTX_BASE, areaOf, homeKind } from '../../src/lib/proptx';
+import { PROPTX_BASE, areaOf, homeKinds } from '../../src/lib/proptx';
 
 interface Context {
   env: { PROPTX_IDX_TOKEN?: string };
@@ -27,12 +27,12 @@ export async function onRequestGet({ env }: Context): Promise<Response> {
     if (!res.ok) return new Response(JSON.stringify({ error: 'upstream', status: res.status }), { status: 503 });
     const data = (await res.json()) as { value: Record<string, unknown>[]; '@odata.nextLink'?: string };
     for (const r of data.value) {
-      const kind = homeKind(r) as keyof Counts | null;
+      const kinds = homeKinds(r) as (keyof Counts)[];
       const area = areaOf(r.CityRegion);
       const buckets = area ? [markham, (areas[area] ??= blank())] : [markham];
       for (const b of buckets) {
         b.total++;
-        if (kind) b[kind]++;
+        for (const k of kinds) b[k]++;
       }
     }
     next = data['@odata.nextLink']?.replace(`${PROPTX_BASE}/`, '') ?? null;

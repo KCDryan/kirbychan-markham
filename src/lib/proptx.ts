@@ -23,15 +23,16 @@ export const HOMES: Record<string, { label: string; hint: string; filter: string
   house: { label: 'Houses', hint: 'Detached and semi-detached', filter: "(PropertySubType eq 'Detached' or startswith(PropertySubType,'Semi-Detached'))" },
 };
 
-/** Where a listing's home type falls, matching the HOMES filters above. Used for the daily counts. */
-export function homeKind(r: { PropertySubType?: unknown; ArchitecturalStyle?: unknown }): string | null {
+/** Every HOMES button a listing appears under, matching the filters above. A detached bungalow is under both. */
+export function homeKinds(r: { PropertySubType?: unknown; ArchitecturalStyle?: unknown }): string[] {
   const sub = String(r.PropertySubType ?? '').trim();
   const styles = Array.isArray(r.ArchitecturalStyle) ? r.ArchitecturalStyle : [];
-  if (styles.includes('Bungalow') || styles.includes('Bungaloft')) return 'bungalow';
-  if (sub === 'Condo Apartment') return 'condo';
-  if (sub === 'Att/Row/Townhouse' || sub === 'Condo Townhouse') return 'townhouse';
-  if (sub === 'Detached' || sub.startsWith('Semi-Detached')) return 'house';
-  return null;
+  const kinds: string[] = [];
+  if (styles.includes('Bungalow') || styles.includes('Bungaloft')) kinds.push('bungalow');
+  if (sub === 'Condo Apartment') kinds.push('condo');
+  if (sub === 'Att/Row/Townhouse' || sub === 'Condo Townhouse') kinds.push('townhouse');
+  if (sub === 'Detached' || sub.startsWith('Semi-Detached')) kinds.push('house');
+  return kinds;
 }
 
 /**
@@ -155,7 +156,7 @@ if (typeof process !== 'undefined' && import.meta.filename === process.argv[1]) 
   const a = new URLSearchParams(searchQuery(new URLSearchParams('area=thornhill&home=condo'))).get('$filter')!;
   if (!a.includes("City eq 'Markham' and CityRegion in ('Thornhill','Royal Orchard'")) throw new Error(a);
   if (new URLSearchParams(searchQuery(new URLSearchParams('city=Vaughan&area=cornell'))).get('$filter')!.includes('CityRegion')) throw new Error('area outside Markham');
-  if (homeKind({ PropertySubType: 'Semi-Detached ', ArchitecturalStyle: ['2-Storey'] }) !== 'house' || homeKind({ PropertySubType: 'Detached', ArchitecturalStyle: ['Bungaloft'] }) !== 'bungalow') throw new Error('homeKind');
+  if (homeKinds({ PropertySubType: 'Semi-Detached ', ArchitecturalStyle: ['2-Storey'] }).join() !== 'house' || homeKinds({ PropertySubType: 'Detached', ArchitecturalStyle: ['Bungaloft'] }).join() !== 'bungalow,house') throw new Error('homeKinds');
   if (!coverQuery(["A1'x"]).includes("'A1''x'")) throw new Error('cover quoting');
   if (cleanKey("N1' or 1") !== null || cleanKey('n12345678') !== 'N12345678') throw new Error('key');
   const p = photos([{ MediaURL: 'b', Order: 2 }, { MediaURL: 'a-s', Order: 1, ImageSizeDescription: 'Thumbnail' }, { MediaURL: 'a-l', Order: 1, ImageSizeDescription: 'Large' }]);
