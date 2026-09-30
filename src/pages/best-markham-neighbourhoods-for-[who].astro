@@ -45,6 +45,18 @@ const outroLinks: Record<string, [string, string][]> = {
     <div class="wrap-narrow prose">
       {hub.intro.map((p) => <p>{p}</p>)}
       {hub.photo && <CreditedPhoto slug={hub.photo} priority />}
+      {
+        hub.slug === 'downsizing' && (
+          <div class="for-sale-now">
+            <p><strong>See what is for sale in Markham right now:</strong></p>
+            <p class="for-sale-now__links">
+              <a class="btn btn--primary" href="/homes-for-sale/?home=bungalow">Bungalows</a>
+              <a class="btn btn--primary" href="/homes-for-sale/?home=condo">Condo apartments</a>
+              <a class="btn btn--primary" href="/homes-for-sale/?home=townhouse">Townhouses</a>
+            </p>
+          </div>
+        )
+      }
 
       <h2>At a glance</h2>
       <table>
@@ -123,3 +135,9 @@ const outroLinks: Record<string, [string, string][]> = {
     </div>
   </section>
 </Page>
+
+<style>
+  .for-sale-now { padding: var(--sp-5); background: var(--mist); border: 1px solid var(--rule); border-radius: var(--radius-lg); }
+  .for-sale-now p { margin: 0; }
+  .for-sale-now__links { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-3) !important; }
+</style>

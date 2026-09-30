@@ -19,12 +19,20 @@ const crumbs = [
   noindex
 >
   <section class="section">
-    <div class="wrap-narrow">
-      <p id="status" aria-live="polite">Loading listing…</p>
+    <div class="wrap-narrow l">
+      <p><a class="btn btn--ghost" id="back" href="/homes-for-sale/">← Back to the list of homes</a></p>
+      <p id="status" aria-live="polite">Loading this home…</p>
       <article id="listing" hidden>
         <p class="l__price" id="price"></p>
         <p class="l__meta" id="meta"></p>
-        <div class="l__gallery" id="gallery"></div>
+        <figure class="l__photo" id="photo-box" hidden>
+          <img id="photo" alt="" referrerpolicy="no-referrer" />
+          <figcaption class="l__photo-nav">
+            <button class="btn btn--ghost" type="button" id="photo-prev">← Previous photo</button>
+            <span id="photo-count" aria-live="polite"></span>
+            <button class="btn btn--primary" type="button" id="photo-next">Next photo →</button>
+          </figcaption>
+        </figure>
         <div class="l__cta">
           <a class="btn btn--primary" id="ask" href="/contact/">Ask about this home</a>
           <a class="btn btn--ghost" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
@@ -37,7 +45,6 @@ const crumbs = [
           <p class="l__brokerage" id="brokerage"></p>
         </div>
       </article>
-      <p><a href="/homes-for-sale/">Back to all listings</a></p>
       <IdxDisclaimer />
     </div>
   </section>
@@ -47,6 +54,8 @@ const crumbs = [
   (() => {
     const $ = (id) => document.getElementById(id);
     const id = new URLSearchParams(location.search).get('id') || '';
+    // Back returns to the same search, with the same choices still selected.
+    if (document.referrer.includes('/homes-for-sale/') && !document.referrer.includes('/listing/')) $('back').href = document.referrer;
     const money = (n) => (typeof n === 'number' ? '$' + n.toLocaleString('en-CA') : '');
     const label = (k) => ({ LivingAreaRange: 'Square feet', ApproximateAge: 'Age', DirectionFaces: 'Faces', TaxAnnualAmount: 'Property tax', AssociationFee: 'Maintenance fee', KitchensTotal: 'Kitchens', RoomsTotal: 'Rooms', ParkingTotal: 'Parking spaces', DaysOnMarket: 'Days on market' })[k]
       || k.replace(/([a-z])([A-Z])/g, '$1 $2');
@@ -60,14 +69,21 @@ const crumbs = [
         document.querySelector('h1').textContent = l.address || `Home in ${l.city}`;
         $('price').textContent = money(l.price) + (l.lease ? '/month' : '');
         $('meta').textContent = [where, l.beds != null && `${l.beds} bed`, l.baths != null && `${l.baths} bath`, l.type, l.crossStreet && `Near ${l.crossStreet}`].filter(Boolean).join(' · ');
-        l.photos.forEach((src, i) => {
-          const img = document.createElement('img');
-          img.src = src;
-          img.alt = `${where}, photo ${i + 1} of ${l.photos.length}`;
-          img.loading = i ? 'lazy' : 'eager';
-          img.referrerPolicy = 'no-referrer';
-          $('gallery').append(img);
-        });
+        let at = 0;
+        const showPhoto = () => {
+          $('photo').src = l.photos[at];
+          $('photo').alt = `${where}, photo ${at + 1} of ${l.photos.length}`;
+          $('photo-count').textContent = `Photo ${at + 1} of ${l.photos.length}`;
+          // Load the next one early so it appears straight away.
+          if (l.photos[at + 1]) new Image().src = l.photos[at + 1];
+        };
+        if (l.photos.length) {
+          $('photo-box').hidden = false;
+          $('photo-prev').onclick = () => { at = (at - 1 + l.photos.length) % l.photos.length; showPhoto(); };
+          $('photo-next').onclick = () => { at = (at + 1) % l.photos.length; showPhoto(); };
+          if (l.photos.length === 1) $('photo-prev').hidden = $('photo-next').hidden = true;
+          showPhoto();
+        }
         $('remarks').textContent = l.remarks || '';
         for (const [k, v] of Object.entries(l.facts)) {
           const tr = document.createElement('tr');
@@ -95,8 +111,13 @@ const crumbs = [
 <style is:global>
   .l__price { font-family: var(--font-heading); font-size: var(--step-4); color: var(--brand); margin: 0; }
   .l__meta { margin: var(--sp-2) 0 var(--sp-5); }
-  .l__gallery { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; overflow-x: auto; scroll-snap-type: x mandatory; gap: var(--sp-2); border-radius: var(--radius-lg); }
-  .l__gallery img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; scroll-snap-align: start; background: var(--mist); }
+  .l { font-size: 1.15rem; }
+  .l__photo { margin: 0; }
+  .l__photo img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; background: var(--mist); border-radius: var(--radius-lg); }
+  .l__photo-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-top: var(--sp-3); font-weight: 600; }
+  .l__photo-nav .btn { min-height: 56px; }
+  .l__cta .btn { min-height: 60px; font-size: 1.05rem; }
+  .l .prose th, .l .prose td { font-size: 1.05rem; }
   .l__cta { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin: var(--sp-5) 0; }
   .l__brokerage { font-size: var(--step--1); color: var(--text-muted); }
 </style>

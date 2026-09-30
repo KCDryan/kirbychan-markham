@@ -166,6 +166,12 @@ const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft))
   document.querySelectorAll<HTMLFormElement>('form.lead').forEach((form) => {
     const started = form.querySelector<HTMLInputElement>('[data-started]');
     if (started) started.value = String(Date.now());
+    // Coming from a listing page: say which home, so the visitor does not have to.
+    const listing = new URLSearchParams(location.search).get('listing');
+    const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
+    if (listing && /^[A-Z0-9]{5,14}$/i.test(listing) && message && !message.value) {
+      message.value = `I would like to know more about MLS® ${listing}.`;
+    }
 
     const status = form.querySelector<HTMLElement>('[data-status]');
     const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');

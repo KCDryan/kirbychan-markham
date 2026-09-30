@@ -6,7 +6,7 @@
  * Cloudflare dashboard and never reaches the browser. Responses are cached at the edge for
  * five minutes, well inside PropTx's rate limit.
  */
-import { PROPTX_BASE, cleanKey, listingQuery, mediaQuery, photos, searchQuery } from '../../src/lib/proptx';
+import { PROPTX_BASE, cleanKey, coverQuery, listingQuery, mediaQuery, photos, searchQuery } from '../../src/lib/proptx';
 
 interface Env {
   PROPTX_IDX_TOKEN?: string;
@@ -18,7 +18,7 @@ interface Context {
   waitUntil(p: Promise<unknown>): void;
 }
 
-type Row = Record<string, unknown> & { Media?: Parameters<typeof photos>[0] };
+type Row = Record<string, unknown>;
 
 const TTL = 300;
 
@@ -48,7 +48,7 @@ async function proptx(token: string, path: string): Promise<{ value: Row[]; '@od
 }
 
 /** Listings the seller has kept off the internet are dropped, and hidden addresses stay hidden. */
-function publicCard(r: Row) {
+function publicCard(r: Row, cover?: string) {
   const showAddress = r.InternetAddressDisplayYN !== false;
   return {
     key: r.ListingKey,
@@ -58,11 +58,12 @@ function publicCard(r: Row) {
     community: r.CityRegion,
     beds: r.BedroomsTotal,
     baths: r.BathroomsTotalInteger,
-    type: r.PropertySubType,
+    type: typeof r.PropertySubType === 'string' ? r.PropertySubType.trim() : r.PropertySubType,
+    style: Array.isArray(r.ArchitecturalStyle) ? r.ArchitecturalStyle.join(', ') : null,
     lease: r.TransactionType === 'For Lease',
     brokerage: r.ListOfficeName,
     updated: r.ModificationTimestamp,
-    photo: photos(r.Media)[0] ?? null,
+    photo: cover ?? null,
   };
 }
 
@@ -75,28 +76,6 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
   if (hit) return hit;
 
   const params = new URL(request.url).searchParams;
-  // TEMP diagnostic: fixed probe queries only. Remove once filters are confirmed.
-  if (params.get('diag') === 'fields') {
-    const get = (path: string) => fetch(`${PROPTX_BASE}/${path}`, { headers: { authorization: `Bearer ${env.PROPTX_IDX_TOKEN}` } }).then(async (r) => ({ status: r.status, text: await r.text() }));
-    const probes: Record<string, string> = {};
-    const tries: Record<string, string> = {
-      built: `Property?${searchQuery(new URLSearchParams('city=Markham'))}`,
-      builtDecoded: `Property?${searchQuery(new URLSearchParams('city=Markham')).replace(/%24/g, '$')}`,
-      noExpand: `Property?$top=2&$select=ListingKey&$filter=${encodeURIComponent("City eq 'Markham'")}&$count=true&$orderby=${encodeURIComponent('ModificationTimestamp desc,ListingKey')}`,
-      expandSimple: `Property?$top=1&$select=ListingKey&$expand=Media`,
-      expandSel: `Property?$top=1&$select=ListingKey&$expand=${encodeURIComponent('Media($select=MediaURL,ImageSizeDescription,Order)')}`,
-      mediaDirect: `Media?$top=6&$select=MediaURL,ImageSizeDescription,Order,MediaCategory,PreferredPhotoYN,ResourceRecordKey&$orderby=ResourceRecordKey,Order`,
-      anyNoSpace: `Property?$top=1&$select=ListingKey&$filter=${encodeURIComponent("ArchitecturalStyle/any(a:a eq 'Bungalow')")}`,
-      anyRaw: `Property?$top=1&$select=ListingKey&$filter=ArchitecturalStyle/any(a:a eq 'Bungalow')`,
-      has: `Property?$top=1&$select=ListingKey&$filter=${encodeURIComponent("ArchitecturalStyle has 'Bungalow'")}`,
-      eqColl: `Property?$top=1&$select=ListingKey&$filter=${encodeURIComponent("ArchitecturalStyle eq 'Bungalow'")}`,
-      containsColl: `Property?$top=1&$select=ListingKey&$filter=${encodeURIComponent("contains(ArchitecturalStyle,'Bungalow')")}`,
-      inColl: `Property?$top=1&$select=ListingKey&$filter=${encodeURIComponent("ArchitecturalStyle in ('Bungalow')")}`,
-    };
-    for (const [k, path] of Object.entries(tries)) { const r = await get(path); probes[k] = `${r.status} ${r.text.slice(0, 700)}`; }
-    const lines: string[] = []; const tally = {};
-    return new Response(JSON.stringify({ lines, probes, tally }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
-  }
   let body: unknown;
   try {
     if (params.has('id')) {
@@ -110,18 +89,24 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
       if (!r || r.InternetEntireListingDisplayYN === false) return json({ error: 'not-found' }, 404);
       const facts = Object.fromEntries(DETAIL.map((k) => [k, r[k]]).filter(([, v]) => v !== null && v !== undefined && v !== '' && !(Array.isArray(v) && !v.length)));
       body = {
-        ...publicCard(r),
+        ...publicCard(r, photos(media.value as Parameters<typeof photos>[0])[0]),
         remarks: r.PublicRemarks ?? null,
         crossStreet: r.CrossStreet ?? null,
         tour: r.VirtualTourURLUnbranded ?? null,
-        photos: photos(media.value as Parameters<typeof photos>[0], ['Largest', 'Large', 'Medium']),
+        photos: photos(media.value as Parameters<typeof photos>[0]),
         facts,
       };
     } else {
       const data = await proptx(env.PROPTX_IDX_TOKEN, `Property?${searchQuery(params)}`);
+      const rows = data.value.filter((r) => r.InternetEntireListingDisplayYN !== false);
+      const covers = new Map<string, string>();
+      if (rows.length) {
+        const media = await proptx(env.PROPTX_IDX_TOKEN, `Media?${coverQuery(rows.map((r) => String(r.ListingKey)))}`);
+        for (const m of media.value) if (m.MediaURL && !covers.has(String(m.ResourceRecordKey))) covers.set(String(m.ResourceRecordKey), String(m.MediaURL));
+      }
       body = {
         total: data['@odata.count'] ?? null,
-        listings: data.value.filter((r) => r.InternetEntireListingDisplayYN !== false).map(publicCard),
+        listings: rows.map((r) => publicCard(r, covers.get(String(r.ListingKey)))),
       };
     }
   } catch (err) {
