@@ -7,10 +7,10 @@ import sitemap from '@astrojs/sitemap';
 
 const SITE = 'https://kirbychanmarkham.com';
 
-/** Read top level frontmatter values from every MDX file in a folder. */
-function frontmatter(folder) {
+/** Read top level frontmatter values from every MDX file in a folder, including agents' quick/ posts under blog/. */
+function frontmatter(folder, sub = '') {
   // Resolved from this file, so the config works from any working directory.
-  const dir = fileURLToPath(new URL(folder, import.meta.url));
+  const dir = fileURLToPath(new URL(folder + sub, import.meta.url));
   const out = [];
   for (const name of readdirSync(dir)) {
     if (!name.endsWith('.mdx') || name.startsWith('_')) continue;
@@ -28,7 +28,7 @@ function frontmatter(folder) {
 // lastmod rather than a made up one.
 const lastmod = new Map();
 const categoryCounts = new Map();
-for (const post of frontmatter('./src/content/blog/')) {
+for (const post of [...frontmatter('./src/content/blog/'), ...frontmatter('./src/content/blog/', 'quick/')]) {
   if (post.get('draft') === 'true') continue;
   const date = post.get('updated') ?? post.get('published');
   if (date) lastmod.set(`${SITE}/blog/${post.slug}/`, date);

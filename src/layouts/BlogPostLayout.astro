@@ -30,15 +30,67 @@ const categoryName = BLOG_CATEGORIES[d.category];
 const categoryPath = `/blog/category/${d.category}/`;
 const guide = d.guide ? { path: `/${d.guide}/`, label: GUIDES[d.guide].label } : undefined;
 
+// Posts that do not list their own links (agents' quick posts, mostly) get them from the headline,
+// description and category, so every post links on to a guide, a neighbourhood and a tool.
+const topic = `${d.h1} ${d.description}`;
+const HOOD_WORDS: Record<string, RegExp> = {
+  unionville: /\bunionville\b/i,
+  'markham-village': /\bmarkham village\b/i,
+  cornell: /\bcornell\b/i,
+  'berczy-village': /\bberczy\b/i,
+  cathedraltown: /\bcathedraltown\b/i,
+  wismer: /\bwismer\b/i,
+  greensborough: /\bgreensborough\b/i,
+  'angus-glen': /\bangus glen\b/i,
+  'box-grove': /\bbox grove\b/i,
+  thornhill: /\bthornhill\b/i,
+  'milliken-mills': /\bmilliken\b/i,
+  downtown: /\bdowntown markham\b/i,
+};
+const SERVICE_WORDS: [string, RegExp][] = [
+  ['estate-sales', /\b(estate|probate|executor)/i],
+  ['separation-and-divorce', /\b(separation|divorce)/i],
+  ['new-construction', /\b(pre-construction|new construction|builder)/i],
+  ['luxury', /\bluxury\b/i],
+  ['upsizing', /\bupsiz/i],
+  ['relocation', /\b(relocat|moving to markham|newcomer)/i],
+  ['investors', /\b(invest|rental|landlord)/i],
+  ['downsizing', /\b(downsiz|reverse mortgage|senior)/i],
+  ['first-time-buyers', /\bfirst[- ]time\b/i],
+];
+const CATEGORY_SERVICE: Partial<Record<string, string>> = {
+  downsizing: 'downsizing', buying: 'first-time-buyers', 'costs-and-taxes': 'first-time-buyers', condos: 'downsizing',
+  'new-construction': 'new-construction', 'moving-to-markham': 'relocation', investing: 'investors', neighbourhoods: 'relocation', selling: 'downsizing',
+};
+const TOOLS: Partial<Record<string, { href: string; label: string; note: string }[]>> = (() => {
+  const ltt = { href: '/land-transfer-tax-calculator-markham/', label: 'Land transfer tax calculator', note: 'Ontario tax on any price, with the first-time buyer refund.' };
+  const mortgage = { href: '/mortgage-calculator-markham/', label: 'Mortgage calculator', note: 'Monthly payment, minimum down payment and the stress test.' };
+  const prices = { href: '/markham-house-prices/', label: 'Markham house prices', note: 'The latest TRREB prices by property type and neighbourhood.' };
+  const sold = { href: '/sold/', label: 'Markham sold prices', note: 'What homes actually sold for, with a free account.' };
+  const downsizeHub = { href: '/best-markham-neighbourhoods-for-downsizing/', label: 'Where to downsize in Markham', note: 'Neighbourhoods with condos, townhomes and bungalows.' };
+  const families = { href: '/best-markham-neighbourhoods-for-families/', label: 'Markham neighbourhoods with the most room', note: 'Detached, semi and townhome areas with TRREB prices.' };
+  const commuters = { href: '/best-markham-neighbourhoods-for-commuters/', label: 'Markham neighbourhoods by commute', note: 'GO, Viva and highway access by neighbourhood.' };
+  return {
+    buying: [mortgage, ltt], 'costs-and-taxes': [ltt, mortgage], condos: [downsizeHub, prices], 'new-construction': [mortgage, ltt],
+    selling: [prices, sold], market: [prices, sold], downsizing: [downsizeHub, sold], investing: [prices, mortgage],
+    neighbourhoods: [families, commuters], 'moving-to-markham': [commuters, families],
+  };
+})();
+
 const allHoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
-const linkedHoods = d.related
+const hoodIds = d.related.length ? d.related : Object.keys(HOOD_WORDS).filter((id) => HOOD_WORDS[id].test(topic)).slice(0, 2);
+const linkedHoods = hoodIds
   .map((slug) => allHoods.find((h) => h.id === slug))
   .filter((h): h is CollectionEntry<'neighbourhoods'> => Boolean(h));
 
 const allServices = await getCollection('services', ({ data }) => !data.draft);
-const linkedServices = d.relatedServices
+const serviceIds = d.relatedServices.length
+  ? d.relatedServices
+  : [...new Set([...SERVICE_WORDS.filter(([, re]) => re.test(topic)).map(([id]) => id), CATEGORY_SERVICE[d.category]].filter((x): x is string => Boolean(x)))].slice(0, 2);
+const linkedServices = serviceIds
   .map((slug) => allServices.find((s) => s.id === slug))
   .filter((s): s is CollectionEntry<'services'> => Boolean(s));
+const linkedTools = (TOOLS[d.category] ?? []).filter((t) => t.href !== Astro.url.pathname);
 
 // Related posts: same category first, then the newest of the rest.
 const others = (await getCollection('blog', ({ data }) => !data.draft))
@@ -57,7 +109,8 @@ const crumbs = [
 ];
 
 // Share image: the neighbourhood photo when the post is about one.
-const hoodPhoto = d.neighbourhood ? neighbourhoodPhoto(d.neighbourhood) : undefined;
+const photoHood = d.neighbourhood ?? (linkedHoods.length === 1 ? linkedHoods[0].id : undefined);
+const hoodPhoto = photoHood ? neighbourhoodPhoto(photoHood) : undefined;
 const ogImage = hoodPhoto
   ? (await getImage({ src: hoodPhoto, width: 1200, height: 630, format: 'jpg', fit: 'cover' })).src
   : undefined;
@@ -144,7 +197,7 @@ const jsonLd = [
           <FaqAccordion faq={d.faq} />
 
           {
-            (linkedHoods.length > 0 || linkedServices.length > 0) && (
+            (linkedHoods.length > 0 || linkedServices.length > 0 || linkedTools.length > 0) && (
               <section class="post-links" aria-labelledby="post-links-heading">
                 <h2 id="post-links-heading">Keep exploring</h2>
                 <ul>
@@ -158,6 +211,12 @@ const jsonLd = [
                     <li>
                       <a href={servicePath(s.id)}>{s.data.name}</a>
                       <span>{s.data.summary}</span>
+                    </li>
+                  ))}
+                  {linkedTools.map((t) => (
+                    <li>
+                      <a href={t.href}>{t.label}</a>
+                      <span>{t.note}</span>
                     </li>
                   ))}
                 </ul>

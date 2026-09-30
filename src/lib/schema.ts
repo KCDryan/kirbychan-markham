@@ -27,6 +27,23 @@ export function person() {
   };
 }
 
+/**
+ * WebSite, on the home page only. Google reads it for the site name shown in results. No
+ * SearchAction: the sitelinks search box is retired and the site has no search results page.
+ */
+export function website() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${site.url}/#website`,
+    name: site.shortName + ' Markham',
+    alternateName: [site.name, 'kirbychanmarkham.com'],
+    url: `${site.url}/`,
+    inLanguage: 'en-CA',
+    publisher: { '@id': AGENT_ID },
+  };
+}
+
 /** Sitewide RealEstateAgent. Address is the real registered office, never Markham. */
 export function realEstateAgent(areaServed: string[]) {
   const sameAs = Object.values(site.social).filter((u) => typeof u === 'string' && u.length > 0);
@@ -41,6 +58,7 @@ export function realEstateAgent(areaServed: string[]) {
     telephone: site.contact.phone,
     email: site.contact.email,
     image: absolute('/og-default.png'),
+    logo: absolute('/apple-touch-icon.png'),
     priceRange: '$$$',
     address: {
       '@type': 'PostalAddress',

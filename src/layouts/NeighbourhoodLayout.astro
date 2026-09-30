@@ -14,6 +14,7 @@ import { getImage } from 'astro:assets';
 import { neighbourhoodPhoto } from '../lib/photos';
 import site from '../data/site.json';
 import listingCounts from '../data/listing-counts.json';
+import monthly from '../data/trreb-monthly.json';
 import { AREAS } from '../lib/proptx';
 import NewsItems from '../components/NewsItems.astro';
 import credits from '../data/photo-credits.json';
@@ -194,7 +195,7 @@ const jsonLd = [
             </div>
             <p class="bands__note">
               Figures are general information for the period stated and are not an appraisal of any
-              specific property.
+              specific property. For the whole city, see <a href="/markham-house-prices/">Markham house prices by property type</a>{monthly.report && <> and the <a href={monthly.report}>{monthly.period} Markham market report</a></>}.
             </p>
           </section>
         )
@@ -268,6 +269,16 @@ const jsonLd = [
           ))}
         </ul>
         <a class="aside-card__all" href="/neighbourhoods/">All twelve neighbourhoods</a>
+      </div>
+
+      <div class="aside-card">
+        <h2>Compare Markham neighbourhoods</h2>
+        <ul>
+          <li><a href="/best-markham-neighbourhoods-for-downsizing/">Where to downsize in Markham</a><span>Condos, townhomes and bungalows by neighbourhood.</span></li>
+          <li><a href="/best-markham-neighbourhoods-for-families/">Neighbourhoods with the most room</a><span>Detached, semi and townhome areas.</span></li>
+          <li><a href="/best-markham-neighbourhoods-for-commuters/">Neighbourhoods by commute</a><span>GO train times, Viva and highway access.</span></li>
+          <li><a href="/markham-house-prices/">Markham house prices</a><span>The latest TRREB figures by property type.</span></li>
+        </ul>
       </div>
 
       {

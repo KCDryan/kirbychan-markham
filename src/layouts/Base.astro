@@ -4,7 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import site from '../data/site.json';
 import { canonical, absolute, DEFAULT_OG } from '../lib/seo';
-import { realEstateAgent } from '../lib/schema';
+import { realEstateAgent, website } from '../lib/schema';
 import LangSuggest from '../components/LangSuggest.astro';
 import { LOCALES, basePath, langFromPath, langsForPath, localePath, t } from '../i18n';
 
@@ -65,7 +65,8 @@ const agent = realEstateAgent([
   'Downtown Markham',
 ]);
 
-const graphs = [agent, ...jsonLd].filter(Boolean);
+const isHome = Astro.url.pathname === '/';
+const graphs = [agent, isHome && website(), ...jsonLd].filter(Boolean);
 ---
 
 <!doctype html>

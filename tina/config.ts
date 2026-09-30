@@ -56,6 +56,8 @@ const body = (templates: any[] = []): TinaField => ({
   templates,
 });
 
+const SLUG_FILLER = new Set(['a', 'an', 'and', 'the', 'to', 'of', 'in', 'for', 'or', 'what', 'how', 'why', 'with', 'your', 'you', 'need', 'should', 'is', 'are', 'on', 'at', 'from', 'by']);
+
 export default defineConfig({
   branch,
   clientId: process.env.TINA_CLIENT_ID,
@@ -88,6 +90,8 @@ export default defineConfig({
                 .replace(/^-+|-+$/g, '')
                 .split('-')
                 .slice(0, 8)
+                // Never end the address on a filler word ("...-what-the"), which reads as cut off.
+                .reduceRight((kept: string[], word, i, all) => (kept.length || !SLUG_FILLER.has(word) || i === 0 ? [word, ...kept] : kept), [])
                 .join('-') || 'new-post',
           },
         },

@@ -100,6 +100,11 @@ const faq = [
           ))
         }
       </ol>
+      <p class="sellers-numbers">
+        Want to see the numbers first? Start with <a href="/markham-house-prices/">Markham house prices by property type</a>,
+        see <a href="/sold/">what nearby homes actually sold for</a> or
+        <a href="/home-valuation/">ask for a free valuation</a> built from the sales closest to yours.
+      </p>
     </div>
   </section>
 
@@ -132,7 +137,7 @@ const faq = [
         <p class="eyebrow">Selling in a particular situation?</p>
         <h2>Some sales need more than a listing</h2>
       </div>
-      <ServiceGrid only={['estate-sales', 'downsizing', 'luxury', 'upsizing']} />
+      <ServiceGrid only={['estate-sales', 'downsizing', 'separation-and-divorce', 'luxury', 'upsizing']} />
     </div>
   </section>
 
@@ -162,6 +167,10 @@ const faq = [
 </Page>
 
 <style>
+  .sellers-numbers {
+    margin-top: var(--sp-6);
+    max-width: 70ch;
+  }
   .sellers-dpromo {
     margin-bottom: var(--sp-7);
   }
