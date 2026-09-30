@@ -17,6 +17,7 @@ import {
   endCookie, endSession, ensureSchema, hashPassword, ipTag, isEmail, isName, issueToken, keys, loadUser, passwordExpired, passwordExpires,
   randomHex, same, sameOrigin, seal, sendEmail, startSession, useToken, type Keys, type User, type UserRow, type VowEnv,
 } from '../../../src/lib/vow';
+import site from '../../../src/data/site.json';
 
 interface Context {
   request: Request;
@@ -86,8 +87,23 @@ The link works for ${RESET_HOURS} hours. If you did not ask for this, you can ig
 
 ${SIGNATURE}`;
 
-/** Sends the new account to the same place as website enquiries, once the email is confirmed. */
+/**
+ * A new confirmed account is a lead. The team always gets an email; the lead webhook (if one is set)
+ * gets the same details as a website enquiry.
+ */
 async function forwardLead(env: VowEnv, u: User) {
+  await sendEmail(
+    env,
+    site.contact.email,
+    `New sold-prices account: ${u.name}`,
+    `Someone created an account to see Markham sold prices on kirbychanmarkham.com.
+
+Name: ${u.name}
+Email: ${u.email}
+Phone: ${u.phone || 'not given'}
+May we contact them about Markham real estate? ${u.contact_ok ? 'Yes, they ticked the box.' : 'No, they did not tick the box. Do not send marketing.'}
+Confirmed: ${new Date().toLocaleString('en-CA', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Toronto' })}`,
+  );
   if (!env.LEAD_WEBHOOK_URL) return;
   await fetch(env.LEAD_WEBHOOK_URL, {
     method: 'POST',
@@ -129,7 +145,7 @@ export async function onRequest({ request, env, params, waitUntil }: Context): P
     const tokens = (await db.prepare('SELECT kind, COUNT(*) AS issued, COUNT(used_at) AS used FROM tokens GROUP BY kind').bind().all()).results;
     const sessions = await db.prepare('SELECT COUNT(*) AS active FROM sessions WHERE expires_at > ?').bind(Date.now()).first();
     const stored = await db.prepare("SELECT email_enc LIKE '%@%' AS plainEmail, length(email_hash) AS hashLen, length(pass_hash) AS passLen FROM accounts LIMIT 1").bind().first();
-    return json({ accounts, events, tokens, sessions, stored });
+    return json({ accounts, events, tokens, sessions, stored, leadWebhookSet: !!env.LEAD_WEBHOOK_URL });
   }
   if (request.method === 'GET' && action === 'me') {
     const u = await currentUser(db, k, request);
