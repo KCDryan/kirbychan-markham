@@ -122,6 +122,15 @@ export async function onRequest({ request, env, params, waitUntil }: Context): P
   await ensureSchema(db);
   const origin = new URL(request.url).origin;
 
+  // TEMP: counts only, no personal data. Remove after the launch test.
+  if (request.method === 'GET' && action === 'counts') {
+    const accounts = await db.prepare('SELECT COUNT(*) AS total, COUNT(verified_at) AS verified, SUM(contact_ok) AS contactOk FROM accounts').bind().first();
+    const events = (await db.prepare('SELECT action, COUNT(*) AS n FROM audit GROUP BY action').bind().all()).results;
+    const tokens = (await db.prepare('SELECT kind, COUNT(*) AS issued, COUNT(used_at) AS used FROM tokens GROUP BY kind').bind().all()).results;
+    const sessions = await db.prepare('SELECT COUNT(*) AS active FROM sessions WHERE expires_at > ?').bind(Date.now()).first();
+    const stored = await db.prepare("SELECT email_enc LIKE '%@%' AS plainEmail, length(email_hash) AS hashLen, length(pass_hash) AS passLen FROM accounts LIMIT 1").bind().first();
+    return json({ accounts, events, tokens, sessions, stored });
+  }
   if (request.method === 'GET' && action === 'me') {
     const u = await currentUser(db, k, request);
     return json({ configured: true, user: u && { name: u.name, passwordExpires: passwordExpires(u).toISOString() } });
