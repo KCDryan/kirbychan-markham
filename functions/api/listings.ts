@@ -66,7 +66,8 @@ function publicCard(r: Row) {
   };
 }
 
-export async function onRequestGet({ request, env, waitUntil }: Context): Promise<Response> {
+export async function onRequestGet(ctx: Context): Promise<Response> {
+  const { request, env } = ctx;
   if (!env.PROPTX_IDX_TOKEN) return json({ error: 'not-configured' }, 503);
 
   const cache = (caches as unknown as { default: Cache }).default;
@@ -103,10 +104,11 @@ export async function onRequestGet({ request, env, waitUntil }: Context): Promis
     }
   } catch (err) {
     console.error(err);
-    return json({ error: 'upstream', detail: String(err).slice(0, 300) }, 502);
+    // 503, not 502: Cloudflare replaces a 502 body with its own error page.
+    return json({ error: 'upstream', detail: String(err).slice(0, 300) }, 503);
   }
 
   const res = json(body);
-  waitUntil(cache.put(request, res.clone()));
+  ctx.waitUntil(cache.put(request, res.clone()));
   return res;
 }
