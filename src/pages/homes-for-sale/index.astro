@@ -2,7 +2,7 @@
 import Page from '../../layouts/Page.astro';
 import IdxDisclaimer from '../../components/IdxDisclaimer.astro';
 import site from '../../data/site.json';
-import { CITIES, HOMES, PRICES } from '../../lib/proptx';
+import { AREAS, CITIES, HOMES, PRICES } from '../../lib/proptx';
 
 const crumbs = [
   { name: 'Home', path: '/' },
@@ -40,8 +40,18 @@ const BEDS = ['1', '2', '3', '4'];
         </div>
       </div>
 
+      <div class="hs__step" id="area-step">
+        <h2><span class="hs__num">2</span> Where in Markham? <small>(optional)</small></h2>
+        <div class="hs__choices">
+          <a class="hs__choice" data-key="area" data-value="" href="?"><strong>All of Markham</strong></a>
+          {Object.entries(AREAS).map(([k, a]) => (
+            <a class="hs__choice" data-key="area" data-value={k} href={`?area=${k}`}><strong>{a.label}</strong></a>
+          ))}
+        </div>
+      </div>
+
       <div class="hs__step">
-        <h2><span class="hs__num">2</span> Your price <small>(optional)</small></h2>
+        <h2><span class="hs__num">3</span> Your price <small>(optional)</small></h2>
         <div class="hs__choices">
           <a class="hs__choice" data-key="price" data-value="" href="?"><strong>Any price</strong></a>
           {Object.entries(PRICES).map(([k, p]) => (
@@ -51,7 +61,7 @@ const BEDS = ['1', '2', '3', '4'];
       </div>
 
       <div class="hs__step">
-        <h2><span class="hs__num">3</span> Bedrooms <small>(optional)</small></h2>
+        <h2><span class="hs__num">4</span> Bedrooms <small>(optional)</small></h2>
         <div class="hs__choices">
           <a class="hs__choice" data-key="beds" data-value="" href="?"><strong>Any</strong></a>
           {BEDS.map((b) => (
@@ -110,10 +120,10 @@ const BEDS = ['1', '2', '3', '4'];
   </section>
 </Page>
 
-<script is:inline define:vars={{ HOMES, PRICES, fallback: 'https://kirbychanandco.com/homes-for-sale-markham', phone: site.contact.phone }}>
+<script is:inline define:vars={{ HOMES, PRICES, AREAS, fallback: 'https://kirbychanandco.com/homes-for-sale-markham', phone: site.contact.phone }}>
   (() => {
     const $ = (id) => document.getElementById(id);
-    const KEYS = ['home', 'price', 'beds', 'city', 'for', 'sort', 'page'];
+    const KEYS = ['home', 'area', 'price', 'beds', 'city', 'for', 'sort', 'page'];
     const money = (n) => (typeof n === 'number' ? '$' + n.toLocaleString('en-CA') : '');
     const el = (tag, cls, text) => {
       const e = document.createElement(tag);
@@ -130,6 +140,7 @@ const BEDS = ['1', '2', '3', '4'];
       const n = new URLSearchParams(p);
       if (value) n.set(key, value); else n.delete(key);
       if (key !== 'page') n.delete('page');
+      if (key === 'city') n.delete('area');
       const s = n.toString();
       return s ? '?' + s : location.pathname;
     };
@@ -141,7 +152,7 @@ const BEDS = ['1', '2', '3', '4'];
       return [
         home ? home.label.toLowerCase() : 'homes',
         p.get('for') === 'lease' ? 'for rent' : 'for sale',
-        'in ' + (p.get('city') || 'Markham'),
+        'in ' + (p.get('city') || (AREAS[p.get('area')] ? AREAS[p.get('area')].label + ', Markham' : 'Markham')),
         price && (price.min && price.max ? `from ${money(price.min)} to ${money(price.max)}` : price.max ? `under ${money(price.max)}` : `over ${money(price.min)}`),
         p.get('beds') && `with ${p.get('beds')} or more bedrooms`,
       ].filter(Boolean).join(' ');
@@ -183,6 +194,8 @@ const BEDS = ['1', '2', '3', '4'];
         if (on) c.setAttribute('aria-current', 'true'); else c.removeAttribute('aria-current');
       }
       if (p.get('city') || p.get('for') || p.get('sort')) document.querySelector('.hs__more').open = true;
+      // Neighbourhoods are Markham's, so the row only shows while searching Markham.
+      $('area-step').hidden = !!p.get('city');
       $('reset').hidden = ![...p.keys()].length;
       $('status').textContent = 'Finding ' + describe(p) + '…';
       $('jump').textContent = 'See the homes ↓';

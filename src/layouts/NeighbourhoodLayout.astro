@@ -13,6 +13,8 @@ import Photo from '../components/Photo.astro';
 import { getImage } from 'astro:assets';
 import { neighbourhoodPhoto } from '../lib/photos';
 import site from '../data/site.json';
+import listingCounts from '../data/listing-counts.json';
+import { AREAS } from '../lib/proptx';
 import NewsItems from '../components/NewsItems.astro';
 import credits from '../data/photo-credits.json';
 import { longDate, neighbourhoodPath } from '../lib/format';
@@ -57,8 +59,17 @@ const crumbs = [
   { name: d.name, path },
 ];
 
-const searchHref = site.links.loftySearch || '/contact/';
+// Neighbourhood search: the matching TRREB communities, or condos for Downtown Markham, which TRREB does not report as a community.
+const areaSlug = entry.id.split('/').pop() ?? entry.id;
+const inArea = areaSlug in AREAS;
+const searchHref = inArea ? `/homes-for-sale/?area=${areaSlug}` : areaSlug === 'downtown' ? '/homes-for-sale/?home=condo' : site.links.loftySearch || '/contact/';
 const searchExternal = searchHref.startsWith('http');
+// Refreshed every morning by .github/workflows/refresh-listing-counts.yml.
+const counts = inArea ? (listingCounts.areas as Record<string, Record<string, number>>)[areaSlug] : undefined;
+const countsDate = listingCounts.updated ? new Date(listingCounts.updated).toLocaleDateString('en-CA', { month: 'long', day: 'numeric', timeZone: 'America/Toronto' }) : '';
+const quick = counts
+  ? [['bungalow', 'Bungalows'], ['condo', 'Condo apartments'], ['townhouse', 'Townhouses'], ['house', 'Houses']].filter(([k]) => counts[k] > 0)
+  : [];
 
 // Social share card uses the neighbourhood photo when one exists.
 const heroPhoto = neighbourhoodPhoto(entry.id);
@@ -100,12 +111,27 @@ const jsonLd = [
             rel={searchExternal ? 'noopener' : undefined}
             target={searchExternal ? '_blank' : undefined}
           >
-            Search {d.name} Homes{
+            See {d.name} Homes For Sale{
               searchExternal && <span class="visually-hidden"> (opens in a new tab)</span>
             }
           </a>
           <a class="btn btn--ghost" href="/contact/">Ask us about {d.name}</a>
         </div>
+        {
+          counts && counts.total > 0 && (
+            <div class="for-sale-now">
+              <p>
+                <strong>{counts.total.toLocaleString('en-CA')} homes for sale in {d.name} right now.</strong>{' '}
+                <span>Updated {countsDate}.</span>
+              </p>
+              <p class="for-sale-now__links">
+                {quick.map(([k, label]) => (
+                  <a class="btn btn--ghost btn--sm" href={`/homes-for-sale/?area=${areaSlug}&home=${k}`}>{label} ({counts[k]})</a>
+                ))}
+              </p>
+            </div>
+          )
+        }
       </div>
       <figure class="hood-photo">
         <Photo
@@ -316,6 +342,11 @@ const jsonLd = [
 </Base>
 
 <style>
+  .for-sale-now { margin-top: var(--sp-5); padding: var(--sp-4); background: var(--mist); border: 1px solid var(--rule); border-radius: var(--radius-lg); }
+  .for-sale-now p { margin: 0; }
+  .for-sale-now span { color: var(--text-muted); font-size: var(--step--1); }
+  .for-sale-now__links { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-3) !important; }
+
   .hood-photo {
     margin: 0;
   }

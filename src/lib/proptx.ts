@@ -23,6 +23,40 @@ export const HOMES: Record<string, { label: string; hint: string; filter: string
   house: { label: 'Houses', hint: 'Detached and semi-detached', filter: "(PropertySubType eq 'Detached' or startswith(PropertySubType,'Semi-Detached'))" },
 };
 
+/** Where a listing's home type falls, matching the HOMES filters above. Used for the daily counts. */
+export function homeKind(r: { PropertySubType?: unknown; ArchitecturalStyle?: unknown }): string | null {
+  const sub = String(r.PropertySubType ?? '').trim();
+  const styles = Array.isArray(r.ArchitecturalStyle) ? r.ArchitecturalStyle : [];
+  if (styles.includes('Bungalow') || styles.includes('Bungaloft')) return 'bungalow';
+  if (sub === 'Condo Apartment') return 'condo';
+  if (sub === 'Att/Row/Townhouse' || sub === 'Condo Townhouse') return 'townhouse';
+  if (sub === 'Detached' || sub.startsWith('Semi-Detached')) return 'house';
+  return null;
+}
+
+/**
+ * Our neighbourhood guides mapped to TRREB community names (PropTx CityRegion), checked against the
+ * live feed. Downtown Markham is not a TRREB community, so it has no entry.
+ */
+export const AREAS: Record<string, { label: string; communities: string[] }> = {
+  unionville: { label: 'Unionville', communities: ['Unionville', 'Village Green-South Unionville'] },
+  cornell: { label: 'Cornell', communities: ['Cornell'] },
+  'berczy-village': { label: 'Berczy Village', communities: ['Berczy'] },
+  'markham-village': { label: 'Markham Village', communities: ['Markham Village', 'Old Markham Village'] },
+  wismer: { label: 'Wismer', communities: ['Wismer'] },
+  greensborough: { label: 'Greensborough', communities: ['Greensborough'] },
+  thornhill: {
+    label: 'Thornhill',
+    communities: ['Thornhill', 'Royal Orchard', 'Aileen-Willowbrook', 'Grandview', 'German Mills', 'Thornlea', 'Bayview Glen'],
+  },
+  'milliken-mills': { label: 'Milliken Mills', communities: ['Milliken Mills East', 'Milliken Mills West'] },
+  'angus-glen': { label: 'Angus Glen', communities: ['Angus Glen'] },
+  cathedraltown: { label: 'Cathedraltown', communities: ['Cathedraltown'] },
+  'box-grove': { label: 'Box Grove', communities: ['Box Grove'] },
+};
+
+export const areaOf = (region: unknown) => Object.keys(AREAS).find((k) => AREAS[k].communities.includes(String(region))) ?? null;
+
 /** One-click price ranges, [min, max]. */
 export const PRICES: Record<string, { label: string; min?: number; max?: number }> = {
   u800: { label: 'Under $800,000', max: 800000 },
@@ -49,6 +83,8 @@ export function searchQuery(params: URLSearchParams): string {
   const f = ["ContractStatus eq 'Available'", "startswith(PropertyType,'Residential')", `TransactionType eq ${q(lease ? 'For Lease' : 'For Sale')}`];
   const city = CITIES.find((c) => c === (params.get('city') ?? 'Markham'));
   if (city) f.push(`City eq ${q(city)}`);
+  const area = city === 'Markham' ? AREAS[params.get('area') ?? ''] : undefined;
+  if (area) f.push(`CityRegion in (${area.communities.map(q).join(',')})`);
   const home = HOMES[params.get('home') ?? ''];
   if (home) f.push(home.filter);
   const price = PRICES[params.get('price') ?? ''];
@@ -116,6 +152,10 @@ if (typeof process !== 'undefined' && import.meta.filename === process.argv[1]) 
   if (s.get('$skip') !== '24' || s.get('$orderby') !== 'ListPrice asc,ListingKey') throw new Error('paging');
   const evil = new URLSearchParams(searchQuery(new URLSearchParams("city=Markham' or 1 eq 1&home=x' or 1&price=5 or true")));
   if (evil.get('$filter') !== "ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale'") throw new Error('injection ' + evil.get('$filter'));
+  const a = new URLSearchParams(searchQuery(new URLSearchParams('area=thornhill&home=condo'))).get('$filter')!;
+  if (!a.includes("City eq 'Markham' and CityRegion in ('Thornhill','Royal Orchard'")) throw new Error(a);
+  if (new URLSearchParams(searchQuery(new URLSearchParams('city=Vaughan&area=cornell'))).get('$filter')!.includes('CityRegion')) throw new Error('area outside Markham');
+  if (homeKind({ PropertySubType: 'Semi-Detached ', ArchitecturalStyle: ['2-Storey'] }) !== 'house' || homeKind({ PropertySubType: 'Detached', ArchitecturalStyle: ['Bungaloft'] }) !== 'bungalow') throw new Error('homeKind');
   if (!coverQuery(["A1'x"]).includes("'A1''x'")) throw new Error('cover quoting');
   if (cleanKey("N1' or 1") !== null || cleanKey('n12345678') !== 'N12345678') throw new Error('key');
   const p = photos([{ MediaURL: 'b', Order: 2 }, { MediaURL: 'a-s', Order: 1, ImageSizeDescription: 'Thumbnail' }, { MediaURL: 'a-l', Order: 1, ImageSizeDescription: 'Large' }]);

@@ -10,8 +10,6 @@ import { PROPTX_BASE, cleanKey, coverQuery, listingQuery, mediaQuery, photos, se
 
 interface Env {
   PROPTX_IDX_TOKEN?: string;
-  PROPTX_VOW_TOKEN?: string;
-  PROPTX_DLA_TOKEN?: string;
 }
 
 interface Context {
@@ -41,7 +39,7 @@ const json = (body: unknown, status = 200) =>
     },
   });
 
-async function proptx(token: string, path: string): Promise<{ value: Row[]; '@odata.count'?: number }> {
+export async function proptx(token: string, path: string): Promise<{ value: Row[]; '@odata.count'?: number }> {
   const res = await fetch(`${PROPTX_BASE}/${path}`, {
     headers: { authorization: `Bearer ${token}`, accept: 'application/json' },
   });
@@ -78,37 +76,6 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
   if (hit) return hit;
 
   const params = new URL(request.url).searchParams;
-  // TEMP diagnostic: fixed probe queries only. Remove once community names and sold fields are confirmed.
-  if (params.get('diag') === 'vow') {
-    const out: Record<string, unknown> = { vowSet: !!env.PROPTX_VOW_TOKEN, dlaSet: !!env.PROPTX_DLA_TOKEN };
-    const tokens = Object.entries({ idx: env.PROPTX_IDX_TOKEN, vow: env.PROPTX_VOW_TOKEN, dla: env.PROPTX_DLA_TOKEN }).filter(([, t]) => t) as [string, string][];
-    const get = (t: string, path: string) => fetch(`${PROPTX_BASE}/${path}`, { headers: { authorization: `Bearer ${t}` } }).then(async (r) => ({ status: r.status, text: await r.text() }));
-    const meta = (await get(env.PROPTX_IDX_TOKEN!, '$metadata')).text;
-    out.fields = meta.split(/(?=<)/).filter((l) => /Name="(ClosePrice|CloseDate|SoldEntryTimestamp|PurchaseContractDate|SoldConditionalEntryTimestamp|CommunityCode|CityRegion|OriginalListPrice|ListingContractDate|ExpirationDate|DaysOnMarket|PreviousListPrice|StatusChangeTimestamp|UnavailableDate|TerminatedDate)"/.test(l)).map((l) => l.trim()).slice(0, 30);
-    const tally: Record<string, number> = {};
-    let next: string | null = `Property?$top=1000&$select=CityRegion&$filter=${encodeURIComponent("ContractStatus eq 'Available' and City eq 'Markham' and startswith(PropertyType,'Residential')")}`;
-    for (let i = 0; next && i < 3; i++) {
-      const r = JSON.parse((await get(env.PROPTX_IDX_TOKEN!, next)).text);
-      for (const row of r.value) tally[String(row.CityRegion)] = (tally[String(row.CityRegion)] ?? 0) + 1;
-      next = r['@odata.nextLink']?.replace(`${PROPTX_BASE}/`, '') ?? null;
-    }
-    out.communities = tally;
-    for (const [name, t] of tokens) {
-      const probes: Record<string, string> = {};
-      for (const f of ["MlsStatus eq 'Sold'", "StandardStatus eq 'Closed'", "ContractStatus eq 'Unavailable'", "City eq 'Markham'"]) {
-        const r = await get(t, `Property?$top=0&$count=true&$filter=${encodeURIComponent(f)}`);
-        probes[f] = `${r.status} ${r.text.slice(0, 160)}`;
-      }
-      const s1 = await get(t, `Property?$top=3&$select=ListingKey,MlsStatus,StandardStatus,ContractStatus,ListPrice,ClosePrice,CloseDate,PurchaseContractDate,CityRegion,PropertySubType&$orderby=ModificationTimestamp desc&$filter=${encodeURIComponent("MlsStatus eq 'Sold' and City eq 'Markham'")}`);
-      probes.sample = `${s1.status} ${s1.text.slice(0, 900)}`;
-      const st: Record<string, number> = {};
-      const s2 = JSON.parse((await get(t, `Property?$top=2000&$select=MlsStatus&$filter=${encodeURIComponent("City eq 'Markham'")}`)).text || '{"value":[]}');
-      for (const row of s2.value ?? []) st[row.MlsStatus] = (st[row.MlsStatus] ?? 0) + 1;
-      probes.statuses = JSON.stringify(st);
-      out[name] = probes;
-    }
-    return new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
-  }
   let body: unknown;
   try {
     if (params.has('id')) {

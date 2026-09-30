@@ -1,0 +1,41 @@
+name: Refresh listing counts
+
+# Every morning, save how many Markham homes are for sale (by neighbourhood and home type) into
+# src/data/listing-counts.json. The push makes Cloudflare rebuild, so every page shows today's numbers.
+on:
+  schedule:
+    - cron: '15 11 * * *' # 7:15 am Toronto time in summer, 6:15 am in winter
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch today's counts
+        run: curl -sSf --retry 3 --retry-delay 20 https://kirbychanmarkham.com/api/listing-counts -o /tmp/counts.json
+
+      - name: Check the numbers look sane
+        # A PropTx outage must not publish zeros across the site. Keep yesterday's file instead.
+        run: |
+          node -e "
+            const c = require('/tmp/counts.json');
+            if (!(c.markham && c.markham.total > 200 && Object.keys(c.areas).length >= 8)) {
+              console.error('Counts look wrong, keeping the old file:', JSON.stringify(c).slice(0, 300));
+              process.exit(1);
+            }
+          "
+          cp /tmp/counts.json src/data/listing-counts.json
+
+      - name: Commit if changed
+        run: |
+          git diff --quiet && { echo 'No change'; exit 0; }
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -am 'Daily listing counts'
+          git push
