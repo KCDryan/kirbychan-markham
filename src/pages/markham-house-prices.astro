@@ -5,21 +5,19 @@ import DownsizingPromo from '../components/DownsizingPromo.astro';
 import market from '../data/market.json';
 import { cad, neighbourhoodPath } from '../lib/format';
 import { CITIES, MARKHAM } from '../lib/comparisons';
+import monthly from '../data/trreb-monthly.json';
 
 /**
- * Markham house prices, from TRREB. Update each month from the new Market Watch: the period, the
- * by-type table and MARKHAM in src/lib/comparisons.ts. Neighbourhood medians come from
+ * Markham house prices, from TRREB. Monthly figures live in src/data/trreb-monthly.json, which the
+ * update routine refreshes from each new Market Watch. Neighbourhood medians come from
  * src/data/market.json, which the biweekly updater refreshes from the quarterly community reports.
  */
-const PERIOD = 'August 2026';
-const REPORT = '/market-reports/august-2026/';
-const BY_TYPE = [
-  { type: 'Detached', sales: 137, average: 1611773, median: 1488000 },
-  { type: 'Semi-detached', sales: 15, average: 958133, median: 945000 },
-  { type: 'Freehold townhouse', sales: 39, average: 1031119, median: 995000 },
-  { type: 'Condo townhouse', sales: 28, average: 812567, median: 750000 },
-  { type: 'Condo apartment', sales: 57, average: 638332, median: 563800 },
-];
+const PERIOD = monthly.period;
+const REPORT = monthly.report || '/market-reports/';
+const BY_TYPE = monthly.markhamByType;
+const DETACHED = BY_TYPE.find((r) => r.type === 'Detached')!;
+const CONDO = BY_TYPE.find((r) => r.type === 'Condo apartment')!;
+const RATIO = (DETACHED.median / CONDO.median).toFixed(1);
 const hoods = market.neighbourhoods
   .filter((n): n is typeof n & { price: number } => typeof n.price === 'number')
   .sort((a, b) => b.price - a.price);
@@ -32,11 +30,11 @@ const crumbs = [
 const faq = [
   {
     q: 'What is the average house price in Markham?',
-    a: `TRREB recorded an average of ${cad(MARKHAM.average)} across all property types in Markham in ${PERIOD}, from ${MARKHAM.sales} sales. The average detached price was ${cad(BY_TYPE[0].average)}.`,
+    a: `TRREB recorded an average of ${cad(MARKHAM.average)} across all property types in Markham in ${PERIOD}, from ${MARKHAM.sales} sales. The average detached price was ${cad(DETACHED.average)}.`,
   },
   {
     q: 'What is the median home price in Markham?',
-    a: `${cad(MARKHAM.median)} across all property types in ${PERIOD}, according to TRREB. The detached median was ${cad(BY_TYPE[0].median)} and the condo apartment median was ${cad(BY_TYPE[4].median)}.`,
+    a: `${cad(MARKHAM.median)} across all property types in ${PERIOD}, according to TRREB. The detached median was ${cad(DETACHED.median)} and the condo apartment median was ${cad(CONDO.median)}.`,
   },
   {
     q: 'Which Markham neighbourhood has the highest prices?',
@@ -53,7 +51,7 @@ const faq = [
 ];
 
 const sources = [
-  { name: `TRREB Market Watch, ${PERIOD}`, url: 'https://trreb.ca/wp-content/files/market-stats/market-watch/mw2608.pdf' },
+  { name: `TRREB Market Watch, ${PERIOD}`, url: monthly.sourceUrl },
   { name: `TRREB Community Housing Market Report, Markham, ${market.period}`, url: market.sourceUrl },
 ];
 ---
@@ -80,8 +78,8 @@ const sources = [
       </table>
       <p>
         Look at the row for the home you are actually buying or selling. The overall median mixes
-        condo apartments with detached houses and in {PERIOD} the detached median was more than two
-        and a half times the condo apartment median. The <a href={REPORT}>{PERIOD} Markham market report</a> has
+        condo apartments with detached houses and in {PERIOD} the detached median was {RATIO} times
+        the condo apartment median. The <a href={REPORT}>{PERIOD} Markham market report</a> has
         the full month, including listings and days on market.
       </p>
 

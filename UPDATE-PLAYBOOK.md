@@ -27,7 +27,7 @@ Never publish a figure you read in a search result snippet without opening the p
 
 ## 1. What a run does
 
-Three tasks, in this order. Each is independent. If one cannot be completed, skip it, record why in
+Four tasks, in this order. Each is independent. If one cannot be completed, skip it, record why in
 the log and continue with the next.
 
 | Task | Where | Frequency |
@@ -35,6 +35,10 @@ the log and continue with the next.
 | A. Market figures | `src/data/market.json`, `src/content/market-reports/` | Only when TRREB has published something newer than what the site shows |
 | B. Markham news roundup | `src/content/news/` | Every run, if there is enough real news |
 | C. Neighbourhood fact check | `src/content/neighbourhoods/` | Three neighbourhoods per run, oldest reviewed first |
+| D. Monthly city figures | `src/data/trreb-monthly.json` | Only when TRREB has published a Market Watch newer than the file's `period` |
+
+Listings, listing photos and the "homes for sale right now" counts update themselves (the counts via
+`.github/workflows/refresh-listing-counts.yml` every morning). Never edit `src/data/listing-counts.json`.
 
 Then verify, log, commit and push. See sections 6 to 8.
 
@@ -45,6 +49,7 @@ Then verify, log, commit and push. See sections 6 to 8.
 **You may edit or create only:**
 
 - `src/data/market.json`
+- `src/data/trreb-monthly.json`, only as described in task D
 - `src/data/why-markham.json`, to fill a `TODO` value with a verified, sourced figure
 - `src/content/market-reports/*.mdx`, new files copied from `template.mdx`
 - `src/content/news/*.mdx`, new files copied from `_template.mdx`
@@ -188,6 +193,34 @@ unavailable.
      - name: "York Region District School Board, school locator"
        url: "https://www.yrdsb.ca/..."
    ```
+
+### Task D. Monthly city figures
+
+`src/data/trreb-monthly.json` feeds the Markham house prices page and the three comparison pages
+(Markham vs Richmond Hill, Vaughan and Toronto). Those pages write their sentences from the numbers,
+so updating the numbers is all this task does. Never edit the pages themselves.
+
+1. Note the current `period` in the file, for example `"August 2026"`.
+2. Open TRREB's Market Watch page on `trreb.ca` and find the newest monthly issue. Its PDF is usually
+   named `mwYYMM.pdf`, for example `mw2609.pdf` for September 2026. If it is not newer than `period`,
+   skip this task.
+3. Open the actual PDF. Take every figure from it, for the same month:
+   - From the all home types table by municipality: sales, average price and median price for
+     Markham, Richmond Hill, Vaughan and the City of Toronto (Toronto is the "Toronto" or "City of
+     Toronto" total row, not the whole TRREB area).
+   - From the detached table by municipality: sales and average price for the same four.
+   - From the condo apartment table by municipality: sales and average price for the same four.
+   - For `markhamByType`, the Markham row of the detached, semi-detached, att/row/townhouse
+     (freehold townhouse), condo townhouse and condo apartment tables: sales, average price and
+     median price. Keep the five `type` labels and their order exactly as they are.
+4. Update the file: `period` exactly as TRREB labels the month, `sourceUrl` the PDF you opened,
+   every number as a plain integer with no symbols. `report` is the path of this site's market report
+   for the same month if one exists in `src/content/market-reports/` (for example
+   `"/market-reports/september-2026/"`), otherwise `null`.
+5. If any single figure cannot be read with certainty, do not update the file at all. A page with a
+   whole month of consistent older figures is better than one that mixes two months. Record why in
+   the log.
+6. Change nothing else in the file. Leave `_readme` as it is.
 
 ---
 

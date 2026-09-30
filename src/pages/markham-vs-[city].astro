@@ -4,7 +4,7 @@ import type { GetStaticPaths } from 'astro';
 import Page from '../layouts/Page.astro';
 import { cad } from '../lib/format';
 import { ontarioLtt, torontoMltt } from '../lib/ltt';
-import { CITIES, MARKHAM, type Stats } from '../lib/comparisons';
+import { CITIES, MARKHAM, PERIOD, type Stats } from '../lib/comparisons';
 
 export const getStaticPaths = (() => CITIES.map((c) => ({ params: { city: c.slug }, props: { c } }))) satisfies GetStaticPaths;
 
@@ -29,7 +29,7 @@ const rows: [string, (s: Stats) => string | null][] = [
 const others = CITIES.filter((o) => o.slug !== c.slug);
 const faq = [
   ...c.faq,
-  { q: `What is the median home price in Markham?`, a: `TRREB recorded a median of ${cad(MARKHAM.median)} across all property types in Markham in August 2026, from ${MARKHAM.sales} sales.` },
+  { q: `What is the median home price in Markham?`, a: `TRREB recorded a median of ${cad(MARKHAM.median)} across all property types in Markham in ${PERIOD}, from ${MARKHAM.sales} sales.` },
 ];
 ---
 
@@ -45,9 +45,9 @@ const faq = [
   <section class="section">
     <div class="wrap-narrow prose">
       <CreditedPhoto slug={PHOTO[c.slug] ?? 'downtown'} priority />
-      <h2>At a glance, August 2026</h2>
+      <h2>At a glance, {PERIOD}</h2>
       <table>
-        <thead><tr><th>TRREB, August 2026</th><th>Markham</th><th>{c.name}</th></tr></thead>
+        <thead><tr><th>TRREB, {PERIOD}</th><th>Markham</th><th>{c.name}</th></tr></thead>
         <tbody>
           {rows.map(([label, f]) => <tr><td>{label}</td><td>{f(MARKHAM)}</td><td>{f(c.stats)}</td></tr>)}
           <tr>
