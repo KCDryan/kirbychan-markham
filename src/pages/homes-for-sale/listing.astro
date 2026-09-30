@@ -55,7 +55,8 @@ const crumbs = [
     const $ = (id) => document.getElementById(id);
     const id = new URLSearchParams(location.search).get('id') || '';
     // Back returns to the same search, with the same choices still selected.
-    if (document.referrer.includes('/homes-for-sale/') && !document.referrer.includes('/listing/')) $('back').href = document.referrer;
+    const ref = document.referrer ? new URL(document.referrer) : null;
+    if (ref && ref.origin === location.origin && ref.pathname === '/homes-for-sale/') $('back').href = ref.pathname + ref.search;
     const money = (n) => (typeof n === 'number' ? '$' + n.toLocaleString('en-CA') : '');
     const label = (k) => ({ LivingAreaRange: 'Square feet', ApproximateAge: 'Age', DirectionFaces: 'Faces', TaxAnnualAmount: 'Property tax', AssociationFee: 'Maintenance fee', KitchensTotal: 'Kitchens', RoomsTotal: 'Rooms', ParkingTotal: 'Parking spaces', DaysOnMarket: 'Days on market' })[k]
       || k.replace(/([a-z])([A-Z])/g, '$1 $2');

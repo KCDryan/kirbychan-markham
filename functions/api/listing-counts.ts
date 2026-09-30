@@ -8,13 +8,20 @@
 import { PROPTX_BASE, areaOf, homeKinds } from '../../src/lib/proptx';
 
 interface Context {
+  request: Request;
   env: { PROPTX_IDX_TOKEN?: string };
+  waitUntil(p: Promise<unknown>): void;
 }
 
 const FILTER = "ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale' and City eq 'Markham'";
 
-export async function onRequestGet({ env }: Context): Promise<Response> {
+export async function onRequestGet({ request, env, waitUntil }: Context): Promise<Response> {
   if (!env.PROPTX_IDX_TOKEN) return new Response('{"error":"not-configured"}', { status: 503 });
+  // Up to ten PropTx calls per answer, so one answer is shared for an hour whoever asks.
+  const cacheKey = new Request(new URL('/api/listing-counts', request.url));
+  const cache = (caches as unknown as { default: Cache }).default;
+  const hit = await cache.match(cacheKey);
+  if (hit) return hit;
   type Counts = { total: number; bungalow: number; condo: number; townhouse: number; house: number };
   const blank = (): Counts => ({ total: 0, bungalow: 0, condo: 0, townhouse: 0, house: 0 });
   const markham = blank();
@@ -38,7 +45,9 @@ export async function onRequestGet({ env }: Context): Promise<Response> {
     next = data['@odata.nextLink']?.replace(`${PROPTX_BASE}/`, '') ?? null;
   }
 
-  return new Response(JSON.stringify({ updated: new Date().toISOString(), markham, areas }, null, 2), {
-    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' },
+  const res = new Response(JSON.stringify({ updated: new Date().toISOString(), markham, areas }, null, 2), {
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=3600', 'x-robots-tag': 'noindex' },
   });
+  waitUntil(cache.put(cacheKey, res.clone()));
+  return res;
 }

@@ -71,11 +71,18 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
   const { request, env } = ctx;
   if (!env.PROPTX_IDX_TOKEN) return json({ error: 'not-configured' }, 503);
 
+  // Cache on the known params only, in a fixed order, so junk params cannot force fresh PropTx calls.
+  const url = new URL(request.url);
+  const params = new URLSearchParams();
+  for (const k of ['id', 'home', 'area', 'price', 'beds', 'city', 'for', 'sort', 'page']) {
+    const v = url.searchParams.get(k);
+    if (v) params.set(k, v.slice(0, 40));
+  }
+  const cacheKey = new Request(`${url.origin}/api/listings?${params}`);
   const cache = (caches as unknown as { default: Cache }).default;
-  const hit = await cache.match(request);
+  const hit = await cache.match(cacheKey);
   if (hit) return hit;
 
-  const params = new URL(request.url).searchParams;
   let body: unknown;
   try {
     if (params.has('id')) {
@@ -112,10 +119,10 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
   } catch (err) {
     console.error(err);
     // 503, not 502: Cloudflare replaces a 502 body with its own error page.
-    return json({ error: 'upstream', detail: String(err).slice(0, 300) }, 503);
+    return json({ error: 'upstream' }, 503);
   }
 
   const res = json(body);
-  ctx.waitUntil(cache.put(request, res.clone()));
+  ctx.waitUntil(cache.put(cacheKey, res.clone()));
   return res;
 }

@@ -116,8 +116,17 @@ const faq = [
             <label for="fg-email">Your email address</label>
             <input id="fg-email" name="email" type="email" autocomplete="email" required />
           </div>
+          {turnstileSiteKey && <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="light" />}
           <button class="btn btn--primary hs__big" type="submit">Email me a link</button>
         </form>
+      </div>
+
+      <div id="s-verify" hidden>
+        <div class="hs-form">
+          <h2>One last step</h2>
+          <p>Press the button to confirm your email address and open your free account.</p>
+          <button class="btn btn--primary hs__big" type="button" id="finish">Finish creating my account</button>
+        </div>
       </div>
 
       <div id="s-reset" hidden>
@@ -193,13 +202,19 @@ const faq = [
   type Sold = { key: string; soldPrice: number; soldDate: string; listPrice: number | null; days: number | null; address: string | null; city: string; community: string | null; beds: number | null; baths: number | null; type: string | null; style: string | null; brokerage: string | null; photo: string | null };
 
   const show = (id: string) => {
-    for (const s of ['s-loading', 's-off', 's-out', 's-in', 's-reset']) $(s).hidden = s !== id;
+    for (const s of ['s-loading', 's-off', 's-out', 's-in', 's-reset', 's-verify']) $(s).hidden = s !== id;
   };
   const say = (text: string) => {
     $('msg').textContent = text;
     $('msg').hidden = !text;
     if (text) $('msg').scrollIntoView();
   };
+  // Emailed links carry their one-time code after the #, which never leaves the browser. Read it,
+  // then take it out of the address bar at once so it is not kept in history or seen by analytics.
+  const link = new URLSearchParams(location.hash.slice(1));
+  const linkToken = { verify: link.get('verify') ?? '', reset: link.get('reset') ?? '' };
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+
   const post = (action: string, body: unknown) =>
     fetch('/api/vow/' + action, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
       .then((r) => r.json().catch(() => ({})).then((b) => ({ ok: r.ok, status: r.status, ...b })));
@@ -220,7 +235,8 @@ const faq = [
     unverified: 'Please confirm your email address first. We have just sent you a new link. Open the email and press the link.',
     expired: 'For your security, passwords last 90 days. We have emailed you a link to choose a new one.',
     'slow-down': `Too many tries for now. Please wait an hour or ${CALL}.`,
-    'link-expired': 'That link has expired. Press "Forgot your password?" to get a new one.',
+    'link-expired': 'That link has expired or was already used. Sign in below. You can also press "Forgot your password?" to get a new link.',
+    locked: `For your security, this account is paused for an hour after too many wrong passwords. Press "Forgot your password?" to choose a new one now. You can also ${CALL}.`,
     'email-failed': `We could not send the email just now. Please try again in a few minutes or ${CALL}.`,
   };
   const fail = (b: { error?: string }) => say(ERRORS[b.error ?? ''] ?? `Something went wrong. Please try again or ${CALL}.`);
@@ -264,8 +280,9 @@ const faq = [
   $('f-forgot').addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
+    const f = fields(form);
     busy(form, true);
-    const r = await post('forgot', fields(form));
+    const r = await post('forgot', { email: f.email, turnstile: f['cf-turnstile-response'] ?? '' });
     busy(form, false);
     if (!r.ok) return fail(r);
     say('If there is an account for that email, we have sent a link to choose a new password. It works for 2 hours.');
@@ -275,11 +292,23 @@ const faq = [
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     busy(form, true);
-    const r = await post('reset', { ...fields(form), token: new URLSearchParams(location.search).get('reset') });
+    const r = await post('reset', { ...fields(form), token: linkToken.reset });
     busy(form, false);
     if (!r.ok) return fail(r);
     location.href = '/sold/?welcome=1';
   });
+
+  $('finish').onclick = async () => {
+    const b = $('finish') as HTMLButtonElement;
+    b.disabled = true;
+    b.textContent = 'One moment…';
+    const r = await post('verify', { token: linkToken.verify });
+    if (!r.ok) {
+      show('s-out');
+      return fail(r);
+    }
+    location.href = '/sold/?welcome=1';
+  };
 
   $('logout').onclick = async () => {
     await post('logout', {});
@@ -360,13 +389,14 @@ const faq = [
     const q = new URLSearchParams(location.search);
     const me = await fetch('/api/vow/me').then((r) => r.json()).catch(() => ({ configured: false }));
     if (!me.configured) return show('s-off');
-    if (q.get('reset')) {
+    if (linkToken.verify) return show('s-verify');
+    if (linkToken.reset) {
       show('s-reset');
       return say(message);
     }
     if (!me.user) {
       show('s-out');
-      return say(message || (q.get('link') === 'expired' ? ERRORS['link-expired'] : ''));
+      return say(message);
     }
     show('s-in');
     $('hello').textContent = `Signed in as ${me.user.name}.`;

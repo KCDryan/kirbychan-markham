@@ -6,7 +6,7 @@
  * account has a daily limit, so the sold data cannot be scraped.
  */
 import { PROPTX_BASE, SOLD_MAX_RESULTS, coverQuery, soldQuery } from '../../src/lib/proptx';
-import { SEARCHES_PER_DAY, audit, countSince, currentUser, ensureSchema, type VowEnv } from '../../src/lib/vow';
+import { SEARCHES_PER_DAY, audit, countSince, currentUser, ensureSchema, ipTag, keys, type VowEnv } from '../../src/lib/vow';
 
 interface Context {
   request: Request;
@@ -28,14 +28,15 @@ async function proptx(token: string, path: string): Promise<{ value: Row[]; '@od
 }
 
 export async function onRequestGet({ request, env }: Context): Promise<Response> {
-  if (!env.VOW_DB || !env.PROPTX_VOW_TOKEN) return json({ error: 'not-configured' }, 503);
+  const k = keys(env.VOW_SECRET);
+  if (!env.VOW_DB || !env.PROPTX_VOW_TOKEN || !k) return json({ error: 'not-configured' }, 503);
   await ensureSchema(env.VOW_DB);
-  const user = await currentUser(env.VOW_DB, request);
+  const user = await currentUser(env.VOW_DB, await k, request);
   if (!user) return json({ error: 'sign-in' }, 401);
   if ((await countSince(env.VOW_DB, 'user_id', user.id, ['search'], 864e5)) >= SEARCHES_PER_DAY) return json({ error: 'limit' }, 429);
 
   const params = new URL(request.url).searchParams;
-  await audit(env.VOW_DB, user.id, 'search', params.toString(), request.headers.get('cf-connecting-ip'));
+  await audit(env.VOW_DB, user.id, 'search', params.toString(), await ipTag(await k, request));
   try {
     const data = await proptx(env.PROPTX_VOW_TOKEN, `Property?${soldQuery(params)}`);
     // Listings the seller kept off the internet stay off, sold or not (Rules 8.14).
@@ -67,6 +68,6 @@ export async function onRequestGet({ request, env }: Context): Promise<Response>
     });
   } catch (err) {
     console.error(err);
-    return json({ error: 'upstream', detail: String(err).slice(0, 300) }, 503);
+    return json({ error: 'upstream' }, 503);
   }
 }

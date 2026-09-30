@@ -1,27 +1,33 @@
 /**
  * /api/vow/me        GET   who is signed in, and whether sold prices are switched on
- * /api/vow/register  POST  name, email, phone, password, terms, contact
- * /api/vow/verify    GET   ?token= from the confirmation email, then back to /sold/
+ * /api/vow/register  POST  name, email, phone, password, terms, contact, turnstile
+ * /api/vow/verify    POST  token from the confirmation email
  * /api/vow/login     POST  email, password
  * /api/vow/logout    POST
- * /api/vow/forgot    POST  email
+ * /api/vow/forgot    POST  email, turnstile
  * /api/vow/reset     POST  token, password
  *
- * Accounts for the sold-prices section. The rules behind each step are in src/lib/vow.ts.
+ * Accounts for the sold-prices section. The rules behind each step and the encryption are in
+ * src/lib/vow.ts. Emailed links point at /sold/#verify= or /sold/#reset=: the part after # never
+ * leaves the browser, so the token is not sent to Google Analytics, logs or any other site, and a
+ * mail scanner that opens the link cannot use it up. The page then posts it here.
  */
 import {
-  FAILS_PER_HOUR, RESET_HOURS, TERMS_VERSION, VERIFY_HOURS, audit, countSince, currentUser, endCookie, endSession, ensureSchema,
-  hashPassword, isEmail, issueToken, passwordExpired, passwordExpires, randomHex, same, sameOrigin, sendEmail, startSession, useToken,
-  type User, type VowEnv,
+  ACCOUNT_FAILS_PER_HOUR, FAILS_PER_HOUR, RESET_HOURS, TERMS_VERSION, USER_COLS, VERIFY_HOURS, audit, blind, countSince, currentUser,
+  endCookie, endSession, ensureSchema, hashPassword, ipTag, isEmail, isName, issueToken, keys, loadUser, passwordExpired, passwordExpires,
+  randomHex, same, sameOrigin, seal, sendEmail, startSession, useToken, type Keys, type User, type UserRow, type VowEnv,
 } from '../../../src/lib/vow';
 
 interface Context {
   request: Request;
   env: VowEnv;
   params: { action: string };
+  waitUntil(p: Promise<unknown>): void;
 }
 
 const SIGNATURE = 'Kirby Chan & Co. Real Estate Team | eXp Realty Brokerage\n416-305-8008 | kirbychanmarkham.com';
+/** Sign ups and reset requests from one IP address in an hour. */
+const SENDS_PER_HOUR = 10;
 
 const json = (body: unknown, status = 200, cookie?: string) => {
   const headers = new Headers({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
@@ -29,41 +35,54 @@ const json = (body: unknown, status = 200, cookie?: string) => {
   return new Response(JSON.stringify(body), { status, headers });
 };
 const text = (v: unknown, max = 200) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
-const configured = (env: VowEnv) => !!(env.VOW_DB && env.PROPTX_VOW_TOKEN && env.RESEND_API_KEY && env.VOW_EMAIL_FROM);
+const password = (v: unknown) => (typeof v === 'string' && v.length >= 8 && v.length <= 200 ? v : null);
+/** Everything must be set, including the spam check: without it the sign-up form could be used to send our emails to anyone. */
+const configured = (env: VowEnv) =>
+  !!(env.VOW_DB && keys(env.VOW_SECRET) && env.PROPTX_VOW_TOKEN && env.RESEND_API_KEY && env.VOW_EMAIL_FROM && env.TURNSTILE_SECRET_KEY);
 
-async function turnstileOk(env: VowEnv, token: string, ip: string | null): Promise<boolean> {
-  if (!env.TURNSTILE_SECRET_KEY) return true;
+async function turnstileOk(env: VowEnv, token: string, request: Request): Promise<boolean> {
   if (!token) return false;
   const body = new FormData();
-  body.append('secret', env.TURNSTILE_SECRET_KEY);
+  body.append('secret', env.TURNSTILE_SECRET_KEY!);
   body.append('response', token);
+  const ip = request.headers.get('cf-connecting-ip');
   if (ip) body.append('remoteip', ip);
   const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', body });
   return res.ok && ((await res.json()) as { success?: boolean }).success === true;
 }
 
+const today = () => new Date().toLocaleDateString('en-CA', { dateStyle: 'long', timeZone: 'America/Toronto' });
+
 const verifyEmail = (origin: string, name: string, token: string) =>
   `Hello ${name},
 
 Press this link to confirm your email address and see Markham sold prices:
-${origin}/api/vow/verify?token=${token}
+${origin}/sold/#verify=${token}
 
 The link works for ${VERIFY_HOURS} hours.
 
-When you created your account on ${new Date().toLocaleDateString('en-CA', { dateStyle: 'long', timeZone: 'America/Toronto' })} you agreed to our Terms of Use for sold listings. You can read them at any time:
+When you created your account on ${today()} you agreed to our Terms of Use for sold listings. You can read them at any time:
 ${origin}/sold/terms/
 
 If you did not ask for this, you can ignore this email and no account will be opened.
 
 ${SIGNATURE}`;
 
-const resetEmail = (origin: string, name: string, token: string, expired: boolean) =>
+const resetEmail = (origin: string, name: string, token: string, why: 'expired' | 'forgot' | 'finish') =>
   `Hello ${name},
 
-${expired ? 'For your security, passwords for sold prices last 90 days and yours has expired. ' : ''}Press this link to choose a new password:
-${origin}/sold/?reset=${token}
+${
+  why === 'expired'
+    ? 'For your security, passwords for sold prices last 90 days and yours has expired. '
+    : why === 'finish'
+      ? 'Someone, probably you, started creating an account for Markham sold prices with this email. '
+      : ''
+}Press this link to choose ${why === 'finish' ? 'your' : 'a new'} password:
+${origin}/sold/#reset=${token}
 
-The link works for ${RESET_HOURS} hours. If you did not ask for this, you can ignore this email.
+The link works for ${RESET_HOURS} hours. If you did not ask for this, you can ignore this email.${
+  why === 'finish' ? `\n\nBy choosing a password on ${today()} you agree to our Terms of Use for sold listings: ${origin}/sold/terms/` : ''
+}
 
 ${SIGNATURE}`;
 
@@ -91,154 +110,121 @@ async function forwardLead(env: VowEnv, u: User) {
   }).catch((e) => console.error('Lead webhook failed', e));
 }
 
-const USER_COLS = 'id, email, name, phone, pass_set_at, verified_at, contact_ok';
+async function byEmail(db: NonNullable<VowEnv['VOW_DB']>, k: Keys, email: string) {
+  return db.prepare(`SELECT ${USER_COLS}, pass_hash, pass_salt FROM accounts WHERE email_hash = ?`).bind(await blind(k, email)).first<UserRow & { pass_hash: string; pass_salt: string }>();
+}
 
-export async function onRequest({ request, env, params }: Context): Promise<Response> {
+export async function onRequest({ request, env, params, waitUntil }: Context): Promise<Response> {
   const action = params.action;
-  // TEMP setup check: which settings exist, plus counts and field names from the VOW feed. No listing
-  // or personal data. Remove once sold prices are confirmed working.
-  if (action === 'setup-check') {
-    const out: Record<string, unknown> = {
-      VOW_DB: !!env.VOW_DB, PROPTX_VOW_TOKEN: !!env.PROPTX_VOW_TOKEN, RESEND_API_KEY: !!env.RESEND_API_KEY,
-      VOW_EMAIL_FROM: env.VOW_EMAIL_FROM ? env.VOW_EMAIL_FROM.replace(/<.*@/, '<…@') : null,
-    };
-    if (env.VOW_DB) {
-      await ensureSchema(env.VOW_DB);
-      out.accounts = await env.VOW_DB.prepare('SELECT COUNT(*) AS total, COUNT(verified_at) AS verified FROM users').bind().first();
-      out.events = (await env.VOW_DB.prepare('SELECT action, COUNT(*) AS n FROM audit GROUP BY action').bind().all()).results;
-    }
-    if (env.PROPTX_VOW_TOKEN) {
-      const get = (path: string) => fetch(`https://query.ampre.ca/odata/${path}`, { headers: { authorization: `Bearer ${env.PROPTX_VOW_TOKEN}` } }).then(async (r) => ({ status: r.status, body: await r.text() }));
-      const count = async (f: string) => { const r = await get(`Property?$top=0&$count=true&$filter=${encodeURIComponent(f)}`); return r.status === 200 ? JSON.parse(r.body)['@odata.count'] : `${r.status} ${r.body.slice(0, 150)}`; };
-      const since = new Date(Date.now() - 90 * 864e5).toISOString().slice(0, 10);
-      out.counts = {
-        markhamAll: await count("City eq 'Markham'"),
-        soldStatus: await count("City eq 'Markham' and MlsStatus eq 'Sold'"),
-        closedStandard: await count("City eq 'Markham' and StandardStatus eq 'Closed'"),
-        soldLast90: await count(`City eq 'Markham' and MlsStatus eq 'Sold' and CloseDate ge ${since}`),
-        soldResidential90: await count(`City eq 'Markham' and MlsStatus eq 'Sold' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale' and CloseDate ge ${since}`),
-      };
-      const st: Record<string, number> = {};
-      const r = await get(`Property?$top=1000&$select=MlsStatus&$filter=${encodeURIComponent(`City eq 'Markham' and ModificationTimestamp ge ${since}T00:00:00Z`)}`);
-      if (r.status === 200) for (const row of JSON.parse(r.body).value) st[row.MlsStatus] = (st[row.MlsStatus] ?? 0) + 1;
-      out.statuses = st;
-      const one = await get(`Property?$top=5&$select=ClosePrice,CloseDate,ListPrice,DaysOnMarket,InternetEntireListingDisplayYN&$filter=${encodeURIComponent("City eq 'Markham' and MlsStatus eq 'Sold'")}&$orderby=ModificationTimestamp desc`);
-      out.fieldsFilled = one.status === 200 ? JSON.parse(one.body).value.map((v: Record<string, unknown>) => Object.fromEntries(Object.entries(v).filter(([k]) => !k.startsWith('@')).map(([k, x]) => [k, x !== null && x !== undefined]))) : `${one.status} ${one.body.slice(0, 150)}`;
-    }
-    if (env.PROPTX_VOW_TOKEN) {
-      const { soldQuery, coverQuery } = await import('../../../src/lib/proptx');
-      const q: Record<string, unknown> = {};
-      for (const preset of ['', 'home=bungalow', 'home=condo&area=unionville&sold=30', 'home=house&price=1200-1600&beds=4&sold=365', 'sort=high&page=5']) {
-        const r = await fetch(`https://query.ampre.ca/odata/Property?${soldQuery(new URLSearchParams(preset))}`, { headers: { authorization: `Bearer ${env.PROPTX_VOW_TOKEN}` } });
-        const body = await r.text();
-        if (r.status !== 200) { q[preset || 'default'] = `${r.status} ${body.slice(0, 200)}`; continue; }
-        const d = JSON.parse(body);
-        const keys = d.value.map((v: Record<string, unknown>) => String(v.ListingKey));
-        const m = keys.length ? await fetch(`https://query.ampre.ca/odata/Media?${coverQuery(keys)}`, { headers: { authorization: `Bearer ${env.PROPTX_VOW_TOKEN}` } }) : null;
-        const covers = m && m.ok ? new Set(((await m.json()) as { value: { ResourceRecordKey: string }[] }).value.map((x) => x.ResourceRecordKey)).size : m ? `media ${m.status}` : 0;
-        q[preset || 'default'] = { total: d['@odata.count'], returned: keys.length, withPhoto: covers };
-      }
-      out.soldQueries = q;
-    }
-    return json(out);
-  }
   if (!configured(env)) return json({ configured: false }, action === 'me' ? 200 : 503);
   const db = env.VOW_DB!;
+  const k = await keys(env.VOW_SECRET)!;
   await ensureSchema(db);
-  const ip = request.headers.get('cf-connecting-ip');
   const origin = new URL(request.url).origin;
 
   if (request.method === 'GET' && action === 'me') {
-    const u = await currentUser(db, request);
-    return json({ configured: true, user: u && { name: u.name, email: u.email, passwordExpires: passwordExpires(u).toISOString() } });
-  }
-
-  if (request.method === 'GET' && action === 'verify') {
-    const userId = await useToken(db, new URL(request.url).searchParams.get('token') ?? '', 'verify');
-    if (!userId) return Response.redirect(`${origin}/sold/?link=expired`, 303);
-    const u = (await db.prepare(`SELECT ${USER_COLS} FROM users WHERE id = ?`).bind(userId).first<User>())!;
-    if (!u.verified_at) {
-      await db.prepare('UPDATE users SET verified_at = ? WHERE id = ?').bind(Date.now(), userId).run();
-      await forwardLead(env, u);
-    }
-    await audit(db, userId, 'verify', '', ip);
-    const cookie = await startSession(db, u);
-    return new Response(null, { status: 303, headers: { location: '/sold/?welcome=1', 'set-cookie': cookie } });
+    const u = await currentUser(db, k, request);
+    return json({ configured: true, user: u && { name: u.name, passwordExpires: passwordExpires(u).toISOString() } });
   }
 
   if (request.method !== 'POST') return json({ error: 'method' }, 405);
-  if (!sameOrigin(request)) return json({ error: 'origin' }, 403);
+  // Only this site's own pages may post here, as JSON.
+  if (!sameOrigin(request) || !(request.headers.get('content-type') ?? '').startsWith('application/json')) return json({ error: 'origin' }, 403);
   let body: Record<string, unknown>;
   try {
     body = (await request.json()) as Record<string, unknown>;
   } catch {
     return json({ error: 'bad-request' }, 400);
   }
+  const ip = await ipTag(k, request);
 
   if (action === 'logout') {
-    const u = await currentUser(db, request);
+    const u = await currentUser(db, k, request);
     await endSession(db, request);
     if (u) await audit(db, u.id, 'logout', '', ip);
     return json({ ok: true }, 200, endCookie);
   }
 
-  if ((await countSince(db, 'ip', ip, ['login-fail', 'register', 'forgot'], 36e5)) >= FAILS_PER_HOUR) {
-    return json({ error: 'slow-down' }, 429);
+  if (action === 'verify') {
+    const userId = await useToken(db, text(body.token, 64), 'verify');
+    if (!userId) return json({ error: 'link-expired' }, 400);
+    const row = (await db.prepare(`SELECT ${USER_COLS} FROM accounts WHERE id = ?`).bind(userId).first<UserRow>())!;
+    if (!row.verified_at) {
+      await db.prepare('UPDATE accounts SET verified_at = ? WHERE id = ?').bind(Date.now(), userId).run();
+      waitUntil(loadUser(k, row).then((u) => forwardLead(env, u)));
+    }
+    await audit(db, userId, 'verify', '', ip);
+    return json({ ok: true }, 200, await startSession(db, row));
   }
 
   const email = text(body.email, 254).toLowerCase();
 
-  if (action === 'register') {
+  if (action === 'register' || action === 'forgot') {
     if (text(body.company_website)) return json({ ok: true }); // honeypot
-    const name = text(body.name, 120);
-    const password = typeof body.password === 'string' ? body.password : '';
-    if (name.length < 2) return json({ error: 'name' }, 422);
-    if (!isEmail(email)) return json({ error: 'email' }, 422);
-    if (password.length < 8 || password.length > 200) return json({ error: 'password' }, 422);
-    if (body.terms !== true) return json({ error: 'terms' }, 422);
-    if (!(await turnstileOk(env, text(body.turnstile, 4000), ip))) return json({ error: 'spam-check' }, 403);
-    await audit(db, null, 'register', email, ip);
+    if ((await countSince(db, 'ip', ip, ['register', 'forgot'], 36e5)) >= SENDS_PER_HOUR) return json({ error: 'slow-down' }, 429);
+    if (!(await turnstileOk(env, text(body.turnstile, 4000), request))) return json({ error: 'spam-check' }, 403);
+  }
 
-    const existing = await db.prepare(`SELECT ${USER_COLS} FROM users WHERE email = ?`).bind(email).first<User>();
-    if (existing?.verified_at) {
-      // Same answer as a new sign up, so the form never reveals who has an account.
-      await sendEmail(env, email, 'You already have an account for Markham sold prices', `Hello ${existing.name},\n\nSomeone, probably you, tried to create an account with this email. You already have one. Sign in at ${origin}/sold/ or choose a new password with "Forgot your password?" on that page.\n\n${SIGNATURE}`);
+  if (action === 'register') {
+    const name = text(body.name, 80);
+    const pw = password(body.password);
+    if (!isName(name)) return json({ error: 'name' }, 422);
+    if (!isEmail(email)) return json({ error: 'email' }, 422);
+    if (!pw) return json({ error: 'password' }, 422);
+    if (body.terms !== true) return json({ error: 'terms' }, 422);
+    await audit(db, null, 'register', '', ip);
+
+    const salt = randomHex(16);
+    // Hashed whether or not the account exists, so the response time gives nothing away.
+    const hash = await hashPassword(k, pw, salt);
+    const existing = await byEmail(db, k, email);
+    if (existing) {
+      // Never change an existing account from this form: that would let a stranger set the password
+      // on an account whose owner has not confirmed it yet. Email the owner instead.
+      const owner = await unsealName(k, existing);
+      waitUntil(
+        existing.verified_at
+          ? sendEmail(env, email, 'You already have an account for Markham sold prices', `Hello ${owner},\n\nSomeone, probably you, tried to create an account with this email. You already have one. Sign in at ${origin}/sold/ or choose a new password with "Forgot your password?" on that page.\n\n${SIGNATURE}`)
+          : issueToken(db, existing.id, 'reset', RESET_HOURS).then((t) => sendEmail(env, email, 'Finish creating your account for Markham sold prices', resetEmail(origin, owner, t, 'finish'))),
+      );
       return json({ ok: true });
     }
-    const salt = randomHex(16);
-    const hash = await hashPassword(password, salt);
     const now = Date.now();
-    let userId = existing?.id;
-    if (existing) {
-      await db.prepare('UPDATE users SET name = ?, phone = ?, pass_hash = ?, pass_salt = ?, pass_set_at = ?, terms_version = ?, terms_at = ?, contact_ok = ? WHERE id = ?')
-        .bind(name, text(body.phone, 40) || null, hash, salt, now, TERMS_VERSION, now, body.contact === true ? 1 : 0, existing.id).run();
-    } else {
-      await db.prepare('INSERT INTO users (email, name, phone, pass_hash, pass_salt, pass_set_at, terms_version, terms_at, contact_ok, created_at, created_ip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-        .bind(email, name, text(body.phone, 40) || null, hash, salt, now, TERMS_VERSION, now, body.contact === true ? 1 : 0, now, ip).run();
-      userId = (await db.prepare('SELECT id FROM users WHERE email = ?').bind(email).first<{ id: number }>())!.id;
-    }
-    const token = await issueToken(db, userId!, 'verify', VERIFY_HOURS);
-    const sent = await sendEmail(env, email, 'Confirm your email to see Markham sold prices', verifyEmail(origin, name, token));
-    return sent ? json({ ok: true }) : json({ error: 'email-failed' }, 503);
+    const phone = text(body.phone, 40);
+    const row = await db
+      .prepare('INSERT INTO accounts (email_hash, email_enc, name_enc, phone_enc, pass_hash, pass_salt, pass_set_at, terms_version, terms_at, contact_ok, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id')
+      .bind(await blind(k, email), await seal(k, email), await seal(k, name), phone ? await seal(k, phone) : null, hash, salt, now, TERMS_VERSION, now, body.contact === true ? 1 : 0, now)
+      .first<{ id: number }>();
+    const token = await issueToken(db, row!.id, 'verify', VERIFY_HOURS);
+    // Sent after the reply, like the existing-account emails above, so both take the same time.
+    waitUntil(sendEmail(env, email, 'Confirm your email to see Markham sold prices', verifyEmail(origin, name, token)));
+    return json({ ok: true });
   }
 
   if (action === 'login') {
-    const password = typeof body.password === 'string' ? body.password : '';
-    const row = await db.prepare(`SELECT ${USER_COLS}, pass_hash, pass_salt FROM users WHERE email = ?`).bind(email).first<User & { pass_hash: string; pass_salt: string }>();
+    if ((await countSince(db, 'ip', ip, ['login-fail'], 36e5)) >= FAILS_PER_HOUR) return json({ error: 'slow-down' }, 429);
+    const pw = typeof body.password === 'string' && body.password.length <= 200 ? body.password : '';
+    const row = await byEmail(db, k, email);
+    // Wrong passwords before the last password change do not count: resetting unlocks the account.
+    if (row && (await countSince(db, 'user_id', row.id, ['login-fail'], Math.min(36e5, Date.now() - row.pass_set_at))) >= ACCOUNT_FAILS_PER_HOUR) {
+      // Someone is guessing this account's password. Lock it for the hour; the owner can still reset.
+      return json({ error: 'locked' }, 429);
+    }
     // Hash even when there is no such account, so the response time gives nothing away.
-    const hash = await hashPassword(password, row?.pass_salt ?? 'no-account');
+    const hash = await hashPassword(k, pw, row?.pass_salt ?? 'no-account');
     if (!row || !same(hash, row.pass_hash)) {
-      await audit(db, row?.id ?? null, 'login-fail', email, ip);
+      await audit(db, row?.id ?? null, 'login-fail', '', ip);
       return json({ error: 'wrong' }, 401);
     }
+    const u = await loadUser(k, row);
     if (!row.verified_at) {
       const token = await issueToken(db, row.id, 'verify', VERIFY_HOURS);
-      await sendEmail(env, email, 'Confirm your email to see Markham sold prices', verifyEmail(origin, row.name, token));
+      waitUntil(sendEmail(env, u.email, 'Confirm your email to see Markham sold prices', verifyEmail(origin, u.name, token)));
       return json({ error: 'unverified' }, 403);
     }
     if (passwordExpired(row)) {
       const token = await issueToken(db, row.id, 'reset', RESET_HOURS);
-      await sendEmail(env, email, 'Choose a new password for Markham sold prices', resetEmail(origin, row.name, token, true));
+      waitUntil(sendEmail(env, u.email, 'Choose a new password for Markham sold prices', resetEmail(origin, u.name, token, 'expired')));
       await audit(db, row.id, 'login-expired', '', ip);
       return json({ error: 'expired' }, 403);
     }
@@ -247,32 +233,41 @@ export async function onRequest({ request, env, params }: Context): Promise<Resp
   }
 
   if (action === 'forgot') {
-    await audit(db, null, 'forgot', email, ip);
-    const row = await db.prepare(`SELECT ${USER_COLS} FROM users WHERE email = ?`).bind(email).first<User>();
+    await audit(db, null, 'forgot', '', ip);
+    const row = await byEmail(db, k, email);
+    // Sent after the reply, so the response time is the same whether or not the account exists.
     if (row) {
-      const token = await issueToken(db, row.id, 'reset', RESET_HOURS);
-      await sendEmail(env, email, 'Choose a new password for Markham sold prices', resetEmail(origin, row.name, token, false));
+      waitUntil(
+        (async () => {
+          const u = await loadUser(k, row);
+          const token = await issueToken(db, row.id, 'reset', RESET_HOURS);
+          await sendEmail(env, u.email, 'Choose a new password for Markham sold prices', resetEmail(origin, u.name, token, 'forgot'));
+        })(),
+      );
     }
     return json({ ok: true });
   }
 
   if (action === 'reset') {
-    const password = typeof body.password === 'string' ? body.password : '';
-    if (password.length < 8 || password.length > 200) return json({ error: 'password' }, 422);
+    const pw = password(body.password);
+    if (!pw) return json({ error: 'password' }, 422);
     const userId = await useToken(db, text(body.token, 64), 'reset');
     if (!userId) return json({ error: 'link-expired' }, 400);
-    const before = await db.prepare('SELECT verified_at FROM users WHERE id = ?').bind(userId).first<{ verified_at: number | null }>();
+    const before = (await db.prepare(`SELECT ${USER_COLS} FROM accounts WHERE id = ?`).bind(userId).first<UserRow>())!;
     const salt = randomHex(16);
     const now = Date.now();
     // Pressing an emailed link proves the address, so a reset also confirms the email.
-    await db.prepare('UPDATE users SET pass_hash = ?, pass_salt = ?, pass_set_at = ?, verified_at = COALESCE(verified_at, ?) WHERE id = ?')
-      .bind(await hashPassword(password, salt), salt, now, now, userId).run();
+    await db.prepare('UPDATE accounts SET pass_hash = ?, pass_salt = ?, pass_set_at = ?, verified_at = COALESCE(verified_at, ?) WHERE id = ?')
+      .bind(await hashPassword(k, pw, salt), salt, now, now, userId).run();
+    // A new password signs out every other device and cancels every other emailed link.
     await db.prepare('DELETE FROM sessions WHERE user_id = ?').bind(userId).run();
+    await db.prepare('UPDATE tokens SET used_at = ? WHERE user_id = ? AND used_at IS NULL').bind(now, userId).run();
     await audit(db, userId, 'reset', '', ip);
-    const u = (await db.prepare(`SELECT ${USER_COLS} FROM users WHERE id = ?`).bind(userId).first<User>())!;
-    if (!before?.verified_at) await forwardLead(env, u);
-    return json({ ok: true }, 200, await startSession(db, u));
+    if (!before.verified_at) waitUntil(loadUser(k, before).then((u) => forwardLead(env, u)));
+    return json({ ok: true }, 200, await startSession(db, { id: userId, pass_set_at: now }));
   }
 
   return json({ error: 'not-found' }, 404);
 }
+
+const unsealName = (k: Keys, r: UserRow) => loadUser(k, r).then((u) => u.name);
