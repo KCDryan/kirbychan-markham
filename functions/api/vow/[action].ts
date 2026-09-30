@@ -95,6 +95,38 @@ const USER_COLS = 'id, email, name, phone, pass_set_at, verified_at, contact_ok'
 
 export async function onRequest({ request, env, params }: Context): Promise<Response> {
   const action = params.action;
+  // TEMP setup check: which settings exist, plus counts and field names from the VOW feed. No listing
+  // or personal data. Remove once sold prices are confirmed working.
+  if (action === 'setup-check') {
+    const out: Record<string, unknown> = {
+      VOW_DB: !!env.VOW_DB, PROPTX_VOW_TOKEN: !!env.PROPTX_VOW_TOKEN, RESEND_API_KEY: !!env.RESEND_API_KEY,
+      VOW_EMAIL_FROM: env.VOW_EMAIL_FROM ? env.VOW_EMAIL_FROM.replace(/<.*@/, '<…@') : null,
+    };
+    if (env.VOW_DB) {
+      await ensureSchema(env.VOW_DB);
+      out.accounts = await env.VOW_DB.prepare('SELECT COUNT(*) AS total, COUNT(verified_at) AS verified FROM users').bind().first();
+      out.events = (await env.VOW_DB.prepare('SELECT action, COUNT(*) AS n FROM audit GROUP BY action').bind().all()).results;
+    }
+    if (env.PROPTX_VOW_TOKEN) {
+      const get = (path: string) => fetch(`https://query.ampre.ca/odata/${path}`, { headers: { authorization: `Bearer ${env.PROPTX_VOW_TOKEN}` } }).then(async (r) => ({ status: r.status, body: await r.text() }));
+      const count = async (f: string) => { const r = await get(`Property?$top=0&$count=true&$filter=${encodeURIComponent(f)}`); return r.status === 200 ? JSON.parse(r.body)['@odata.count'] : `${r.status} ${r.body.slice(0, 150)}`; };
+      const since = new Date(Date.now() - 90 * 864e5).toISOString().slice(0, 10);
+      out.counts = {
+        markhamAll: await count("City eq 'Markham'"),
+        soldStatus: await count("City eq 'Markham' and MlsStatus eq 'Sold'"),
+        closedStandard: await count("City eq 'Markham' and StandardStatus eq 'Closed'"),
+        soldLast90: await count(`City eq 'Markham' and MlsStatus eq 'Sold' and CloseDate ge ${since}`),
+        soldResidential90: await count(`City eq 'Markham' and MlsStatus eq 'Sold' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale' and CloseDate ge ${since}`),
+      };
+      const st: Record<string, number> = {};
+      const r = await get(`Property?$top=1000&$select=MlsStatus&$filter=${encodeURIComponent(`City eq 'Markham' and ModificationTimestamp ge ${since}T00:00:00Z`)}`);
+      if (r.status === 200) for (const row of JSON.parse(r.body).value) st[row.MlsStatus] = (st[row.MlsStatus] ?? 0) + 1;
+      out.statuses = st;
+      const one = await get(`Property?$top=5&$select=ClosePrice,CloseDate,ListPrice,DaysOnMarket,InternetEntireListingDisplayYN&$filter=${encodeURIComponent("City eq 'Markham' and MlsStatus eq 'Sold'")}&$orderby=ModificationTimestamp desc`);
+      out.fieldsFilled = one.status === 200 ? JSON.parse(one.body).value.map((v: Record<string, unknown>) => Object.fromEntries(Object.entries(v).filter(([k]) => !k.startsWith('@')).map(([k, x]) => [k, x !== null && x !== undefined]))) : `${one.status} ${one.body.slice(0, 150)}`;
+    }
+    return json(out);
+  }
   if (!configured(env)) return json({ configured: false }, action === 'me' ? 200 : 503);
   const db = env.VOW_DB!;
   await ensureSchema(db);
