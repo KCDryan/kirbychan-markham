@@ -75,6 +75,15 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
   if (hit) return hit;
 
   const params = new URL(request.url).searchParams;
+  // TEMP diagnostic: field types from $metadata and sample values for a fixed field list. Remove once filters are confirmed.
+  if (params.get('diag') === 'fields') {
+    const want = ['ContractStatus', 'StandardStatus', 'MlsStatus', 'TransactionType', 'City', 'CityRegion', 'PropertyType', 'PropertySubType', 'ArchitecturalStyle', 'BedroomsTotal', 'BedroomsAboveGrade', 'BathroomsTotalInteger', 'ListPrice', 'InternetEntireListingDisplayYN', 'InternetAddressDisplayYN', 'LivingAreaRange', 'ApproximateAge', 'Basement', 'Elevator', 'AccessibilityFeatures', 'SeniorCommunityYN', 'PetsAllowed', 'AssociationFee', 'GarageType', 'ParkingTotal', 'Laundry', 'LaundryFeatures', 'CondoCorpNumber', 'BuildingAmenities', 'Locker'];
+    const meta = await fetch(`${PROPTX_BASE}/$metadata`, { headers: { authorization: `Bearer ${env.PROPTX_IDX_TOKEN}` } }).then((r) => r.text());
+    const et = meta.slice(meta.indexOf('<EntityType Name="Property"'));
+    const types = Object.fromEntries(want.map((f) => [f, et.slice(0, et.indexOf('</EntityType>')).match(new RegExp(`<Property Name="${f}" Type="([^"]+)"`))?.[1] ?? null]));
+    const sample = await fetch(`${PROPTX_BASE}/Property?$top=40&$filter=City eq 'Markham'&$select=${want.filter((f) => types[f]).join(',')}`, { headers: { authorization: `Bearer ${env.PROPTX_IDX_TOKEN}` } }).then((r) => r.text());
+    return new Response(JSON.stringify({ types, sample: sample.slice(0, 60000) }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+  }
   let body: unknown;
   try {
     if (params.has('id')) {
