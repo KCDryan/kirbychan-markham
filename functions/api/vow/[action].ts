@@ -125,6 +125,21 @@ export async function onRequest({ request, env, params }: Context): Promise<Resp
       const one = await get(`Property?$top=5&$select=ClosePrice,CloseDate,ListPrice,DaysOnMarket,InternetEntireListingDisplayYN&$filter=${encodeURIComponent("City eq 'Markham' and MlsStatus eq 'Sold'")}&$orderby=ModificationTimestamp desc`);
       out.fieldsFilled = one.status === 200 ? JSON.parse(one.body).value.map((v: Record<string, unknown>) => Object.fromEntries(Object.entries(v).filter(([k]) => !k.startsWith('@')).map(([k, x]) => [k, x !== null && x !== undefined]))) : `${one.status} ${one.body.slice(0, 150)}`;
     }
+    if (env.PROPTX_VOW_TOKEN) {
+      const { soldQuery, coverQuery } = await import('../../../src/lib/proptx');
+      const q: Record<string, unknown> = {};
+      for (const preset of ['', 'home=bungalow', 'home=condo&area=unionville&sold=30', 'home=house&price=1200-1600&beds=4&sold=365', 'sort=high&page=5']) {
+        const r = await fetch(`https://query.ampre.ca/odata/Property?${soldQuery(new URLSearchParams(preset))}`, { headers: { authorization: `Bearer ${env.PROPTX_VOW_TOKEN}` } });
+        const body = await r.text();
+        if (r.status !== 200) { q[preset || 'default'] = `${r.status} ${body.slice(0, 200)}`; continue; }
+        const d = JSON.parse(body);
+        const keys = d.value.map((v: Record<string, unknown>) => String(v.ListingKey));
+        const m = keys.length ? await fetch(`https://query.ampre.ca/odata/Media?${coverQuery(keys)}`, { headers: { authorization: `Bearer ${env.PROPTX_VOW_TOKEN}` } }) : null;
+        const covers = m && m.ok ? new Set(((await m.json()) as { value: { ResourceRecordKey: string }[] }).value.map((x) => x.ResourceRecordKey)).size : m ? `media ${m.status}` : 0;
+        q[preset || 'default'] = { total: d['@odata.count'], returned: keys.length, withPhoto: covers };
+      }
+      out.soldQueries = q;
+    }
     return json(out);
   }
   if (!configured(env)) return json({ configured: false }, action === 'me' ? 200 : 503);
