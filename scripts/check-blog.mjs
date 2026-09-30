@@ -131,7 +131,7 @@ for (const name of files) {
     fail(file, 'link to at least one neighbourhood guide, service, buyers or sellers page in the body');
   }
   for (const l of internal) {
-    const path = l.split('#')[0];
+    const path = l.split(/[?#]/)[0];
     if (path && !path.endsWith('/') && !/\.[a-z0-9]+$/i.test(path)) fail(file, `internal link ${l} needs a trailing slash`);
     if (path === `/blog/${slug}/`) fail(file, 'links to itself');
   }
