@@ -1,0 +1,94 @@
+---
+import Page from '../../layouts/Page.astro';
+import site from '../../data/site.json';
+import { TERMS_VERSION } from '../../lib/vow';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Sold Prices', path: '/sold/' },
+  { name: 'Terms of Use', path: '/sold/terms/' },
+];
+const effective = new Date(TERMS_VERSION + 'T12:00:00').toLocaleDateString('en-CA', { dateStyle: 'long' });
+---
+
+<Page
+  title="Terms of Use for Sold Prices"
+  description="The terms you agree to when you create a free account to see Markham sold prices from the MLS® on kirbychanmarkham.com."
+  eyebrow="Sold prices"
+  h1="Terms of use for sold prices"
+  lede={`These terms apply to the sold prices section of this website. They take effect on ${effective}.`}
+  crumbs={crumbs}
+>
+  <section class="section">
+    <div class="wrap-narrow prose">
+      <p>
+        The sold prices section of this website is a virtual office website operated by {site.brokerage.disclosure}
+        It shows listing information from the MLS® System of the Toronto Regional Real Estate Board (TRREB), provided
+        through PropTx. The rules of the board let us show this information only to people who create an account and
+        agree to these terms. By ticking the box when you create your account, you agree to all of them.
+      </p>
+
+      <h2>1. Our relationship</h2>
+      <p>
+        By creating an account you enter into a lawful broker and consumer relationship with {site.brokerage.legalName}
+        through the Kirby Chan &amp; Co. Real Estate Team. This relationship lets us provide you with MLS® information
+        through this website. It does not require you to pay anything and it is not a representation or buyer agency
+        agreement. You are under no obligation to buy, sell or lease through us.
+      </p>
+
+      <h2>2. Personal use only</h2>
+      <p>
+        You will use the information only for your own personal, non-commercial use. You confirm that you have a bona
+        fide interest in the purchase, sale or lease of real estate of the type shown on this website.
+      </p>
+
+      <h2>3. No copying or sharing</h2>
+      <p>You agree that you will not:</p>
+      <ul>
+        <li>copy, redistribute or retransmit any of the information, except in connection with your own consideration of buying, selling or leasing a property;</li>
+        <li>display, publish, sell, license or sublicense any of the information to anyone else;</li>
+        <li>use any robot, scraper, crawler or other automated tool to collect the information;</li>
+        <li>try to get around the limits on searching;</li>
+        <li>give any of the information to an artificial intelligence tool, large language model or similar service;</li>
+        <li>use any of the information to train such a tool;</li>
+        <li>share your account or password with anyone.</li>
+      </ul>
+
+      <h2>4. Ownership</h2>
+      <p>
+        The listing information is owned by TRREB and PropTx and is protected by copyright. It is provided under
+        licence and you acknowledge the board's ownership of it and the validity of its copyright. It is deemed
+        reliable but is not guaranteed accurate by TRREB or PropTx.
+      </p>
+
+      <h2>5. Your account</h2>
+      <ul>
+        <li>Your email address is your username. We confirm it by sending you a link before your account works.</li>
+        <li>Board rules limit each password to 90 days. When yours expires we email you a link to choose a new one.</li>
+        <li>Each search shows at most 100 results. There is also a daily limit on searches to protect the information from misuse.</li>
+        <li>We keep a record of sign ins and searches, as the board rules require.</li>
+        <li>We may close an account that breaks these terms.</li>
+      </ul>
+
+      <h2>6. Access for the board</h2>
+      <p>
+        TRREB, PropTx and other members of the board may access this section of the website to check that it complies
+        with the board's rules. You agree to that access.
+      </p>
+
+      <h2>7. Your information</h2>
+      <p>
+        We keep your name, email address, phone number and account records for as long as your account exists and
+        for at least 180 days after your password expires, as the board rules require. This information may be shared
+        with TRREB and PropTx to confirm compliance with their rules. We do not sell it. The
+        <a href="/privacy/">privacy policy</a> explains how we handle personal information.
+      </p>
+
+      <h2>8. Contact</h2>
+      <p>
+        Questions about these terms or your account: call {site.contact.phone} or email
+        <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.
+      </p>
+    </div>
+  </section>
+</Page>

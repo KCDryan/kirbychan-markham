@@ -2,13 +2,14 @@
 import Page from '../../layouts/Page.astro';
 import IdxDisclaimer from '../../components/IdxDisclaimer.astro';
 import site from '../../data/site.json';
-import { AREAS, CITIES, HOMES, PRICES } from '../../lib/proptx';
+import HomeChoices from '../../components/HomeChoices.astro';
+import { CITIES } from '../../lib/proptx';
+import '../../styles/home-search.css';
 
 const crumbs = [
   { name: 'Home', path: '/' },
   { name: 'Homes for Sale', path: '/homes-for-sale/' },
 ];
-const BEDS = ['1', '2', '3', '4'];
 ---
 
 <Page
@@ -24,51 +25,10 @@ const BEDS = ['1', '2', '3', '4'];
       <div class="hs__call">
         <p>Prefer to talk to a person? We will search for you.</p>
         <a class="btn btn--primary hs__big" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
+        <a class="btn btn--ghost hs__big" href="/sold/">See what homes sold for</a>
       </div>
 
-      <div class="hs__step">
-        <h2><span class="hs__num">1</span> What kind of home?</h2>
-        <div class="hs__choices hs__choices--tiles">
-          <a class="hs__choice" data-key="home" data-value="" href="?">
-            <strong>Any home</strong><span>Show everything</span>
-          </a>
-          {Object.entries(HOMES).map(([k, h]) => (
-            <a class="hs__choice" data-key="home" data-value={k} href={`?home=${k}`}>
-              <strong>{h.label}</strong><span>{h.hint}</span>
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <div class="hs__step" id="area-step">
-        <h2><span class="hs__num">2</span> Where in Markham? <small>(optional)</small></h2>
-        <div class="hs__choices">
-          <a class="hs__choice" data-key="area" data-value="" href="?"><strong>All of Markham</strong></a>
-          {Object.entries(AREAS).map(([k, a]) => (
-            <a class="hs__choice" data-key="area" data-value={k} href={`?area=${k}`}><strong>{a.label}</strong></a>
-          ))}
-        </div>
-      </div>
-
-      <div class="hs__step">
-        <h2><span class="hs__num">3</span> Your price <small>(optional)</small></h2>
-        <div class="hs__choices">
-          <a class="hs__choice" data-key="price" data-value="" href="?"><strong>Any price</strong></a>
-          {Object.entries(PRICES).map(([k, p]) => (
-            <a class="hs__choice" data-key="price" data-value={k} href={`?price=${k}`}><strong>{p.label}</strong></a>
-          ))}
-        </div>
-      </div>
-
-      <div class="hs__step">
-        <h2><span class="hs__num">4</span> Bedrooms <small>(optional)</small></h2>
-        <div class="hs__choices">
-          <a class="hs__choice" data-key="beds" data-value="" href="?"><strong>Any</strong></a>
-          {BEDS.map((b) => (
-            <a class="hs__choice" data-key="beds" data-value={b} href={`?beds=${b}`}><strong>{b} or more</strong></a>
-          ))}
-        </div>
-      </div>
+      <HomeChoices />
 
       <a class="btn btn--primary hs__big hs__jump" id="jump" href="#results-top">See the homes ↓</a>
 
@@ -120,185 +80,71 @@ const BEDS = ['1', '2', '3', '4'];
   </section>
 </Page>
 
-<script is:inline define:vars={{ HOMES, PRICES, AREAS, fallback: 'https://kirbychanandco.com/homes-for-sale-markham', phone: site.contact.phone }}>
-  (() => {
-    const $ = (id) => document.getElementById(id);
-    const KEYS = ['home', 'area', 'price', 'beds', 'city', 'for', 'sort', 'page'];
-    const money = (n) => (typeof n === 'number' ? '$' + n.toLocaleString('en-CA') : '');
-    const el = (tag, cls, text) => {
-      const e = document.createElement(tag);
-      if (cls) e.className = cls;
-      if (text != null) e.textContent = text;
-      return e;
-    };
-    const current = () => {
-      const p = new URLSearchParams(location.search);
-      for (const k of [...p.keys()]) if (!KEYS.includes(k) || !p.get(k)) p.delete(k);
-      return p;
-    };
-    const withValue = (p, key, value) => {
-      const n = new URLSearchParams(p);
-      if (value) n.set(key, value); else n.delete(key);
-      if (key !== 'page') n.delete('page');
-      if (key === 'city') n.delete('area');
-      const s = n.toString();
-      return s ? '?' + s : location.pathname;
-    };
+<script>
+  import site from '../../data/site.json';
+  import { $, bindChoices, current, describe, el, factsLine, money, photo, syncChoices, withValue } from '../../scripts/home-search';
 
-    /** Plain sentence describing the search, e.g. "bungalows for sale in Markham under $800,000". */
-    const describe = (p) => {
-      const home = HOMES[p.get('home')];
-      const price = PRICES[p.get('price')];
-      return [
-        home ? home.label.toLowerCase() : 'homes',
-        p.get('for') === 'lease' ? 'for rent' : 'for sale',
-        'in ' + (p.get('city') || (AREAS[p.get('area')] ? AREAS[p.get('area')].label + ', Markham' : 'Markham')),
-        price && (price.min && price.max ? `from ${money(price.min)} to ${money(price.max)}` : price.max ? `under ${money(price.max)}` : `over ${money(price.min)}`),
-        p.get('beds') && `with ${p.get('beds')} or more bedrooms`,
-      ].filter(Boolean).join(' ');
-    };
+  const KEYS = ['home', 'area', 'price', 'beds', 'city', 'for', 'sort', 'page'];
+  const FALLBACK = 'https://kirbychanandco.com/homes-for-sale-markham';
+  type Listing = { key: string; price: number; address: string | null; city: string; community: string | null; beds: number | null; baths: number | null; type: string | null; style: string | null; lease: boolean; brokerage: string | null; photo: string | null };
 
-    const card = (l) => {
-      const li = el('li', 'hs__card');
-      const a = el('a', 'hs__link');
-      a.href = '/homes-for-sale/listing/?id=' + encodeURIComponent(l.key);
-      const img = el('img', 'hs__img');
-      img.alt = l.address ? `${l.address}, ${l.city}` : `Home in ${l.city}`;
-      if (l.photo) { img.src = l.photo; img.loading = 'lazy'; img.referrerPolicy = 'no-referrer'; }
-      const body = el('div', 'hs__body');
-      const facts = [
-        l.style && !/storey|apartment|other/i.test(l.style) ? l.style : l.type,
-        l.beds != null && `${l.beds} bedroom${l.beds === 1 ? '' : 's'}`,
-        l.baths != null && `${l.baths} bathroom${l.baths === 1 ? '' : 's'}`,
-      ].filter(Boolean).join(' · ');
-      body.append(
-        el('p', 'hs__price', money(l.price) + (l.lease ? ' a month' : '')),
-        el('p', 'hs__addr', l.address || 'Address given on request'),
-        el('p', 'hs__where', [l.community, l.city].filter(Boolean).join(', ')),
-        el('p', 'hs__facts', facts),
-        el('span', 'btn btn--primary hs__see', 'See photos and details'),
-        el('p', 'hs__brokerage', `Listed by ${l.brokerage || 'the listing brokerage'}. MLS® ${l.key}`),
-      );
-      a.append(img, body);
-      li.append(a);
-      return li;
-    };
+  const card = (l: Listing) => {
+    const li = el('li', 'hs__card');
+    const a = el('a', 'hs__link') as HTMLAnchorElement;
+    a.href = '/homes-for-sale/listing/?id=' + encodeURIComponent(l.key);
+    const body = el('div', 'hs__body');
+    body.append(
+      el('p', 'hs__price', money(l.price) + (l.lease ? ' a month' : '')),
+      el('p', 'hs__addr', l.address || 'Address given on request'),
+      el('p', 'hs__where', [l.community, l.city].filter(Boolean).join(', ')),
+      el('p', 'hs__facts', factsLine(l)),
+      el('span', 'btn btn--primary hs__see', 'See photos and details'),
+      el('p', 'hs__brokerage', `Listed by ${l.brokerage || 'the listing brokerage'}. MLS® ${l.key}`),
+    );
+    a.append(photo(l.photo, l.address ? `${l.address}, ${l.city}` : `Home in ${l.city}`), body);
+    li.append(a);
+    return li;
+  };
 
-    let seq = 0;
-    const load = () => {
-      const p = current();
-      const page = Math.max(1, Number(p.get('page')) || 1);
-      for (const c of document.querySelectorAll('.hs__choice')) {
-        const on = (p.get(c.dataset.key) || '') === c.dataset.value;
-        c.href = withValue(p, c.dataset.key, c.dataset.value);
-        if (on) c.setAttribute('aria-current', 'true'); else c.removeAttribute('aria-current');
-      }
-      if (p.get('city') || p.get('for') || p.get('sort')) document.querySelector('.hs__more').open = true;
-      // Neighbourhoods are Markham's, so the row only shows while searching Markham.
-      $('area-step').hidden = !!p.get('city');
-      $('reset').hidden = ![...p.keys()].length;
-      $('status').textContent = 'Finding ' + describe(p) + '…';
-      $('jump').textContent = 'See the homes ↓';
-      $('results').replaceChildren();
-      $('prev').hidden = $('next').hidden = true;
-      const mine = ++seq;
-      fetch('/api/listings?' + p)
-        .then((r) => r.json().then((body) => ({ ok: r.ok, body })))
-        .then(({ ok, body }) => {
-          if (mine !== seq) return;
-          if (!ok) throw body;
-          const { total, listings } = body;
-          if (!total) {
-            $('status').textContent = `There are no ${describe(p)} right now. Try "Any price" or "Any" bedrooms. You can also call us at ${phone} and we will watch for one.`;
-            return;
-          }
-          const from = (page - 1) * 24 + 1;
-          const to = from + listings.length - 1;
-          $('status').textContent = `${total.toLocaleString('en-CA')} ${describe(p)}.` + (total > 24 ? ` Showing ${from} to ${to}.` : '');
-          $('jump').textContent = `See the ${total.toLocaleString('en-CA')} home${total === 1 ? '' : 's'} ↓`;
-          $('results').replaceChildren(...listings.map(card));
-          if (page > 1) { $('prev').href = withValue(p, 'page', String(page - 1)); $('prev').hidden = false; }
-          if (to < total) { $('next').href = withValue(p, 'page', String(page + 1)); $('next').hidden = false; }
-        })
-        .catch(() => {
-          if (mine !== seq) return;
-          $('status').textContent = `Homes could not be loaded just now. Please try again in a minute or call us at ${phone}. `;
-          const a = el('a', null, 'Or search all Markham listings here.');
-          a.href = fallback || '/contact/';
-          $('status').append(a);
-        });
-    };
+  let seq = 0;
+  const load = () => {
+    const p = current(KEYS);
+    const verb = p.get('for') === 'lease' ? 'for rent' : 'for sale';
+    const page = Math.max(1, Number(p.get('page')) || 1);
+    syncChoices(p);
+    if (p.get('city') || p.get('for') || p.get('sort')) (document.querySelector('.hs__more') as HTMLDetailsElement).open = true;
+    $('reset').hidden = ![...p.keys()].length;
+    $('status').textContent = 'Finding ' + describe(p, verb) + '…';
+    $('jump').textContent = 'See the homes ↓';
+    $('results').replaceChildren();
+    $('prev').hidden = $('next').hidden = true;
+    const mine = ++seq;
+    fetch('/api/listings?' + p)
+      .then((r) => r.json().then((body) => ({ ok: r.ok, body })))
+      .then(({ ok, body }) => {
+        if (mine !== seq) return;
+        if (!ok) throw body;
+        const { total, listings } = body as { total: number; listings: Listing[] };
+        if (!total) {
+          $('status').textContent = `There are no ${describe(p, verb)} right now. Try "Any price" or "Any" bedrooms. You can also call us at ${site.contact.phone} and we will watch for one.`;
+          return;
+        }
+        const from = (page - 1) * 24 + 1;
+        const to = from + listings.length - 1;
+        $('status').textContent = `${total.toLocaleString('en-CA')} ${describe(p, verb)}.` + (total > 24 ? ` Showing ${from} to ${to}.` : '');
+        $('jump').textContent = `See the ${total.toLocaleString('en-CA')} home${total === 1 ? '' : 's'} ↓`;
+        $('results').replaceChildren(...listings.map(card));
+        if (page > 1) { ($('prev') as HTMLAnchorElement).href = withValue(p, 'page', String(page - 1)); $('prev').hidden = false; }
+        if (to < total) { ($('next') as HTMLAnchorElement).href = withValue(p, 'page', String(page + 1)); $('next').hidden = false; }
+      })
+      .catch(() => {
+        if (mine !== seq) return;
+        $('status').textContent = `Homes could not be loaded just now. Please try again in a minute or call us at ${site.contact.phone}. `;
+        const a = el('a', null, 'Or search all Markham listings here.') as HTMLAnchorElement;
+        a.href = FALLBACK;
+        $('status').append(a);
+      });
+  };
 
-    // Choices update the list in place, so the page never jumps back to the top.
-    document.addEventListener('click', (e) => {
-      const a = e.target.closest('.hs__choice, #prev, #next');
-      if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
-      e.preventDefault();
-      history.pushState(null, '', a.getAttribute('href'));
-      load();
-      if (a.id === 'prev' || a.id === 'next') $('results-top').scrollIntoView();
-    });
-    addEventListener('popstate', load);
-    load();
-  })();
+  bindChoices(load);
 </script>
-
-<style is:global>
-  .hs { font-size: 1.15rem; }
-  .hs h2 { font-size: var(--step-2); display: flex; align-items: center; gap: var(--sp-3); margin: 0 0 var(--sp-4); }
-  .hs h2 small { font-size: 1rem; font-family: var(--font-body); color: var(--text-muted); font-weight: 400; }
-  .hs h3 { font-size: var(--step-1); margin: var(--sp-5) 0 var(--sp-3); }
-  .hs__num {
-    display: inline-grid; place-items: center; width: 2.2rem; height: 2.2rem; flex: none;
-    border-radius: 50%; background: var(--brand); color: var(--paper); font-family: var(--font-body); font-size: 1.1rem;
-  }
-  .hs__call {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3);
-    padding: var(--sp-4) var(--sp-5); margin-bottom: var(--sp-6);
-    background: var(--mist); border: 1px solid var(--rule); border-radius: var(--radius-lg);
-  }
-  .hs__call p { margin: 0; font-weight: 600; }
-  .hs__big { min-height: 60px; font-size: 1.05rem; padding-inline: var(--sp-6); }
-  .hs__step { margin-bottom: var(--sp-6); }
-  .hs__choices { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); }
-  .hs__choices--tiles { grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
-  .hs__choice {
-    display: grid; align-content: center; gap: 0.2rem; min-height: 64px; padding: var(--sp-3) var(--sp-4);
-    background: #fff; color: var(--text); text-decoration: none; text-align: center;
-    border: 2px solid var(--rule); border-radius: var(--radius-lg);
-    transition: border-color 0.15s var(--ease), background-color 0.15s var(--ease);
-  }
-  .hs__choices--tiles .hs__choice { min-height: 96px; }
-  .hs__choice strong { font-size: 1.2rem; }
-  .hs__choice span { font-size: 1rem; color: var(--text-muted); }
-  .hs__choice:hover { border-color: var(--brand); color: var(--text); }
-  .hs__choice:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
-  .hs__choice[aria-current] { background: var(--brand); border-color: var(--brand); color: var(--paper); }
-  .hs__choice[aria-current] span { color: var(--paper); }
-  .hs__choice[aria-current] strong::before { content: '✓ '; }
-  .hs__jump { width: 100%; margin-bottom: var(--sp-5); font-size: 1.15rem; }
-  .hs__more { margin-bottom: var(--sp-6); }
-  .hs__more summary {
-    cursor: pointer; font-weight: 600; padding: var(--sp-3) 0; color: var(--brand);
-    text-decoration: underline; text-underline-offset: 4px; min-height: 48px;
-  }
-  .hs__summary {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3);
-    border-top: 2px solid var(--rule); padding-top: var(--sp-5); margin-bottom: var(--sp-5); scroll-margin-top: 90px;
-  }
-  .hs__summary p { margin: 0; font-size: 1.3rem; font-weight: 600; max-width: 60ch; }
-  .hs__results { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--sp-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
-  .hs__card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden; }
-  .hs__card:hover { border-color: var(--brass); box-shadow: var(--shadow); }
-  .hs__link, .hs__link:hover { display: block; color: inherit; text-decoration: none; }
-  .hs__img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--mist); }
-  .hs__body { padding: var(--sp-4) var(--sp-5) var(--sp-5); display: grid; gap: 0.3rem; }
-  .hs__body p { margin: 0; }
-  .hs__price { font-family: var(--font-heading); font-size: var(--step-3); color: var(--brand); }
-  .hs__addr { font-weight: 700; font-size: 1.2rem; }
-  .hs__facts { font-size: 1.1rem; }
-  .hs__see { margin-top: var(--sp-3); min-height: 56px; }
-  .hs__brokerage { font-size: 0.85rem; color: var(--text-muted); margin-top: var(--sp-2) !important; }
-  .hs__pager { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-3); margin-top: var(--sp-6); }
-  .hs__intro { max-width: 70ch; margin-top: var(--sp-8); }
-</style>

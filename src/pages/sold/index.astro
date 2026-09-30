@@ -1,0 +1,383 @@
+---
+import Page from '../../layouts/Page.astro';
+import HomeChoices from '../../components/HomeChoices.astro';
+import IdxDisclaimer from '../../components/IdxDisclaimer.astro';
+import site from '../../data/site.json';
+import { SOLD_WINDOWS } from '../../lib/proptx';
+import '../../styles/home-search.css';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Sold Prices', path: '/sold/' },
+];
+const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY ?? '';
+const faq = [
+  {
+    q: 'Why do I need an account to see sold prices?',
+    a: 'The real estate board rules in Ontario let a brokerage show sold prices online only to people who have created an account and agreed to the terms of use. The account is free and there is no obligation.',
+  },
+  {
+    q: 'Does the account cost anything or commit me to anything?',
+    a: 'No. It is free, it does not ask you to sign any agreement with us and you can stop using it at any time.',
+  },
+  {
+    q: 'Why do I have to choose a new password every 90 days?',
+    a: 'The board rules require it. When your password is 90 days old we email you a link to choose a new one, which takes a minute.',
+  },
+  {
+    q: 'How far back do the sold prices go?',
+    a: 'Up to two years. Choose the last 30 days, 3 months, 12 months or 2 years.',
+  },
+];
+---
+
+<Page
+  title="Markham Sold Prices: See What Homes Sold For"
+  description="See what Markham homes actually sold for, from the MLS®: bungalows, condo apartments, townhouses and houses by neighbourhood. Free account, one-click search."
+  eyebrow="Markham, Ontario"
+  h1="Markham sold prices"
+  lede="See what homes in Markham actually sold for, not just what they were listed at. Board rules ask for a free account first. It takes about a minute."
+  crumbs={crumbs}
+  faq={faq}
+>
+  <section class="section">
+    <div class="wrap hs">
+      <p class="hs-msg" id="msg" role="status" hidden></p>
+
+      <div id="s-loading"><p>Loading…</p></div>
+
+      <div id="s-off" hidden>
+        <div class="hs__call">
+          <p>Sold prices online are coming soon. Until then, call us and we will tell you what any home sold for.</p>
+          <a class="btn btn--primary hs__big" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
+        </div>
+      </div>
+
+      <div id="s-out" hidden>
+        <div class="hs-choose">
+          <button class="btn btn--primary hs__big" type="button" id="show-register">I am new: create my free account</button>
+          <button class="btn btn--ghost hs__big" type="button" id="show-login">I already have an account: sign in</button>
+        </div>
+
+        <form class="hs-form" id="f-register" hidden novalidate>
+          <h2>Create your free account</h2>
+          <div class="hs-field hs-honey" aria-hidden="true">
+            <label for="r-company">Company website</label>
+            <input id="r-company" name="company_website" tabindex="-1" autocomplete="off" />
+          </div>
+          <div class="hs-field">
+            <label for="r-name">Your name</label>
+            <input id="r-name" name="name" autocomplete="name" required />
+          </div>
+          <div class="hs-field">
+            <label for="r-email">Your email address <small>(this is how you sign in)</small></label>
+            <input id="r-email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="hs-field">
+            <label for="r-phone">Phone number <small>(optional)</small></label>
+            <input id="r-phone" name="phone" type="tel" autocomplete="tel" />
+          </div>
+          <div class="hs-field">
+            <label for="r-password">Choose a password <small>(at least 8 letters or numbers)</small></label>
+            <input id="r-password" name="password" type="password" autocomplete="new-password" minlength="8" required />
+            <label class="hs-check hs-show"><input type="checkbox" data-show="r-password" /> Show the password</label>
+          </div>
+          <label class="hs-check">
+            <input type="checkbox" name="terms" required />
+            <span>I have read and agree to the <a href="/sold/terms/" target="_blank">terms of use for sold prices</a> (opens in a new tab).</span>
+          </label>
+          <label class="hs-check">
+            <input type="checkbox" name="contact" />
+            <span>Kirby Chan &amp; Co. may contact me about Markham real estate. <small>(optional)</small></span>
+          </label>
+          {turnstileSiteKey && <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="light" />}
+          <button class="btn btn--primary hs__big" type="submit">Create my account</button>
+        </form>
+
+        <form class="hs-form" id="f-login" hidden novalidate>
+          <h2>Sign in</h2>
+          <div class="hs-field">
+            <label for="l-email">Your email address</label>
+            <input id="l-email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="hs-field">
+            <label for="l-password">Your password</label>
+            <input id="l-password" name="password" type="password" autocomplete="current-password" required />
+            <label class="hs-check hs-show"><input type="checkbox" data-show="l-password" /> Show the password</label>
+          </div>
+          <button class="btn btn--primary hs__big" type="submit">Sign in</button>
+          <button class="hs-link" type="button" id="show-forgot">Forgot your password?</button>
+        </form>
+
+        <form class="hs-form" id="f-forgot" hidden novalidate>
+          <h2>Choose a new password</h2>
+          <p>Enter your email address and we will send you a link to choose a new password.</p>
+          <div class="hs-field">
+            <label for="fg-email">Your email address</label>
+            <input id="fg-email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <button class="btn btn--primary hs__big" type="submit">Email me a link</button>
+        </form>
+      </div>
+
+      <div id="s-reset" hidden>
+        <form class="hs-form" id="f-reset" novalidate>
+          <h2>Choose a new password</h2>
+          <div class="hs-field">
+            <label for="n-password">New password <small>(at least 8 letters or numbers)</small></label>
+            <input id="n-password" name="password" type="password" autocomplete="new-password" minlength="8" required />
+            <label class="hs-check hs-show"><input type="checkbox" data-show="n-password" /> Show the password</label>
+          </div>
+          <button class="btn btn--primary hs__big" type="submit">Save my new password</button>
+        </form>
+      </div>
+
+      <div id="s-in" hidden>
+        <div class="hs__call">
+          <p id="hello"></p>
+          <button class="btn btn--ghost" type="button" id="logout">Sign out</button>
+        </div>
+        <HomeChoices priceLabel="Sold price">
+          <div class="hs__step">
+            <h2><span class="hs__num">5</span> Sold when?</h2>
+            <div class="hs__choices">
+              {Object.entries(SOLD_WINDOWS).map(([k, w]) => (
+                <a class="hs__choice" data-key="sold" data-value={k === '90' ? '' : k} href={k === '90' ? '?' : `?sold=${k}`}><strong>{w.label}</strong></a>
+              ))}
+            </div>
+          </div>
+        </HomeChoices>
+        <a class="btn btn--primary hs__big hs__jump" id="jump" href="#results-top">See the sold homes ↓</a>
+        <div class="hs__summary" id="results-top">
+          <p id="status" aria-live="polite"></p>
+          <a class="btn btn--ghost" id="reset" href="/sold/" hidden>Start over</a>
+        </div>
+        <ul class="hs__results" id="results"></ul>
+        <nav class="hs__pager" aria-label="More sold homes">
+          <a class="btn btn--ghost hs__big" id="prev" href="#" hidden>Previous homes</a>
+          <a class="btn btn--primary hs__big" id="next" href="#" hidden>Show more homes</a>
+        </nav>
+      </div>
+
+      <div class="prose hs__intro">
+        <h2>Why sold prices matter when you downsize</h2>
+        <p>
+          The asking price tells you what a seller hopes for. The sold price tells you what buyers
+          actually paid. Before you list a family home or make an offer on a smaller one, the sold
+          prices on nearby streets are the best guide to what is realistic. With a free account you can
+          see bungalows, condo apartments, townhouses and houses sold in any Markham neighbourhood over
+          the last two years.
+        </p>
+        <p>
+          Would you rather have someone walk you through the numbers? Call us or
+          <a href="/home-valuation/">ask for a free valuation</a> of your home, based on the sales
+          closest to it. To see what is on the market today, use our
+          <a href="/homes-for-sale/">Markham homes for sale</a> search.
+        </p>
+      </div>
+
+      <IdxDisclaimer />
+    </div>
+  </section>
+</Page>
+
+{turnstileSiteKey && <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js" />}
+
+<script>
+  import site from '../../data/site.json';
+  import { SOLD_MAX_RESULTS, SOLD_PAGE_SIZE, SOLD_WINDOWS } from '../../lib/proptx';
+  import { $, bindChoices, current, describe, el, factsLine, money, photo, syncChoices, withValue } from '../../scripts/home-search';
+
+  const KEYS = ['home', 'area', 'price', 'beds', 'sold', 'sort', 'page'];
+  const CALL = `call us at ${site.contact.phone}`;
+  type Sold = { key: string; soldPrice: number; soldDate: string; listPrice: number | null; days: number | null; address: string | null; city: string; community: string | null; beds: number | null; baths: number | null; type: string | null; style: string | null; brokerage: string | null; photo: string | null };
+
+  const show = (id: string) => {
+    for (const s of ['s-loading', 's-off', 's-out', 's-in', 's-reset']) $(s).hidden = s !== id;
+  };
+  const say = (text: string) => {
+    $('msg').textContent = text;
+    $('msg').hidden = !text;
+    if (text) $('msg').scrollIntoView();
+  };
+  const post = (action: string, body: unknown) =>
+    fetch('/api/vow/' + action, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+      .then((r) => r.json().catch(() => ({})).then((b) => ({ ok: r.ok, status: r.status, ...b })));
+  const fields = (form: HTMLFormElement) => Object.fromEntries(new FormData(form)) as Record<string, string>;
+  const busy = (form: HTMLFormElement, on: boolean) => {
+    const b = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    b.disabled = on;
+    b.dataset.label ??= b.textContent ?? '';
+    b.textContent = on ? 'One moment…' : b.dataset.label;
+  };
+  const ERRORS: Record<string, string> = {
+    name: 'Please add your name.',
+    email: 'Please check the email address. It should look like name@example.com.',
+    password: 'Please choose a password with at least 8 letters or numbers.',
+    terms: 'Please tick the box to agree to the terms of use.',
+    'spam-check': 'The security check did not finish. Please wait a moment and press the button again.',
+    wrong: 'That email and password do not match. Please try again or press "Forgot your password?"',
+    unverified: 'Please confirm your email address first. We have just sent you a new link. Open the email and press the link.',
+    expired: 'For your security, passwords last 90 days. We have emailed you a link to choose a new one.',
+    'slow-down': `Too many tries for now. Please wait an hour or ${CALL}.`,
+    'link-expired': 'That link has expired. Press "Forgot your password?" to get a new one.',
+    'email-failed': `We could not send the email just now. Please try again in a few minutes or ${CALL}.`,
+  };
+  const fail = (b: { error?: string }) => say(ERRORS[b.error ?? ''] ?? `Something went wrong. Please try again or ${CALL}.`);
+
+  // Show password, for anyone who finds typing a password without seeing it hard.
+  for (const box of document.querySelectorAll<HTMLInputElement>('[data-show]')) {
+    box.addEventListener('change', () => (($(box.dataset.show!) as HTMLInputElement).type = box.checked ? 'text' : 'password'));
+  }
+  const open = (id: string) => {
+    for (const f of ['f-register', 'f-login', 'f-forgot']) $(f).hidden = f !== id;
+    say('');
+    $(id).querySelector('input:not([tabindex])')?.scrollIntoView();
+    ($(id).querySelector('input:not([tabindex])') as HTMLInputElement | null)?.focus();
+  };
+  $('show-register').onclick = () => open('f-register');
+  $('show-login').onclick = () => open('f-login');
+  $('show-forgot').onclick = () => open('f-forgot');
+
+  $('f-register').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const f = fields(form);
+    busy(form, true);
+    const r = await post('register', { ...f, terms: !!f.terms, contact: !!f.contact, turnstile: f['cf-turnstile-response'] ?? '' });
+    busy(form, false);
+    if (!r.ok) return fail(r);
+    form.hidden = true;
+    say(`Almost done. We sent an email to ${f.email}. Open it and press the link inside to see sold prices. If it is not there in a few minutes, look in your junk or spam folder.`);
+  });
+
+  $('f-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    busy(form, true);
+    const r = await post('login', fields(form));
+    busy(form, false);
+    if (!r.ok) return fail(r);
+    location.href = '/sold/';
+  });
+
+  $('f-forgot').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    busy(form, true);
+    const r = await post('forgot', fields(form));
+    busy(form, false);
+    if (!r.ok) return fail(r);
+    say('If there is an account for that email, we have sent a link to choose a new password. It works for 2 hours.');
+  });
+
+  $('f-reset').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    busy(form, true);
+    const r = await post('reset', { ...fields(form), token: new URLSearchParams(location.search).get('reset') });
+    busy(form, false);
+    if (!r.ok) return fail(r);
+    location.href = '/sold/?welcome=1';
+  });
+
+  $('logout').onclick = async () => {
+    await post('logout', {});
+    location.href = '/sold/';
+  };
+
+  const date = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const card = (l: Sold) => {
+    const li = el('li', 'hs__card');
+    const body = el('div', 'hs__body');
+    const ask = el('a', 'btn btn--ghost hs__see', 'Ask us about this sale') as HTMLAnchorElement;
+    ask.href = '/contact/?listing=' + encodeURIComponent(l.key);
+    body.append(
+      el('p', 'hs__price', 'Sold for ' + money(l.soldPrice)),
+      el('p', 'hs__facts', [l.listPrice && `Asked ${money(l.listPrice)}`, l.soldDate && `Sold ${date(l.soldDate)}`].filter(Boolean).join(' · ')),
+      el('p', 'hs__addr', l.address || 'Address not shown at the seller’s request'),
+      el('p', 'hs__where', [l.community, l.city].filter(Boolean).join(', ')),
+      el('p', 'hs__facts', factsLine(l)),
+      l.days != null ? el('p', 'hs__facts', `On the market ${l.days} day${l.days === 1 ? '' : 's'}`) : '',
+      ask,
+      el('p', 'hs__brokerage', `Listed by ${l.brokerage || 'the listing brokerage'}. MLS® ${l.key}`),
+    );
+    li.append(photo(l.photo, l.address ? `${l.address}, ${l.city}` : `Home in ${l.city}`), body);
+    return li;
+  };
+
+  let seq = 0;
+  const load = () => {
+    const p = current(KEYS);
+    const span = (SOLD_WINDOWS[p.get('sold') ?? ''] ?? SOLD_WINDOWS['90']).label.toLowerCase();
+    const what = `${describe(p, 'sold')} in the ${span}`;
+    const page = Math.max(1, Number(p.get('page')) || 1);
+    syncChoices(p);
+    $('reset').hidden = ![...p.keys()].length;
+    $('status').textContent = 'Finding ' + what + '…';
+    $('jump').textContent = 'See the sold homes ↓';
+    $('results').replaceChildren();
+    $('prev').hidden = $('next').hidden = true;
+    const mine = ++seq;
+    fetch('/api/sold?' + p)
+      .then((r) => r.json().then((body) => ({ status: r.status, body })))
+      .then(({ status, body }) => {
+        if (mine !== seq) return;
+        if (status === 401) {
+          start('Please sign in again to see sold prices.');
+          return;
+        }
+        if (status === 429) {
+          $('status').textContent = `You have reached today's limit of searches. Please come back tomorrow or ${CALL}.`;
+          return;
+        }
+        if (status !== 200) throw body;
+        const { total, listings } = body as { total: number; listings: Sold[] };
+        if (!total) {
+          $('status').textContent = `No ${what}. Try a longer time, "Any price" or "All of Markham".`;
+          return;
+        }
+        const from = (page - 1) * SOLD_PAGE_SIZE + 1;
+        const to = from + listings.length - 1;
+        const shown = Math.min(total, SOLD_MAX_RESULTS);
+        $('status').textContent =
+          `${total.toLocaleString('en-CA')} ${what}.` +
+          (total > SOLD_PAGE_SIZE ? ` Showing ${from} to ${to}.` : '') +
+          (total > SOLD_MAX_RESULTS ? ` Board rules allow ${SOLD_MAX_RESULTS} results per search, so choose a neighbourhood or price to see the rest.` : '');
+        $('jump').textContent = `See the ${shown.toLocaleString('en-CA')} sold home${shown === 1 ? '' : 's'} ↓`;
+        $('results').replaceChildren(...listings.map(card));
+        if (page > 1) { ($('prev') as HTMLAnchorElement).href = withValue(p, 'page', String(page - 1)); $('prev').hidden = false; }
+        if (to < shown) { ($('next') as HTMLAnchorElement).href = withValue(p, 'page', String(page + 1)); $('next').hidden = false; }
+      })
+      .catch(() => {
+        if (mine === seq) $('status').textContent = `Sold prices could not be loaded just now. Please try again in a minute or ${CALL}.`;
+      });
+  };
+
+  let bound = false;
+  async function start(message = '') {
+    const q = new URLSearchParams(location.search);
+    const me = await fetch('/api/vow/me').then((r) => r.json()).catch(() => ({ configured: false }));
+    if (!me.configured) return show('s-off');
+    if (q.get('reset')) {
+      show('s-reset');
+      return say(message);
+    }
+    if (!me.user) {
+      show('s-out');
+      return say(message || (q.get('link') === 'expired' ? ERRORS['link-expired'] : ''));
+    }
+    show('s-in');
+    $('hello').textContent = `Signed in as ${me.user.name}.`;
+    if (q.get('welcome')) {
+      say(`Welcome, ${me.user.name}. Press any button below to see sold prices.`);
+      history.replaceState(null, '', '/sold/');
+    }
+    if (!bound) {
+      bound = true;
+      bindChoices(load);
+    }
+  }
+  start();
+</script>

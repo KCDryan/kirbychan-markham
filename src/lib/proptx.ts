@@ -78,10 +78,9 @@ const int = (v: string | null, max: number) => {
   return Number.isFinite(n) && n > 0 ? Math.min(n, max) : 0;
 };
 
-/** Turns the visitor's search params into a PropTx Property query string. */
-export function searchQuery(params: URLSearchParams): string {
-  const lease = params.get('for') === 'lease';
-  const f = ["ContractStatus eq 'Available'", "startswith(PropertyType,'Residential')", `TransactionType eq ${q(lease ? 'For Lease' : 'For Sale')}`];
+/** The filters the active and sold searches share: city, neighbourhood, home type, price band and bedrooms. */
+function shared(params: URLSearchParams, priceField: string): string[] {
+  const f: string[] = [];
   const city = CITIES.find((c) => c === (params.get('city') ?? 'Markham'));
   if (city) f.push(`City eq ${q(city)}`);
   const area = city === 'Markham' ? AREAS[params.get('area') ?? ''] : undefined;
@@ -89,10 +88,17 @@ export function searchQuery(params: URLSearchParams): string {
   const home = HOMES[params.get('home') ?? ''];
   if (home) f.push(home.filter);
   const price = PRICES[params.get('price') ?? ''];
-  if (price?.min) f.push(`ListPrice ge ${price.min}`);
-  if (price?.max) f.push(`ListPrice le ${price.max}`);
+  if (price?.min) f.push(`${priceField} ge ${price.min}`);
+  if (price?.max) f.push(`${priceField} le ${price.max}`);
   const beds = int(params.get('beds'), 10);
   if (beds) f.push(`BedroomsTotal ge ${beds}`);
+  return f;
+}
+
+/** Turns the visitor's search params into a PropTx Property query string. */
+export function searchQuery(params: URLSearchParams): string {
+  const lease = params.get('for') === 'lease';
+  const f = ["ContractStatus eq 'Available'", "startswith(PropertyType,'Residential')", `TransactionType eq ${q(lease ? 'For Lease' : 'For Sale')}`, ...shared(params, 'ListPrice')];
   const page = int(params.get('page'), 400) || 1;
   const order = { low: 'ListPrice asc', high: 'ListPrice desc' }[params.get('sort') ?? ''] ?? 'ModificationTimestamp desc';
   return odata({
@@ -101,6 +107,34 @@ export function searchQuery(params: URLSearchParams): string {
     $orderby: `${order},ListingKey`,
     $top: String(PAGE_SIZE),
     $skip: String((page - 1) * PAGE_SIZE),
+    $count: 'true',
+  });
+}
+
+/** Sold search windows, in days. */
+export const SOLD_WINDOWS: Record<string, { label: string; days: number }> = {
+  '30': { label: 'Last 30 days', days: 30 },
+  '90': { label: 'Last 3 months', days: 90 },
+  '365': { label: 'Last 12 months', days: 365 },
+  '730': { label: 'Last 2 years', days: 730 },
+};
+export const SOLD_PAGE_SIZE = 20;
+/** PropTx MLS Rules 8.27: at most 100 results for any one search. */
+export const SOLD_MAX_RESULTS = 100;
+
+/** VOW sold search. Needs the VOW token: the IDX feed has no sold listings. */
+export function soldQuery(params: URLSearchParams, today = new Date()): string {
+  const window = SOLD_WINDOWS[params.get('sold') ?? ''] ?? SOLD_WINDOWS['90'];
+  const since = new Date(today.getTime() - window.days * 864e5).toISOString().slice(0, 10);
+  const f = ["MlsStatus eq 'Sold'", "startswith(PropertyType,'Residential')", "TransactionType eq 'For Sale'", `CloseDate ge ${since}`, ...shared(params, 'ClosePrice')];
+  const page = Math.min(int(params.get('page'), 100) || 1, SOLD_MAX_RESULTS / SOLD_PAGE_SIZE);
+  const order = { low: 'ClosePrice asc', high: 'ClosePrice desc' }[params.get('sort') ?? ''] ?? 'CloseDate desc';
+  return odata({
+    $filter: f.join(' and '),
+    $select: [...CARD_FIELDS, 'ClosePrice', 'CloseDate', 'DaysOnMarket'].join(','),
+    $orderby: `${order},ListingKey`,
+    $top: String(SOLD_PAGE_SIZE),
+    $skip: String((page - 1) * SOLD_PAGE_SIZE),
     $count: 'true',
   });
 }
@@ -157,6 +191,8 @@ if (typeof process !== 'undefined' && import.meta.filename === process.argv[1]) 
   if (!a.includes("City eq 'Markham' and CityRegion in ('Thornhill','Royal Orchard'")) throw new Error(a);
   if (new URLSearchParams(searchQuery(new URLSearchParams('city=Vaughan&area=cornell'))).get('$filter')!.includes('CityRegion')) throw new Error('area outside Markham');
   if (homeKinds({ PropertySubType: 'Semi-Detached ', ArchitecturalStyle: ['2-Storey'] }).join() !== 'house' || homeKinds({ PropertySubType: 'Detached', ArchitecturalStyle: ['Bungaloft'] }).join() !== 'bungalow,house') throw new Error('homeKinds');
+  const sold = new URLSearchParams(soldQuery(new URLSearchParams('home=condo&price=u800&sold=30&page=9'), new Date('2026-09-30T12:00:00Z')));
+  if (!sold.get('$filter')!.includes("CloseDate ge 2026-08-31") || !sold.get('$filter')!.includes('ClosePrice le 800000') || sold.get('$skip') !== '80') throw new Error('sold ' + sold);
   if (!coverQuery(["A1'x"]).includes("'A1''x'")) throw new Error('cover quoting');
   if (cleanKey("N1' or 1") !== null || cleanKey('n12345678') !== 'N12345678') throw new Error('key');
   const p = photos([{ MediaURL: 'b', Order: 2 }, { MediaURL: 'a-s', Order: 1, ImageSizeDescription: 'Thumbnail' }, { MediaURL: 'a-l', Order: 1, ImageSizeDescription: 'Large' }]);

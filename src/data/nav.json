@@ -41,6 +41,14 @@
         "href": "/markham-house-prices/"
       },
       {
+        "label": "Homes for sale",
+        "href": "/homes-for-sale/"
+      },
+      {
+        "label": "Sold prices",
+        "href": "/sold/"
+      },
+      {
         "label": "Market reports",
         "href": "/market-reports/"
       },
