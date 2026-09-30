@@ -87,22 +87,20 @@ The link works for ${RESET_HOURS} hours. If you did not ask for this, you can ig
 
 ${SIGNATURE}`;
 
-/**
- * A new confirmed account is a lead. The team always gets an email; the lead webhook (if one is set)
- * gets the same details as a website enquiry.
- */
+/** A confirmed account is a lead: it goes to the leads inbox, and to the lead webhook too if one is set. */
 async function forwardLead(env: VowEnv, u: User) {
   await sendEmail(
     env,
-    site.contact.email,
+    site.leadsEmail,
     `New sold-prices account: ${u.name}`,
-    `Someone created an account to see Markham sold prices on kirbychanmarkham.com.
+    `Someone created an account to see Markham sold prices on kirbychanmarkham.com. Reply to this email to write to them.
 
 Name: ${u.name}
 Email: ${u.email}
 Phone: ${u.phone || 'not given'}
 May we contact them about Markham real estate? ${u.contact_ok ? 'Yes, they ticked the box.' : 'No, they did not tick the box. Do not send marketing.'}
 Confirmed: ${new Date().toLocaleString('en-CA', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Toronto' })}`,
+    u.email,
   );
   if (!env.LEAD_WEBHOOK_URL) return;
   await fetch(env.LEAD_WEBHOOK_URL, {
@@ -138,15 +136,6 @@ export async function onRequest({ request, env, params, waitUntil }: Context): P
   await ensureSchema(db);
   const origin = new URL(request.url).origin;
 
-  // TEMP: counts only, no personal data. Remove after the launch test.
-  if (request.method === 'GET' && action === 'counts') {
-    const accounts = await db.prepare('SELECT COUNT(*) AS total, COUNT(verified_at) AS verified, SUM(contact_ok) AS contactOk FROM accounts').bind().first();
-    const events = (await db.prepare('SELECT action, COUNT(*) AS n FROM audit GROUP BY action').bind().all()).results;
-    const tokens = (await db.prepare('SELECT kind, COUNT(*) AS issued, COUNT(used_at) AS used FROM tokens GROUP BY kind').bind().all()).results;
-    const sessions = await db.prepare('SELECT COUNT(*) AS active FROM sessions WHERE expires_at > ?').bind(Date.now()).first();
-    const stored = await db.prepare("SELECT email_enc LIKE '%@%' AS plainEmail, length(email_hash) AS hashLen, length(pass_hash) AS passLen FROM accounts LIMIT 1").bind().first();
-    return json({ accounts, events, tokens, sessions, stored, leadWebhookSet: !!env.LEAD_WEBHOOK_URL });
-  }
   if (request.method === 'GET' && action === 'me') {
     const u = await currentUser(db, k, request);
     return json({ configured: true, user: u && { name: u.name, passwordExpires: passwordExpires(u).toISOString() } });

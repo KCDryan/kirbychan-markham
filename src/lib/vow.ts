@@ -266,12 +266,12 @@ export async function endSession(db: D1, request: Request) {
   if (token) await db.prepare('DELETE FROM sessions WHERE hash = ?').bind(await sha256(token)).run();
 }
 
-export async function sendEmail(env: VowEnv, to: string, subject: string, text: string): Promise<boolean> {
+export async function sendEmail(env: Pick<VowEnv, 'RESEND_API_KEY' | 'VOW_EMAIL_FROM'>, to: string, subject: string, text: string, replyTo?: string): Promise<boolean> {
   if (!env.RESEND_API_KEY || !env.VOW_EMAIL_FROM) return false;
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
-    body: JSON.stringify({ from: env.VOW_EMAIL_FROM, to: [to], subject, text }),
+    body: JSON.stringify({ from: env.VOW_EMAIL_FROM, to: [to], subject, text, ...(replyTo ? { reply_to: replyTo } : {}) }),
   });
   if (!res.ok) console.error('Resend rejected an email', res.status, (await res.text()).slice(0, 200));
   return res.ok;

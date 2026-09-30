@@ -2,16 +2,22 @@
  * POST /api/lead
  *
  * Cloudflare Pages Function. Validates the enquiry, screens obvious spam,
- * verifies the Cloudflare Turnstile token when one is configured, then forwards
- * the lead to LEAD_WEBHOOK_URL as JSON.
+ * verifies the Cloudflare Turnstile token when one is configured, then emails
+ * the lead to the leads inbox (site.json leadsEmail) and, if LEAD_WEBHOOK_URL is
+ * set, also forwards it there as JSON.
  *
  * Secrets live only in the Cloudflare dashboard. Nothing in src/ reads
  * TURNSTILE_SECRET_KEY or LEAD_WEBHOOK_URL, so neither can reach the browser.
  */
 
+import site from '../../src/data/site.json';
+import { sendEmail } from '../../src/lib/vow';
+
 interface Env {
   LEAD_WEBHOOK_URL?: string;
   TURNSTILE_SECRET_KEY?: string;
+  RESEND_API_KEY?: string;
+  VOW_EMAIL_FROM?: string;
 }
 
 interface Context {
@@ -145,34 +151,49 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     country: request.headers.get('cf-ipcountry') ?? '',
   };
 
+  const labels: [string, string][] = [
+    ['Name', payload.name],
+    ['Email', payload.email],
+    ['Phone', payload.phone || 'not given'],
+    ['Property address', payload.address],
+    ['Neighbourhood', payload.neighbourhood],
+    ['Looking to', payload.intent],
+    ['Timeline', payload.timeline],
+    ['Page', payload.page],
+    ['Message', payload.message],
+  ];
+  const body = [
+    'A new enquiry from kirbychanmarkham.com. Reply to this email to write to them.',
+    '',
+    ...labels.filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`),
+    '',
+    `They agreed to be contacted about this enquiry and about Markham real estate.`,
+    `Received: ${new Date().toLocaleString('en-CA', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Toronto' })}`,
+  ].join('\n');
+
+  // Email is the main delivery. The webhook is optional, for a CRM later.
+  let delivered = await sendEmail(env, site.leadsEmail, `New website enquiry: ${name}`, body, email).catch((error) => {
+    console.error('Lead email failed', error);
+    return false;
+  });
+
   const webhook = env.LEAD_WEBHOOK_URL ?? '';
-  if (!webhook) {
-    // Nothing to forward to yet. Do not pretend the lead was delivered.
-    // Deliberately no personal data in the log line. Cloudflare logs are not
-    // the right place for a visitor's email address, and this branch fires on
-    // every submission while the webhook is unset.
-    console.error('LEAD_WEBHOOK_URL is not set. Lead was validated but not forwarded.');
-    return reply(request, 500, {
-      ok: false,
-      error: 'The enquiry form is not connected yet. Please call 416-305-8008',
-    });
+  if (webhook) {
+    try {
+      const forwarded = await fetch(webhook, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (forwarded.ok) delivered = true;
+      else console.error('Webhook rejected the lead', forwarded.status);
+    } catch (error) {
+      console.error('Webhook request failed', error);
+    }
   }
 
-  try {
-    const forwarded = await fetch(webhook, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (!forwarded.ok) {
-      console.error('Webhook rejected the lead', forwarded.status);
-      return reply(request, 502, {
-        ok: false,
-        error: 'We could not deliver that just now. Please call 416-305-8008',
-      });
-    }
-  } catch (error) {
-    console.error('Webhook request failed', error);
+  if (!delivered) {
+    // Deliberately no personal data in the log line.
     return reply(request, 502, {
       ok: false,
       error: 'We could not deliver that just now. Please call 416-305-8008',
