@@ -60,6 +60,8 @@ const BEDS = ['1', '2', '3', '4'];
         </div>
       </div>
 
+      <a class="btn btn--primary hs__big hs__jump" id="jump" href="#results-top">See the homes ↓</a>
+
       <details class="hs__more">
         <summary>More choices: another city, homes for rent, sort order</summary>
         <div class="hs__step">
@@ -183,6 +185,7 @@ const BEDS = ['1', '2', '3', '4'];
       if (p.get('city') || p.get('for') || p.get('sort')) document.querySelector('.hs__more').open = true;
       $('reset').hidden = ![...p.keys()].length;
       $('status').textContent = 'Finding ' + describe(p) + '…';
+      $('jump').textContent = 'See the homes ↓';
       $('results').replaceChildren();
       $('prev').hidden = $('next').hidden = true;
       const mine = ++seq;
@@ -199,6 +202,7 @@ const BEDS = ['1', '2', '3', '4'];
           const from = (page - 1) * 24 + 1;
           const to = from + listings.length - 1;
           $('status').textContent = `${total.toLocaleString('en-CA')} ${describe(p)}.` + (total > 24 ? ` Showing ${from} to ${to}.` : '');
+          $('jump').textContent = `See the ${total.toLocaleString('en-CA')} home${total === 1 ? '' : 's'} ↓`;
           $('results').replaceChildren(...listings.map(card));
           if (page > 1) { $('prev').href = withValue(p, 'page', String(page - 1)); $('prev').hidden = false; }
           if (to < total) { $('next').href = withValue(p, 'page', String(page + 1)); $('next').hidden = false; }
@@ -259,6 +263,7 @@ const BEDS = ['1', '2', '3', '4'];
   .hs__choice[aria-current] { background: var(--brand); border-color: var(--brand); color: var(--paper); }
   .hs__choice[aria-current] span { color: var(--paper); }
   .hs__choice[aria-current] strong::before { content: '✓ '; }
+  .hs__jump { width: 100%; margin-bottom: var(--sp-5); font-size: 1.15rem; }
   .hs__more { margin-bottom: var(--sp-6); }
   .hs__more summary {
     cursor: pointer; font-weight: 600; padding: var(--sp-3) 0; color: var(--brand);

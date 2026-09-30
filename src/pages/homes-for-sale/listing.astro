@@ -68,7 +68,7 @@ const crumbs = [
         document.title = `${where || 'Home for sale'} | ${money(l.price)}`;
         document.querySelector('h1').textContent = l.address || `Home in ${l.city}`;
         $('price').textContent = money(l.price) + (l.lease ? '/month' : '');
-        $('meta').textContent = [where, l.beds != null && `${l.beds} bed`, l.baths != null && `${l.baths} bath`, l.type, l.crossStreet && `Near ${l.crossStreet}`].filter(Boolean).join(' · ');
+        $('meta').textContent = [where, l.beds != null && `${l.beds} bedroom${l.beds === 1 ? '' : 's'}`, l.baths != null && `${l.baths} bathroom${l.baths === 1 ? '' : 's'}`, l.type, l.crossStreet && `Near ${l.crossStreet}`].filter(Boolean).join(' · ');
         let at = 0;
         const showPhoto = () => {
           $('photo').src = l.photos[at];
