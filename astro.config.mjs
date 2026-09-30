@@ -58,6 +58,8 @@ export default defineConfig({
     sitemap({
       filter: (page) => {
         if (page.includes('/contact/thank-you/')) return false;
+        // The single-listing page is filled in the browser and is noindex.
+        if (page.includes('/homes-for-sale/listing/')) return false;
         // The news index is noindex while the collection is empty, so listing it
         // in the sitemap would ask Google to crawl a page we told it to skip.
         if (/\/news\/$/.test(page) && newsCount === 0) return false;

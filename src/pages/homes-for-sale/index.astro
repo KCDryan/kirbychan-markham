@@ -1,0 +1,182 @@
+---
+import Page from '../../layouts/Page.astro';
+import IdxDisclaimer from '../../components/IdxDisclaimer.astro';
+import site from '../../data/site.json';
+import { CITIES, TYPES } from '../../lib/proptx';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Homes for Sale', path: '/homes-for-sale/' },
+];
+const TYPE_LABEL: Record<string, string> = { 'Att/Row/Townhouse': 'Freehold townhouse', Link: 'Link home' };
+const PRICES = [500000, 700000, 900000, 1100000, 1300000, 1500000, 2000000, 3000000];
+const money = (n: number) => '$' + n.toLocaleString('en-CA');
+---
+
+<Page
+  title="Markham Homes for Sale: Live MLS® Listings"
+  description="Search every Markham home for sale on the MLS®, updated every few minutes from TRREB, with price, bedrooms and property type filters and help from a local team."
+  eyebrow="Markham, Ontario"
+  h1="Markham homes for sale"
+  lede="Live MLS® listings from TRREB, updated every few minutes. Filter by city, property type, price and bedrooms, then ask us about any home."
+  crumbs={crumbs}
+>
+  <section class="section">
+    <div class="wrap">
+      <form class="search" id="search" action="/homes-for-sale/" method="get">
+        <label>For
+          <select name="for"><option value="sale">Sale</option><option value="lease">Lease</option></select>
+        </label>
+        <label>City
+          <select name="city">
+            <option value="">Any city</option>
+            {CITIES.map((c) => <option value={c} selected={c === 'Markham'}>{c}</option>)}
+          </select>
+        </label>
+        <label>Type
+          <select name="type">
+            <option value="">Any type</option>
+            {TYPES.map((t) => <option value={t}>{TYPE_LABEL[t] ?? t}</option>)}
+          </select>
+        </label>
+        <label>Min price
+          <select name="min"><option value="">No min</option>{PRICES.map((p) => <option value={p}>{money(p)}</option>)}</select>
+        </label>
+        <label>Max price
+          <select name="max"><option value="">No max</option>{PRICES.map((p) => <option value={p}>{money(p)}</option>)}</select>
+        </label>
+        <label>Beds
+          <select name="beds"><option value="">Any</option>{[1, 2, 3, 4, 5].map((n) => <option value={n}>{n}+</option>)}</select>
+        </label>
+        <label>Baths
+          <select name="baths"><option value="">Any</option>{[1, 2, 3, 4].map((n) => <option value={n}>{n}+</option>)}</select>
+        </label>
+        <label>Sort
+          <select name="sort"><option value="">Newest</option><option value="low">Price, low to high</option><option value="high">Price, high to low</option></select>
+        </label>
+        <button class="btn btn--primary" type="submit">Search</button>
+      </form>
+
+      <p class="search__status" id="status" aria-live="polite">Loading listings…</p>
+      <ul class="results" id="results"></ul>
+      <nav class="pager" id="pager" aria-label="Results pages" hidden>
+        <a class="btn btn--ghost btn--sm" id="prev" href="#">Previous</a>
+        <a class="btn btn--ghost btn--sm" id="next" href="#">Next</a>
+      </nav>
+
+      <div class="prose search__intro">
+        <h2>Buying in Markham with a local team</h2>
+        <p>
+          Every listing here comes from the MLS® through TRREB and PropTx. See one you like? We can book
+          a showing, pull the recent sales on that street and tell you what the neighbourhood is really
+          like before you make an offer.
+        </p>
+        <p>
+          New to the city? Start with our <a href="/neighbourhoods/">Markham neighbourhood guides</a>,
+          check <a href="/markham-house-prices/">Markham house prices</a> by property type and run a
+          price through the <a href="/mortgage-calculator-markham/">mortgage calculator</a>. Downsizing?
+          See <a href="/best-markham-neighbourhoods-for-downsizing/">where to downsize in Markham</a>.
+        </p>
+      </div>
+
+      <IdxDisclaimer />
+    </div>
+  </section>
+</Page>
+
+<script is:inline define:vars={{ fallback: site.links.loftySearch }}>
+  (() => {
+    const form = document.getElementById('search');
+    const status = document.getElementById('status');
+    const list = document.getElementById('results');
+    const pager = document.getElementById('pager');
+    const params = new URLSearchParams(location.search);
+    if (!params.has('city') && !location.search) params.set('city', 'Markham');
+    for (const [k, v] of params) if (form.elements[k]) form.elements[k].value = v;
+    const page = Math.max(1, Number(params.get('page')) || 1);
+    const money = (n) => (typeof n === 'number' ? '$' + n.toLocaleString('en-CA') : '');
+    const el = (tag, cls, text) => {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text != null) e.textContent = text;
+      return e;
+    };
+    const pageLink = (n) => { const p = new URLSearchParams(params); p.set('page', n); return '?' + p; };
+
+    fetch('/api/listings?' + params)
+      .then((r) => r.json().then((body) => ({ ok: r.ok, body })))
+      .then(({ ok, body }) => {
+        if (!ok) throw body;
+        const { total, listings } = body;
+        status.textContent = total ? `${total.toLocaleString('en-CA')} homes found. Page ${page} of ${Math.ceil(total / 24)}.` : 'No homes match. Try widening the price or removing a filter.';
+        for (const l of listings) {
+          const li = el('li', 'listing card');
+          const a = el('a', 'listing__link');
+          a.href = '/homes-for-sale/listing/?id=' + encodeURIComponent(l.key);
+          const img = el('img', 'listing__img');
+          if (l.photo) { img.src = l.photo; img.loading = 'lazy'; img.referrerPolicy = 'no-referrer'; }
+          img.alt = l.address ? `${l.address}, ${l.city}` : `Home in ${l.city}`;
+          const body = el('div', 'listing__body');
+          body.append(
+            el('p', 'listing__price', money(l.price) + (l.lease ? '/month' : '')),
+            el('p', 'listing__addr', l.address || 'Address on request'),
+            el('p', 'listing__meta', [l.community, l.city].filter(Boolean).join(', ')),
+            el('p', 'listing__meta', [l.beds != null && `${l.beds} bed`, l.baths != null && `${l.baths} bath`, l.type].filter(Boolean).join(' · ')),
+            el('p', 'listing__brokerage', `Listed by ${l.brokerage || 'the listing brokerage'} · MLS® ${l.key}`),
+          );
+          a.append(img, body);
+          li.append(a);
+          list.append(li);
+        }
+        if (total > 24) {
+          pager.hidden = false;
+          const prev = document.getElementById('prev');
+          const next = document.getElementById('next');
+          if (page > 1) prev.href = pageLink(page - 1); else prev.remove();
+          if (page * 24 < total) next.href = pageLink(page + 1); else next.remove();
+        }
+      })
+      .catch(() => {
+        status.textContent = '';
+        status.append('Live listings are not available right now. ');
+        const a = el('a', null, 'Search all Markham listings here');
+        a.href = fallback || '/contact/';
+        status.append(a, ' or call us and we will send you matching homes.');
+      });
+  })();
+</script>
+
+<style is:global>
+  .search {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--sp-3);
+    align-items: end;
+    padding: var(--sp-5);
+    background: var(--mist);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+  .search label { display: grid; gap: 0.3rem; font-weight: 600; font-size: var(--step--1); }
+  .search select {
+    font: inherit;
+    font-weight: 400;
+    padding: 0.55rem 0.6rem;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+  }
+  .search__status { margin: var(--sp-5) 0; }
+  .results { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--sp-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+  .listing { padding: 0; overflow: hidden; }
+  .listing__link, .listing__link:hover { display: block; color: inherit; text-decoration: none; }
+  .listing__img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--mist); }
+  .listing__body { padding: var(--sp-4); display: grid; gap: 0.2rem; }
+  .listing__body p { margin: 0; }
+  .listing__price { font-family: var(--font-heading); font-size: var(--step-2); color: var(--brand); }
+  .listing__addr { font-weight: 600; }
+  .listing__meta { font-size: var(--step--1); }
+  .listing__brokerage { font-size: 0.75rem; color: var(--text-muted); margin-top: var(--sp-2) !important; }
+  .pager { display: flex; justify-content: center; gap: var(--sp-3); margin-top: var(--sp-6); }
+  .search__intro { max-width: 70ch; margin-top: var(--sp-8); }
+</style>
