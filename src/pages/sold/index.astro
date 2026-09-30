@@ -274,7 +274,7 @@ const faq = [
     const r = await post('login', fields(form));
     busy(form, false);
     if (!r.ok) return fail(r);
-    location.href = '/sold/';
+    location.href = '/sold/' + location.search;
   });
 
   $('f-forgot').addEventListener('submit', async (e) => {

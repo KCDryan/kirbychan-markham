@@ -129,6 +129,7 @@ const jsonLd = [
                   <a class="btn btn--ghost btn--sm" href={`/homes-for-sale/?area=${areaSlug}&home=${k}`}>{label} ({counts[k]})</a>
                 ))}
               </p>
+              <p class="for-sale-now__sold"><a href={`/sold/?area=${areaSlug}`}>See what homes in {d.name} sold for</a></p>
             </div>
           )
         }
@@ -345,6 +346,7 @@ const jsonLd = [
   .for-sale-now { margin-top: var(--sp-5); padding: var(--sp-4); background: var(--mist); border: 1px solid var(--rule); border-radius: var(--radius-lg); }
   .for-sale-now p { margin: 0; }
   .for-sale-now span { color: var(--text-muted); font-size: var(--step--1); }
+  .for-sale-now__sold { margin-top: var(--sp-3) !important; font-weight: 600; }
   .for-sale-now__links { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-3) !important; }
 
   .hood-photo {
