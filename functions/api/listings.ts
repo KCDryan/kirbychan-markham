@@ -75,14 +75,24 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
   if (hit) return hit;
 
   const params = new URL(request.url).searchParams;
-  // TEMP diagnostic: field types from $metadata and sample values for a fixed field list. Remove once filters are confirmed.
+  // TEMP diagnostic: fixed probe queries only. Remove once filters are confirmed.
   if (params.get('diag') === 'fields') {
-    const want = ['ContractStatus', 'StandardStatus', 'MlsStatus', 'TransactionType', 'City', 'CityRegion', 'PropertyType', 'PropertySubType', 'ArchitecturalStyle', 'BedroomsTotal', 'BedroomsAboveGrade', 'BathroomsTotalInteger', 'ListPrice', 'InternetEntireListingDisplayYN', 'InternetAddressDisplayYN', 'LivingAreaRange', 'ApproximateAge', 'Basement', 'Elevator', 'AccessibilityFeatures', 'SeniorCommunityYN', 'PetsAllowed', 'AssociationFee', 'GarageType', 'ParkingTotal', 'Laundry', 'LaundryFeatures', 'CondoCorpNumber', 'BuildingAmenities', 'Locker'];
-    const meta = await fetch(`${PROPTX_BASE}/$metadata`, { headers: { authorization: `Bearer ${env.PROPTX_IDX_TOKEN}` } }).then((r) => r.text());
-    const et = meta.slice(meta.indexOf('<EntityType Name="Property"'));
-    const types = Object.fromEntries(want.map((f) => [f, et.slice(0, et.indexOf('</EntityType>')).match(new RegExp(`<Property Name="${f}" Type="([^"]+)"`))?.[1] ?? null]));
-    const sample = await fetch(`${PROPTX_BASE}/Property?$top=40&$filter=City eq 'Markham'&$select=${want.filter((f) => types[f]).join(',')}`, { headers: { authorization: `Bearer ${env.PROPTX_IDX_TOKEN}` } }).then((r) => r.text());
-    return new Response(JSON.stringify({ types, sample: sample.slice(0, 60000) }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+    const get = (path: string) => fetch(`${PROPTX_BASE}/${path}`, { headers: { authorization: `Bearer ${env.PROPTX_IDX_TOKEN}` } }).then(async (r) => ({ status: r.status, text: await r.text() }));
+    const meta = (await get('$metadata')).text;
+    const lines = meta.split(/(?=<)/).filter((l) => /Name="(ListPrice|BedroomsTotal|BathroomsTotalInteger|CityRegion|ListOfficeName|UnparsedAddress|StreetSuffix|UnitNumber|ModificationTimestamp|MediaURL|ImageSizeDescription|Order|ResourceRecordKey|PreferredPhotoYN|MediaCategory|ShortDescription|CrossStreet|VirtualTourURLUnbranded|TaxAnnualAmount|KitchensTotal|RoomsTotal|ParkingTotal|DirectionFaces|LotWidth|LotDepth|LotSizeUnits|Exposure|DaysOnMarket|TaxYear|AssociationFee|Cooling|HeatType|BedroomsAboveGrade|CountyOrParish|CommunityName|Community|Media)"/.test(l)).slice(0, 80);
+    const clauses = ["ContractStatus eq 'Available'", "TransactionType eq 'For Sale'", "City eq 'Markham'", "ListPrice ge 900000", "BedroomsTotal ge 3", "BathroomsTotalInteger ge 2", "PropertySubType eq 'Detached'", "ArchitecturalStyle/any(a: a eq 'Bungalow')", "startswith(PropertyType,'Residential')"];
+    const probes: Record<string, number | string> = {};
+    for (const c of clauses) { const r = await get(`Property?$top=1&$select=ListingKey&$filter=${encodeURIComponent(c)}`); probes[c] = r.status === 200 ? 200 : r.text.slice(0, 160); }
+    const ex = await get(`Property?$top=1&$select=ListingKey&$expand=${encodeURIComponent('Media($select=MediaURL,ImageSizeDescription,Order;$orderby=Order;$top=8)')}`);
+    probes.expand = ex.status === 200 ? ex.text.slice(0, 600) : ex.text.slice(0, 200);
+    const tally: Record<string, Record<string, number>> = { PropertyType: {}, PropertySubType: {}, ArchitecturalStyle: {}, AccessibilityFeatures: {} };
+    let next: string | null = `Property?$top=1000&$select=PropertyType,PropertySubType,ArchitecturalStyle,AccessibilityFeatures&$filter=${encodeURIComponent("ContractStatus eq 'Available' and TransactionType eq 'For Sale' and City eq 'Markham'")}`;
+    for (let i = 0; next && i < 3; i++) {
+      const r = JSON.parse((await get(next)).text);
+      for (const row of r.value) for (const k of Object.keys(tally)) for (const v of [row[k]].flat()) if (v != null) tally[k][v] = (tally[k][v] ?? 0) + 1;
+      next = r['@odata.nextLink']?.replace(`${PROPTX_BASE}/`, '') ?? null;
+    }
+    return new Response(JSON.stringify({ lines, probes, tally }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
   }
   let body: unknown;
   try {
