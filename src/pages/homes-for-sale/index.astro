@@ -3,7 +3,8 @@ import Page from '../../layouts/Page.astro';
 import IdxDisclaimer from '../../components/IdxDisclaimer.astro';
 import site from '../../data/site.json';
 import HomeChoices from '../../components/HomeChoices.astro';
-import { CITIES } from '../../lib/proptx';
+import { AREAS, CITIES } from '../../lib/proptx';
+import { TYPE_PAGES } from '../../lib/landing';
 import '../../styles/home-search.css';
 
 const crumbs = [
@@ -83,6 +84,9 @@ const crumbs = [
           neighbourhoods with the most of these homes and our <a href="/downsizing-markham/">downsizing guide</a>
           for the whole move, from pricing your house to moving day.
         </p>
+        <h2>Browse Markham homes for sale</h2>
+        <p><strong>By home type:</strong> {Object.entries(TYPE_PAGES).map(([s, t], i) => <>{i > 0 && ' · '}<a href={`/homes-for-sale/${s}/`}>{t.label}</a></>)}</p>
+        <p><strong>By neighbourhood:</strong> {Object.entries(AREAS).map(([s, a], i) => <>{i > 0 && ' · '}<a href={`/homes-for-sale/${s}/`}>{a.label}</a></>)}</p>
       </div>
 
       <IdxDisclaimer />

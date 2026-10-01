@@ -124,6 +124,17 @@
   .hs { padding-bottom: 84px; }
 }
 
+/* Landing pages: /homes-for-sale/<type>/ and /<neighbourhood>/ */
+.hs-landing { display: grid; gap: var(--sp-5); margin-bottom: var(--sp-6); }
+@media (min-width: 1000px) { .hs-landing { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: start; gap: var(--sp-7); } }
+.hs-landing__intro p { margin: 0 0 var(--sp-3); }
+.hs-tiles--row { grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); }
+.hs-landing__h2 { font-size: var(--step-2); margin: var(--sp-6) 0 var(--sp-4); }
+.hs-landing__empty { padding: var(--sp-5); background: var(--mist); border-radius: var(--radius-lg); font-weight: 600; }
+.hs-landing__more { margin-top: var(--sp-5); text-align: center; }
+.hs-landing__facts { max-width: 75ch; margin-top: var(--sp-7); }
+.hs-landing__facts a[aria-current] { font-weight: 700; color: var(--text); text-decoration: none; }
+
 /* Result cards */
 .hs__results { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--sp-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
 .hs__card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }

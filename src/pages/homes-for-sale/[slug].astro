@@ -1,0 +1,221 @@
+---
+/**
+ * /homes-for-sale/<type>/ and /homes-for-sale/<neighbourhood>/. Listings are rendered into the HTML
+ * from a build-time snapshot (src/lib/landing.ts) so search engines can read them; the button on
+ * each page opens the live one-click search for anything newer.
+ */
+import type { GetStaticPaths } from 'astro';
+import { getEntry, type CollectionEntry } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import IdxDisclaimer from '../../components/IdxDisclaimer.astro';
+import HomeIcon from '../../components/HomeIcon.astro';
+import site from '../../data/site.json';
+import counts from '../../data/listing-counts.json';
+import { AREAS, HOMES } from '../../lib/proptx';
+import { TYPE_PAGES, cad, homeTypeOf, snapshot, type TypePage } from '../../lib/landing';
+import { neighbourhoodPath } from '../../lib/format';
+import '../../styles/home-search.css';
+
+export const getStaticPaths = (() => [
+  ...Object.keys(TYPE_PAGES).map((slug) => ({ params: { slug }, props: { kind: 'type' as const } })),
+  ...Object.keys(AREAS).map((slug) => ({ params: { slug }, props: { kind: 'area' as const } })),
+]) satisfies GetStaticPaths;
+
+const { slug } = Astro.params as { slug: string };
+const { kind } = Astro.props as { kind: 'type' | 'area' };
+const areaCounts = counts.areas as Record<string, Record<string, number>>;
+const markham = counts.markham as Record<string, number>;
+const today = new Date().toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Toronto' });
+const list = (xs: string[]) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`);
+
+let t: TypePage | undefined;
+let hood: CollectionEntry<'neighbourhoods'> | undefined;
+let query: string;
+let title: string;
+let description: string;
+let h1: string;
+let noun: string;
+let searchHref: string;
+
+if (kind === 'type') {
+  t = TYPE_PAGES[slug];
+  query = `home=${t.home}`;
+  ({ title, description, h1 } = t);
+  noun = t.label.toLowerCase();
+  searchHref = `/homes-for-sale/?home=${t.home}`;
+} else {
+  hood = await getEntry('neighbourhoods', slug);
+  const label = AREAS[slug].label;
+  query = `area=${slug}`;
+  title = `${label} Homes for Sale | Markham MLS® Listings`;
+  description = `Homes for sale in ${label}, Markham today from the MLS®, with photos and prices, plus TRREB price bands, home types and transit for ${label}. Updated daily.`;
+  h1 = `Homes for sale in ${label}`;
+  noun = `homes in ${label}`;
+  searchHref = `/homes-for-sale/?area=${slug}`;
+}
+
+const snap = await snapshot(query);
+const total = snap?.total ?? (kind === 'type' ? markham[t!.home] : areaCounts[slug]?.total) ?? 0;
+const shown = snap?.listings ?? [];
+const prices = shown.map((c) => c.price).filter((p) => typeof p === 'number' && p > 0);
+const label = kind === 'type' ? t!.label : AREAS[slug].label;
+
+// Where this type is for sale, most first (type pages), or what types this area has (area pages).
+const byArea = kind === 'type'
+  ? Object.entries(AREAS)
+      .map(([k, a]) => ({ slug: k, label: a.label, n: areaCounts[k]?.[t!.home] ?? 0 }))
+      .filter((x) => x.n > 0)
+      .sort((a, b) => b.n - a.n)
+  : [];
+const byType = kind === 'area'
+  ? Object.entries(HOMES).map(([k, h]) => ({ home: k, label: h.label, n: areaCounts[slug]?.[k] ?? 0 })).filter((x) => x.n > 0)
+  : [];
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Homes for Sale', path: '/homes-for-sale/' },
+  { name: label, path: `/homes-for-sale/${slug}/` },
+];
+
+const faq = [
+  {
+    q: kind === 'type' ? `How many ${noun} are for sale in Markham?` : `How many homes are for sale in ${label}?`,
+    a: `${total.toLocaleString('en-CA')} on ${today}, from TRREB's MLS® System. The number changes every day as homes are listed and sold, so the live search on this page always has the latest.`,
+  },
+  kind === 'type'
+    ? {
+        q: `Which Markham neighbourhoods have the most ${noun} for sale?`,
+        a: byArea.length
+          ? `On ${today}: ${list(byArea.slice(0, 3).map((x) => `${x.label} (${x.n})`))}. Each neighbourhood button on this page opens just those listings.`
+          : `It changes daily. Use the neighbourhood buttons in the live search to see each area.`,
+      }
+    : {
+        q: `What kinds of homes are for sale in ${label}?`,
+        a: byType.length
+          ? `On ${today}: ${list(byType.map((x) => `${x.n} ${x.label.toLowerCase()}`))}. ${hood?.data.quickStats.propertyTypes ? `The housing here: ${hood.data.quickStats.propertyTypes}.` : ''}`
+          : `It changes daily. Open the live search to see what is listed now.`,
+      },
+  {
+    q: 'How do I see what homes actually sold for?',
+    a: 'Board rules let us show sold prices only to people with a free account. Create one on our sold prices page and you can see sales by home type, neighbourhood and price for the last two years.',
+  },
+];
+---
+
+<Page {title} {description} eyebrow="Markham, Ontario" {h1} crumbs={crumbs} faq={faq} compact
+  lede={`${total.toLocaleString('en-CA')} ${kind === 'type' ? noun + ' for sale in Markham' : 'homes for sale in ' + label} on ${today}, from TRREB's MLS® System. Updated every morning.`}>
+  <section class="section hs-section">
+    <div class="wrap hs">
+      <div class="hs__call">
+        <p>{prices.length ? `On this page: ${cad(Math.min(...prices))} to ${cad(Math.max(...prices))}. Press the button to filter by price, bedrooms or neighbourhood.` : 'Press the button to see every listing and filter by price, bedrooms or neighbourhood.'}</p>
+        <div class="hs__call-actions">
+          <a class="btn btn--primary hs__big" href={searchHref}>See all {total.toLocaleString('en-CA')} with filters</a>
+          <a class="btn btn--ghost hs__big" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
+        </div>
+      </div>
+
+      <div class="hs-landing">
+        <div class="prose hs-landing__intro">
+          {kind === 'type' && t!.intro.map((p) => <p>{p}</p>)}
+          {kind === 'type' && byArea.length > 0 && (
+            <p>Today the most are in {list(byArea.slice(0, 3).map((x) => `${x.label} (${x.n})`))}.</p>
+          )}
+          {kind === 'area' && hood && (
+            <>
+              <p>{hood.data.personality} The housing here: {hood.data.quickStats.propertyTypes}.</p>
+              <p>Getting around: {hood.data.quickStats.transit}. {hood.data.quickStats.commute}.</p>
+              <p>For schools, parks and what the area is like day to day, read our <a href={neighbourhoodPath(slug)}>{label} neighbourhood guide</a>.</p>
+            </>
+          )}
+        </div>
+
+        {kind === 'type' && byArea.length > 0 && (
+          <nav class="hs-group" aria-labelledby="by-area">
+            <h2 class="hs-group__title" id="by-area">{label} by neighbourhood</h2>
+            <div class="hs-chips">
+              {byArea.map((x) => (
+                <a class="hs-chip" href={`/homes-for-sale/?area=${x.slug}&home=${t!.home}`}>{x.label} <span class="hs-chip__count">{x.n}</span></a>
+              ))}
+            </div>
+          </nav>
+        )}
+        {kind === 'area' && byType.length > 0 && (
+          <nav class="hs-group" aria-labelledby="by-type">
+            <h2 class="hs-group__title" id="by-type">{label} by home type</h2>
+            <div class="hs-tiles hs-tiles--row">
+              {byType.map((x) => (
+                <a class="hs-tile" href={`/homes-for-sale/?area=${slug}&home=${x.home}`}>
+                  <HomeIcon kind={x.home} />
+                  <strong>{x.label}</strong>
+                  <span class="hs-count">{x.n}</span>
+                </a>
+              ))}
+            </div>
+          </nav>
+        )}
+      </div>
+
+      <h2 class="hs-landing__h2">{kind === 'type' ? `Newest ${noun} for sale` : `Newest listings in ${label}`}</h2>
+      {
+        shown.length > 0 ? (
+          <ul class="hs__results">
+            {shown.map((c) => (
+              <li class="hs__card">
+                <a class="hs__link" href={`/homes-for-sale/listing/?id=${encodeURIComponent(c.key)}`}>
+                  <div class="hs__media">
+                    {c.photo ? (
+                      <img class="hs__img" src={c.photo} alt={c.address ? `${c.address}, ${c.city}` : `Home in ${c.city}`} loading="lazy" referrerpolicy="no-referrer" />
+                    ) : (
+                      <div class="hs__noimg"><HomeIcon kind="house" /><span>Photo coming soon</span></div>
+                    )}
+                    {homeTypeOf(c) && <span class="hs__badge">{homeTypeOf(c)}</span>}
+                  </div>
+                  <div class="hs__body">
+                    <p class="hs__price">{cad(c.price)}</p>
+                    <p class="hs__addr">{c.address || 'Address given on request'}</p>
+                    <p class="hs__where">{[c.community, c.city].filter(Boolean).join(', ')}</p>
+                    <p class="hs__facts">
+                      {c.beds != null && <span class="hs__fact">{c.beds} bedroom{c.beds === 1 ? '' : 's'}</span>}
+                      {c.baths != null && <span class="hs__fact">{c.baths} bathroom{c.baths === 1 ? '' : 's'}</span>}
+                    </p>
+                    <span class="btn btn--primary hs__see">See photos and details</span>
+                    <p class="hs__brokerage">Listed by {c.brokerage || 'the listing brokerage'}. MLS® {c.key}</p>
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="hs-landing__empty">The listings could not be loaded into this page just now. <a href={searchHref}>Open the live search</a> to see every {kind === 'type' ? noun.replace(/s$/, '') : 'home'} for sale today.</p>
+        )
+      }
+      <p class="hs-landing__more"><a class="btn btn--primary hs__big" href={searchHref}>See all {total.toLocaleString('en-CA')} with one-click filters</a></p>
+
+      <div class="prose hs-landing__facts">
+        {kind === 'area' && hood && hood.data.priceBands.length > 0 && (
+          <>
+            <h2>Recent prices in {label}</h2>
+            <table>
+              <thead><tr><th>Property type</th><th>Median</th><th>Sales and average</th></tr></thead>
+              <tbody>{hood.data.priceBands.map((b) => <tr><td>{b.band}</td><td>{b.range}</td><td>{b.what}</td></tr>)}</tbody>
+            </table>
+            <p>Sold prices from TRREB's community housing market report, as listed in our <a href={neighbourhoodPath(slug)}>{label} guide</a>. For individual sales, see <a href="/sold/">Markham sold prices</a>.</p>
+          </>
+        )}
+        {kind === 'type' && (
+          <>
+            <h2>Before you buy</h2>
+            <ul>{t!.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+          </>
+        )}
+
+        <h2>Browse Markham homes for sale</h2>
+        <p><strong>By home type:</strong> {Object.entries(TYPE_PAGES).map(([s, tp], i) => <>{i > 0 && ' · '}<a href={`/homes-for-sale/${s}/`} aria-current={s === slug ? 'page' : undefined}>{tp.label}</a></>)}</p>
+        <p><strong>By neighbourhood:</strong> {Object.entries(AREAS).map(([s, a], i) => <>{i > 0 && ' · '}<a href={`/homes-for-sale/${s}/`} aria-current={s === slug ? 'page' : undefined}>{a.label}</a></>)}</p>
+        <p>Or use the <a href="/homes-for-sale/">one-click Markham home search</a>, where every choice is a single button.</p>
+      </div>
+
+      <IdxDisclaimer />
+    </div>
+  </section>
+</Page>

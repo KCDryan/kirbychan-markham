@@ -63,7 +63,7 @@ const crumbs = [
 // Neighbourhood search: the matching TRREB communities, or condos for Downtown Markham, which TRREB does not report as a community.
 const areaSlug = entry.id.split('/').pop() ?? entry.id;
 const inArea = areaSlug in AREAS;
-const searchHref = inArea ? `/homes-for-sale/?area=${areaSlug}` : areaSlug === 'downtown' ? '/homes-for-sale/?home=condo' : site.links.loftySearch || '/contact/';
+const searchHref = inArea ? `/homes-for-sale/${areaSlug}/` : areaSlug === 'downtown' ? '/homes-for-sale/?home=condo' : site.links.loftySearch || '/contact/';
 const searchExternal = searchHref.startsWith('http');
 // Refreshed every morning by .github/workflows/refresh-listing-counts.yml.
 const counts = inArea ? (listingCounts.areas as Record<string, Record<string, number>>)[areaSlug] : undefined;
