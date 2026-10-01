@@ -193,7 +193,7 @@ const crumbs = [
         if (markers.length) map.fitBounds(L.latLngBounds(pins.map((x) => [x.la, x.ln] as [number, number])), { padding: [40, 40], maxZoom: 15 });
         const off = body.hidden as number;
         $('status').textContent = pins.length
-          ? `${pins.length.toLocaleString('en-CA')} ${describe(p, verb)} on the map.` + (off ? ` ${off.toLocaleString('en-CA')} more are in the list, without a mapped address.` : '')
+          ? `${pins.length.toLocaleString('en-CA')} ${describe(p, verb)} on the map.` + (off ? ` ${off.toLocaleString('en-CA')} more ${off === 1 ? 'is' : 'are'} in the list, without a mapped address.` : '')
           : `There are no ${describe(p, verb)} on the map right now. Try "Any price" or "All of Markham".`;
         $('jump').textContent = pins.length ? `See the ${pins.length.toLocaleString('en-CA')} homes on the map ↓` : 'See the map ↓';
       })
