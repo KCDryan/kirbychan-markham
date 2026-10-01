@@ -17,6 +17,24 @@ const FILTER = "ContractStatus eq 'Available' and startswith(PropertyType,'Resid
 
 export async function onRequestGet({ request, env, waitUntil }: Context): Promise<Response> {
   if (!env.PROPTX_IDX_TOKEN) return new Response('{"error":"not-configured"}', { status: 503 });
+  // TEMP: diagnose PropTx 500s with fixed query variants. Status and error text only. Remove after.
+  if (new URL(request.url).searchParams.get('diag') === '1') {
+    const out: Record<string, string> = {};
+    const tries: Record<string, string> = {
+      current: `Property?$top=1000&$select=CityRegion,PropertySubType,ArchitecturalStyle&$filter=${encodeURIComponent(FILTER)}`,
+      top500: `Property?$top=500&$select=CityRegion,PropertySubType,ArchitecturalStyle&$filter=${encodeURIComponent(FILTER)}`,
+      top100: `Property?$top=100&$select=CityRegion,PropertySubType,ArchitecturalStyle&$filter=${encodeURIComponent(FILTER)}`,
+      noStyle: `Property?$top=1000&$select=CityRegion,PropertySubType&$filter=${encodeURIComponent(FILTER)}`,
+      withKey: `Property?$top=1000&$select=ListingKey,CityRegion,PropertySubType,ArchitecturalStyle&$orderby=ListingKey&$filter=${encodeURIComponent(FILTER)}`,
+      countOnly: `Property?$top=0&$count=true&$filter=${encodeURIComponent(FILTER)}`,
+    };
+    for (const [k, path] of Object.entries(tries)) {
+      const r = await fetch(`${PROPTX_BASE}/${path}`, { headers: { authorization: `Bearer ${env.PROPTX_IDX_TOKEN}` } });
+      const t = await r.text();
+      out[k] = r.ok ? `${r.status} rows=${(JSON.parse(t).value ?? []).length} next=${!!JSON.parse(t)['@odata.nextLink']} count=${JSON.parse(t)['@odata.count'] ?? ''}` : `${r.status} ${t.slice(0, 200)}`;
+    }
+    return new Response(JSON.stringify(out, null, 1), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+  }
   // Up to ten PropTx calls per answer, so one answer is shared for an hour whoever asks.
   const cacheKey = new Request(new URL('/api/listing-counts', request.url));
   const cache = (caches as unknown as { default: Cache }).default;
