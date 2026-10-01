@@ -84,7 +84,8 @@ export const NOT_HOMES = "PropertySubType ne 'Parking Space' and PropertySubType
 
 function shared(params: URLSearchParams, priceField: string): string[] {
   const f: string[] = [NOT_HOMES];
-  const city = CITIES.find((c) => c === (params.get('city') ?? 'Markham'));
+  // An unknown city falls back to Markham. It must never drop the city filter and search every city.
+  const city = CITIES.find((c) => c === params.get('city')) ?? 'Markham';
   if (city) f.push(`City eq ${q(city)}`);
   const area = city === 'Markham' ? AREAS[params.get('area') ?? ''] : undefined;
   if (area) f.push(`CityRegion in (${area.communities.map(q).join(',')})`);
@@ -203,7 +204,8 @@ if (typeof process !== 'undefined' && import.meta.filename === process.argv[1]) 
   if (filter !== "ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale' and PropertySubType ne 'Parking Space' and PropertySubType ne 'Locker' and City eq 'Markham' and ArchitecturalStyle/any(a:a eq 'Bungalow' or a eq 'Bungaloft') and ListPrice ge 800000 and ListPrice le 1200000 and BedroomsTotal ge 2") throw new Error(filter);
   if (s.get('$skip') !== '24' || s.get('$orderby') !== 'ListPrice asc,ListingKey') throw new Error('paging');
   const evil = new URLSearchParams(searchQuery(new URLSearchParams("city=Markham' or 1 eq 1&home=x' or 1&price=5 or true")));
-  if (evil.get('$filter') !== "ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale' and PropertySubType ne 'Parking Space' and PropertySubType ne 'Locker'") throw new Error('injection ' + evil.get('$filter'));
+  if (evil.get('$filter') !== "ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale' and PropertySubType ne 'Parking Space' and PropertySubType ne 'Locker' and City eq 'Markham'") throw new Error('injection ' + evil.get('$filter'));
+  if (!new URLSearchParams(searchQuery(new URLSearchParams('city=Mississauga'))).get('$filter')!.includes("City eq 'Markham'")) throw new Error('unknown city must fall back to Markham');
   const a = new URLSearchParams(searchQuery(new URLSearchParams('area=thornhill&home=condo'))).get('$filter')!;
   if (!a.includes("City eq 'Markham' and CityRegion in ('Thornhill','Royal Orchard'")) throw new Error(a);
   if (new URLSearchParams(searchQuery(new URLSearchParams('city=Vaughan&area=cornell'))).get('$filter')!.includes('CityRegion')) throw new Error('area outside Markham');

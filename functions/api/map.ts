@@ -14,14 +14,20 @@ import type { D1 } from '../../src/lib/vow';
 
 interface Context {
   request: Request;
-  env: { PROPTX_IDX_TOKEN?: string; GEOCODIO_API_KEY?: string; VOW_DB?: D1 };
+  env: { PROPTX_IDX_TOKEN?: string; GEOCODIO_API_KEY?: string; GEOCODIO_DAILY_LIMIT?: string; VOW_DB?: D1 };
   waitUntil(p: Promise<unknown>): void;
 }
 
 /** Below this Geocodio accuracy the point is a street or area guess, not the house, so no pin. */
 const MIN_ACCURACY = 0.8;
-/** Most new lookups one request may spend, well inside Geocodio's 2,500 free a day. */
+/** Most new lookups one request may spend. */
 const MAX_LOOKUPS = 1500;
+/**
+ * Most lookups in any 24 hours, counted from the geocodes_v2 table. kirbychanmarkham.com and
+ * kirbychantoronto.com share one Geocodio key and its 2,500 free lookups a day; Toronto caps itself
+ * at 2,000, so Markham stays at 400 unless GEOCODIO_DAILY_LIMIT says otherwise. Free lookups only.
+ */
+const DAILY_LIMIT = 400;
 type Geo = { key: string; lat: number | null; lng: number | null };
 
 let tableReady: Promise<unknown> | null = null;
@@ -129,9 +135,13 @@ export async function onRequestGet({ request, env, waitUntil }: Context): Promis
   // Seller choices first: a hidden listing or a hidden address never gets a pin.
   const shown = rows.filter((r) => r.InternetEntireListingDisplayYN !== false && r.InternetAddressDisplayYN !== false && geocodeAddress(r));
   const known = await stored(env.VOW_DB, shown.map((r) => String(r.ListingKey)));
+  // 0 is a real setting: it pauses all lookups.
+  const set = env.GEOCODIO_DAILY_LIMIT?.trim() ? Number(env.GEOCODIO_DAILY_LIMIT) : NaN;
+  const limit = Number.isFinite(set) && set >= 0 ? set : DAILY_LIMIT;
+  const used = (await env.VOW_DB.prepare('SELECT COUNT(*) AS n FROM geocodes_v2 WHERE at > ?').bind(Date.now() - 864e5).first<{ n: number }>())?.n ?? 0;
   const todo = shown
     .filter((r) => !known.has(String(r.ListingKey)))
-    .slice(0, MAX_LOOKUPS)
+    .slice(0, Math.max(0, Math.min(MAX_LOOKUPS, limit - used)))
     .map((r) => ({ key: String(r.ListingKey), address: geocodeAddress(r)! }));
   const found = await lookup(env.VOW_DB, env.GEOCODIO_API_KEY, todo);
 
