@@ -109,15 +109,6 @@ export async function onRequestGet({ request, env, waitUntil }: Context): Promis
   if (hit) return hit;
 
   if (!env.GEOCODIO_API_KEY || !env.VOW_DB) return json({ error: 'map-not-configured' }, 503);
-  // TEMP: check 5 addresses before a full run. Stores nothing. Remove after.
-  if (url.searchParams.get('sample') === '5') {
-    const r0 = await fetch(`${PROPTX_BASE}/Property?${mapQuery(params, 0).replace('%24top=1000', '%24top=5').replace('$top=1000', '$top=5')}`, { headers: { authorization: `Bearer ${env.PROPTX_IDX_TOKEN}` } });
-    const rows0 = ((await r0.json()) as { value: Record<string, unknown>[] }).value.slice(0, 5);
-    const addrs = rows0.map((r) => geocodeAddress(r) ?? '');
-    const g = await fetch('https://api.geocod.io/v2/geocode', { method: 'POST', headers: { authorization: `Bearer ${env.GEOCODIO_API_KEY}`, 'content-type': 'application/json' }, body: JSON.stringify(addrs) });
-    const gj = (await g.json()) as { results?: { query: string; response?: { results?: { location: { lat: number; lng: number }; accuracy: number; accuracy_type: string; formatted_address: string }[] } }[] };
-    return json({ sent: addrs, unparsed: rows0.map((r) => r.UnparsedAddress), got: (gj.results ?? []).map((x) => x.response?.results?.[0] && { lat: x.response.results[0].location.lat, lng: x.response.results[0].location.lng, acc: x.response.results[0].accuracy, type: x.response.results[0].accuracy_type, f: x.response.results[0].formatted_address }) });
-  }
   await ensureTable(env.VOW_DB);
 
   const rows: Record<string, unknown>[] = [];
