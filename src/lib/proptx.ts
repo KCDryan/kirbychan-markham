@@ -142,10 +142,10 @@ export function soldQuery(params: URLSearchParams, today = new Date()): string {
 /** PropTx wants literal $ in option names, so build the string by hand. */
 const odata = (o: Record<string, string>) => Object.entries(o).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
 
-/** The main photo for each listing on a results page, one Media query for the whole page. */
+/** The main photo for each listing on a results page, one Media query for the whole page. Medium, not Large: Large is 1920px wide, far more than a card needs. */
 export const coverQuery = (keys: string[]) =>
   odata({
-    $filter: `ResourceRecordKey in (${keys.map(q).join(',')}) and PreferredPhotoYN eq true and ImageSizeDescription eq 'Large'`,
+    $filter: `ResourceRecordKey in (${keys.map(q).join(',')}) and PreferredPhotoYN eq true and ImageSizeDescription eq 'Medium'`,
     $select: 'ResourceRecordKey,MediaURL',
     $top: String(keys.length * 2),
   });
