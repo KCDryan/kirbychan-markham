@@ -32,6 +32,13 @@ jobs:
           "
           cp /tmp/counts.json src/data/listing-counts.json
 
+      - name: Place new listings on the map
+        # Looks up map positions for listings listed since yesterday, so the map is ready for visitors.
+        # A failure here never stops the counts.
+        run: |
+          curl -sS --max-time 120 -o /dev/null -w 'map for sale: %{http_code}\n' https://kirbychanmarkham.com/api/map || true
+          curl -sS --max-time 120 -o /dev/null -w 'map for rent: %{http_code}\n' 'https://kirbychanmarkham.com/api/map?for=lease' || true
+
       - name: Commit if changed
         run: |
           git diff --quiet && { echo 'No change'; exit 0; }

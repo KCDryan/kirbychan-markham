@@ -118,7 +118,7 @@ export function mapQuery(params: URLSearchParams, page: number): string {
   const f = ["ContractStatus eq 'Available'", "startswith(PropertyType,'Residential')", `TransactionType eq ${q(lease ? 'For Lease' : 'For Sale')}`, ...shared(params, 'ListPrice')];
   return odata({
     $filter: f.join(' and '),
-    $select: 'ListingKey,ListPrice,Latitude,Longitude,BedroomsTotal,BathroomsTotalInteger,PropertySubType,ArchitecturalStyle,UnparsedAddress,InternetEntireListingDisplayYN,InternetAddressDisplayYN',
+    $select: 'ListingKey,ListPrice,BedroomsTotal,BathroomsTotalInteger,PropertySubType,ArchitecturalStyle,UnparsedAddress,InternetEntireListingDisplayYN,InternetAddressDisplayYN',
     $orderby: 'ListingKey',
     $top: String(MAP_PAGE),
     $skip: String(page * MAP_PAGE),

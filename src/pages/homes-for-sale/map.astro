@@ -1,0 +1,212 @@
+---
+import Page from '../../layouts/Page.astro';
+import HomeChoices from '../../components/HomeChoices.astro';
+import IdxDisclaimer from '../../components/IdxDisclaimer.astro';
+import site from '../../data/site.json';
+import { AREAS } from '../../lib/proptx';
+import { TYPE_PAGES } from '../../lib/landing';
+import '../../styles/home-search.css';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Homes for Sale', path: '/homes-for-sale/' },
+  { name: 'Map', path: '/homes-for-sale/map/' },
+];
+---
+
+<Page
+  title="Markham Homes for Sale Map | Live MLS® Listings"
+  description="See every Markham home for sale on a map, from the MLS®. Press a button to show bungalows, condos, townhouses or houses, then press a price to see the home."
+  eyebrow="Markham, Ontario"
+  h1="Markham homes for sale on a map"
+  lede="Choose a kind of home and the map shows where each one is, with its price. Press a price to see the home."
+  crumbs={crumbs}
+  compact
+>
+  <section class="section hs-section">
+    <div class="wrap hs">
+      <div class="hs-layout">
+        <div class="hs-layout__filters">
+          <HomeChoices>
+            <details class="hs__more">
+              <summary>More choices: homes for rent</summary>
+              <h3>Buy or rent</h3>
+              <div class="hs-seg hs-seg--2">
+                <a class="hs__choice hs-seg__item" data-key="for" data-value="" href="?">To buy</a>
+                <a class="hs__choice hs-seg__item" data-key="for" data-value="lease" href="?for=lease">To rent</a>
+              </div>
+            </details>
+          </HomeChoices>
+        </div>
+
+        <div class="hs-layout__results">
+          <div class="hs__summary" id="results-top">
+            <p id="status" aria-live="polite">Loading the map…</p>
+            <div class="hs-active" id="active" hidden></div>
+            <div class="hs__summary-row">
+              <a class="btn btn--ghost" id="as-list" href="/homes-for-sale/">Show as a list</a>
+              <a class="btn btn--ghost" id="reset" href="/homes-for-sale/map/" hidden>Start over</a>
+            </div>
+          </div>
+          <div class="hs-map" id="map" role="region" aria-label="Map of homes for sale. Each label is a price."></div>
+          <p class="hs-map__help">Press a price to see that home. Use the + and − buttons to zoom. A circle with a number holds that many homes: press it to zoom in.</p>
+          <div class="hs-picked" id="picked" aria-live="polite" hidden></div>
+        </div>
+      </div>
+
+      <a class="btn btn--primary hs__jump" id="jump" href="#results-top">See the map ↓</a>
+
+      <div class="prose hs__intro">
+        <h2>Using the map</h2>
+        <p>
+          Every price on the map is a home for sale in Markham today, placed at its street address.
+          Choose a kind of home, a neighbourhood, a price or a number of bedrooms on the left and the
+          map changes straight away. Homes close together are grouped into a circle with a number. Press
+          it to zoom in.
+        </p>
+        <p>
+          A few listings are not on the map: some sellers ask for their address not to be shown and a
+          few addresses cannot be placed exactly. You will find every listing in the
+          <a href="/homes-for-sale/">list search</a>. To see what nearby homes actually sold for, create
+          a free account for <a href="/sold/">Markham sold prices</a>. Or call us at {site.contact.phone}
+          and we will search for you.
+        </p>
+        <h2>Browse Markham homes for sale</h2>
+        <p><strong>By home type:</strong> {Object.entries(TYPE_PAGES).map(([s, t], i) => <>{i > 0 && ' · '}<a href={`/homes-for-sale/${s}/`}>{t.label}</a></>)}</p>
+        <p><strong>By neighbourhood:</strong> {Object.entries(AREAS).map(([s, a], i) => <>{i > 0 && ' · '}<a href={`/homes-for-sale/${s}/`}>{a.label}</a></>)}</p>
+      </div>
+
+      <IdxDisclaimer />
+    </div>
+  </section>
+</Page>
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+  import 'leaflet.markercluster/dist/MarkerCluster.css';
+  import site from '../../data/site.json';
+  import { AREAS, HOMES, PRICES } from '../../lib/proptx';
+  import { $, activeChips, bindChoices, current, describe, el, factsRow, homeType, media, money, syncChoices, syncCounts, watchJump } from '../../scripts/home-search';
+
+  type Pin = { k: string; la: number; ln: number; p: number; b: number | null; ba: number | null; t: string | null; s: string | null; a: string };
+
+  const KEYS = ['home', 'area', 'price', 'beds', 'city', 'for'];
+  const LABEL = (key: string, value: string) =>
+    ({ home: HOMES[value]?.label, area: AREAS[value]?.label, price: PRICES[value]?.label, beds: `${value}+ bedrooms`, city: value, for: 'For rent' })[key] ?? value;
+  /** "$899K", "$1.25M": short enough to read on a map. */
+  const short = (n: number, lease: boolean) =>
+    lease ? `$${Math.round(n).toLocaleString('en-CA')}` : n >= 1e6 ? `$${(n / 1e6).toFixed(n >= 1e7 ? 1 : 2).replace(/\.?0+$/, '')}M` : `$${Math.round(n / 1000)}K`;
+
+  // leaflet.markercluster attaches itself to the global L, so it loads after L is set.
+  (window as unknown as { L: typeof L }).L = L;
+  import('leaflet.markercluster').then(start);
+
+  function start() {
+  const map = L.map('map', { scrollWheelZoom: false, zoomControl: false }).setView([43.8561, -79.337], 12);
+  L.control.zoom({ position: 'topright', zoomInTitle: 'Zoom in', zoomOutTitle: 'Zoom out' }).addTo(map);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(map);
+  // Scrolling the page never zooms the map by accident; a click or tap on the map turns wheel zoom on.
+  map.on('click', () => map.scrollWheelZoom.enable());
+  map.on('mouseout', () => map.scrollWheelZoom.disable());
+
+  const group = L.markerClusterGroup({
+    showCoverageOnHover: false,
+    maxClusterRadius: 50,
+    iconCreateFunction: (c) => L.divIcon({ className: 'hs-cluster', html: `<span>${c.getChildCount()}</span>`, iconSize: L.point(52, 52) }),
+  });
+  map.addLayer(group);
+
+  let picked: L.Marker | null = null;
+  const pick = (pin: Pin, marker: L.Marker, lease: boolean) => {
+    picked?.getElement()?.classList.remove('is-picked');
+    marker.getElement()?.classList.add('is-picked');
+    picked = marker;
+    const box = $('picked');
+    const card = el('div', 'hs__card hs-picked__card');
+    const body = el('div', 'hs__body');
+    const see = el('a', 'btn btn--primary hs__see', 'See photos and details') as HTMLAnchorElement;
+    see.href = '/homes-for-sale/listing/?id=' + encodeURIComponent(pin.k);
+    const ask = el('a', 'btn btn--ghost hs__see', 'Ask about this home') as HTMLAnchorElement;
+    ask.href = '/contact/?listing=' + encodeURIComponent(pin.k);
+    body.append(
+      el('p', 'hs__price', money(pin.p) + (lease ? ' a month' : '')),
+      el('p', 'hs__addr', pin.a),
+      factsRow({ beds: pin.b, baths: pin.ba }),
+      see,
+      ask,
+      el('p', 'hs__brokerage', `MLS® ${pin.k}. The listing brokerage is shown on the details page.`),
+    );
+    const mediaBox = media(null, pin.a, homeType({ style: pin.s, type: pin.t }));
+    card.append(mediaBox, body);
+    box.replaceChildren(el('h2', 'hs-picked__title', 'The home you chose'), card);
+    box.hidden = false;
+    if (innerWidth < 1080) box.scrollIntoView({ block: 'nearest' });
+    // The photo and brokerage come from the listing itself.
+    fetch('/api/listings?id=' + encodeURIComponent(pin.k))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((l) => {
+        if (!l || picked !== marker) return;
+        mediaBox.replaceWith(media(l.photos?.[0] ?? null, pin.a, homeType({ style: pin.s, type: pin.t })));
+        body.querySelector('.hs__brokerage')!.textContent = `Listed by ${l.brokerage || 'the listing brokerage'}. MLS® ${pin.k}`;
+      })
+      .catch(() => {});
+  };
+
+  let seq = 0;
+  const load = () => {
+    const p = current(KEYS);
+    const lease = p.get('for') === 'lease';
+    const verb = lease ? 'for rent' : 'for sale';
+    syncChoices(p);
+    syncCounts(p);
+    activeChips(p, $('active'), LABEL);
+    ($('as-list') as HTMLAnchorElement).href = '/homes-for-sale/' + (p.toString() ? '?' + p : '');
+    $('reset').hidden = ![...p.keys()].length;
+    if (p.get('for')) (document.querySelector('.hs__more') as HTMLDetailsElement).open = true;
+    $('status').textContent = 'Finding ' + describe(p, verb) + '…';
+    $('picked').hidden = true;
+    picked = null;
+    const mine = ++seq;
+    fetch('/api/map?' + p)
+      .then((r) => r.json().then((body) => ({ ok: r.ok, body })))
+      .then(({ ok, body }) => {
+        if (mine !== seq) return;
+        if (!ok) throw body;
+        const pins = body.pins as Pin[];
+        group.clearLayers();
+        const markers = pins.map((pin) => {
+          const m = L.marker([pin.la, pin.ln], {
+            icon: L.divIcon({ className: 'hs-pin', html: `<span>${short(pin.p, lease)}</span>`, iconSize: undefined }),
+            title: `${money(pin.p)}, ${pin.a}`,
+            alt: `${money(pin.p)}, ${pin.a}`,
+            riseOnHover: true,
+          });
+          m.on('click', () => pick(pin, m, lease));
+          m.on('keypress', (e) => (e.originalEvent as KeyboardEvent).key === 'Enter' && pick(pin, m, lease));
+          return m;
+        });
+        group.addLayers(markers);
+        if (markers.length) map.fitBounds(L.latLngBounds(pins.map((x) => [x.la, x.ln] as [number, number])), { padding: [40, 40], maxZoom: 15 });
+        const off = body.hidden as number;
+        $('status').textContent = pins.length
+          ? `${pins.length.toLocaleString('en-CA')} ${describe(p, verb)} on the map.` + (off ? ` ${off.toLocaleString('en-CA')} more are in the list, without a mapped address.` : '')
+          : `There are no ${describe(p, verb)} on the map right now. Try "Any price" or "All of Markham".`;
+        $('jump').textContent = pins.length ? `See the ${pins.length.toLocaleString('en-CA')} homes on the map ↓` : 'See the map ↓';
+      })
+      .catch((err: { error?: string }) => {
+        if (mine !== seq) return;
+        $('status').textContent =
+          err?.error === 'map-not-configured'
+            ? `The map is being set up. Please use the list search for now or call us at ${site.contact.phone}.`
+            : `The map could not be loaded just now. Please try again in a minute, use the list search or call us at ${site.contact.phone}.`;
+      });
+  };
+
+  bindChoices(load);
+  watchJump();
+  }
+</script>

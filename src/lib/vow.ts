@@ -19,14 +19,15 @@
  */
 
 /** The parts of Cloudflare D1 this file uses. */
+export interface D1Statement {
+  first<T = Record<string, unknown>>(): Promise<T | null>;
+  run(): Promise<unknown>;
+  all<T = Record<string, unknown>>(): Promise<{ results: T[] }>;
+}
 export interface D1 {
-  prepare(sql: string): {
-    bind(...values: unknown[]): {
-      first<T = Record<string, unknown>>(): Promise<T | null>;
-      run(): Promise<unknown>;
-      all<T = Record<string, unknown>>(): Promise<{ results: T[] }>;
-    };
-  };
+  prepare(sql: string): { bind(...values: unknown[]): D1Statement };
+  /** Several statements in one call, which counts once against the Workers subrequest limit. */
+  batch(statements: D1Statement[]): Promise<unknown>;
 }
 
 export interface VowEnv {

@@ -61,6 +61,7 @@ const crumbs = [
                 <a class="hs__choice hs-chip hs-chip--sm" data-key="sort" data-value="low" href="?sort=low">Lowest price</a>
                 <a class="hs__choice hs-chip hs-chip--sm" data-key="sort" data-value="high" href="?sort=high">Highest price</a>
               </div>
+              <a class="btn btn--ghost" id="on-map" href="/homes-for-sale/map/">Show on a map</a>
               <a class="btn btn--ghost" id="reset" href="/homes-for-sale/" hidden>Start over</a>
             </div>
           </div>
@@ -143,6 +144,8 @@ const crumbs = [
     activeChips(p, $('active'), LABEL);
     if (p.get('city') || p.get('for')) (document.querySelector('.hs__more') as HTMLDetailsElement).open = true;
     $('reset').hidden = ![...p.keys()].length;
+    const mapParams = new URLSearchParams([...p].filter(([k]) => !['sort', 'page'].includes(k)));
+    ($('on-map') as HTMLAnchorElement).href = '/homes-for-sale/map/' + (mapParams.toString() ? '?' + mapParams : '');
     $('status').textContent = 'Finding ' + describe(p, verb) + '…';
     $('jump').textContent = 'See the homes ↓';
     $('results').replaceChildren();

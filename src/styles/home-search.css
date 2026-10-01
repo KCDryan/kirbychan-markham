@@ -135,6 +135,29 @@
 .hs-landing__facts { max-width: 75ch; margin-top: var(--sp-7); }
 .hs-landing__facts a[aria-current] { font-weight: 700; color: var(--text); text-decoration: none; }
 
+/* Map search: /homes-for-sale/map/ */
+.hs-map { height: min(72vh, 760px); min-height: 440px; border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--mist); z-index: 0; }
+.hs-map__help { margin: var(--sp-3) 0 0; color: var(--text-muted); font-size: 1rem; }
+.hs-pin { width: 0 !important; height: 0 !important; background: none; border: 0; }
+.hs-pin span {
+  position: absolute; left: 0; top: 0; transform: translate(-50%, -100%); white-space: nowrap;
+  padding: 0.3rem 0.6rem; border-radius: 999px; background: var(--brand); color: var(--paper);
+  font: 700 0.95rem/1.1 var(--font-body); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); border: 2px solid #fff; cursor: pointer;
+}
+.hs-pin.is-picked span { background: var(--brass); color: var(--ground); z-index: 2; transform: translate(-50%, -100%) scale(1.15); }
+.hs-pin:focus-visible span { outline: 3px solid var(--brass); outline-offset: 2px; }
+.hs-cluster { background: none; }
+.hs-cluster span {
+  display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(31, 80, 69, 0.88); color: #fff; font: 700 1.05rem var(--font-body); border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.hs .leaflet-control-zoom a { width: 48px; height: 48px; line-height: 46px; font-size: 1.7rem; }
+.hs .leaflet-control-attribution { font-size: 0.75rem; }
+.hs-picked { margin-top: var(--sp-5); scroll-margin-top: 96px; }
+.hs-picked__title { font-size: var(--step-1); margin: 0 0 var(--sp-3); }
+.hs-picked__card { max-width: 560px; }
+.hs-picked__card .hs__see + .hs__see { margin-top: var(--sp-2); }
+
 /* Result cards */
 .hs__results { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--sp-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
 .hs__card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }

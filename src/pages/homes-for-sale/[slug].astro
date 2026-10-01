@@ -110,7 +110,7 @@ const faq = [
         <p>{prices.length ? `On this page: ${cad(Math.min(...prices))} to ${cad(Math.max(...prices))}. Press the button to filter by price, bedrooms or neighbourhood.` : 'Press the button to see every listing and filter by price, bedrooms or neighbourhood.'}</p>
         <div class="hs__call-actions">
           <a class="btn btn--primary hs__big" href={searchHref}>See all {total.toLocaleString('en-CA')} with filters</a>
-          <a class="btn btn--ghost hs__big" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
+          <a class="btn btn--ghost hs__big" href={`/homes-for-sale/map/?${query}`}>See them on a map</a>
         </div>
       </div>
 
