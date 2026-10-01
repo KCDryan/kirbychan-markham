@@ -33,6 +33,13 @@ export async function onRequestGet({ request, env, waitUntil }: Context): Promis
   const hit = await cache.match(cacheKey);
   if (hit) return hit;
 
+  // TEMP: what the location fields hold. Remove after.
+  if (url.searchParams.get('diag') === 'geo') {
+    const r = await fetch(`${PROPTX_BASE}/Property?$top=5&$select=ListingKey,Latitude,Longitude,InternetAddressDisplayYN&$filter=${encodeURIComponent("ContractStatus eq 'Available' and City eq 'Markham'")}`, { headers: { authorization: `Bearer ${env.PROPTX_IDX_TOKEN}` } });
+    const meta = await (await fetch(`${PROPTX_BASE}/$metadata`, { headers: { authorization: `Bearer ${env.PROPTX_IDX_TOKEN}` } })).text();
+    const geo = meta.split(/(?=<)/).filter((l) => /Name="(Latitude|Longitude|Coordinates|GeoLocation|Location|MapCoordinate|CrossStreet|PostalCode|StreetNumber|StreetName)"/.test(l)).map((l) => l.trim());
+    return new Response(JSON.stringify({ status: r.status, sample: (await r.text()).slice(0, 700), geo }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+  }
   const pins: unknown[] = [];
   let hidden = 0;
   // ponytail: 8 pages of 1,000 covers any one Markham search; the map says when there are more.
