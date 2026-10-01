@@ -39,8 +39,9 @@ const faq = [
   lede="See what homes in Markham actually sold for, not just what they were listed at. Board rules ask for a free account first. It takes about a minute."
   crumbs={crumbs}
   faq={faq}
+  compact
 >
-  <section class="section">
+  <section class="section hs-section">
     <div class="wrap hs">
       <p class="hs-msg" id="msg" role="status" hidden></p>
 
@@ -146,26 +147,32 @@ const faq = [
           <p id="hello"></p>
           <button class="btn btn--ghost" type="button" id="logout">Sign out</button>
         </div>
-        <HomeChoices priceLabel="Sold price">
-          <div class="hs__step">
-            <h2><span class="hs__num">5</span> Sold when?</h2>
-            <div class="hs__choices">
-              {Object.entries(SOLD_WINDOWS).map(([k, w]) => (
-                <a class="hs__choice" data-key="sold" data-value={k === '90' ? '' : k} href={k === '90' ? '?' : `?sold=${k}`}><strong>{w.label}</strong></a>
-              ))}
-            </div>
+        <div class="hs-layout">
+          <div class="hs-layout__filters">
+          <HomeChoices priceLabel="Sold price" showCounts={false}>
+            <section class="hs-group" aria-labelledby="hs-g-sold">
+              <h2 class="hs-group__title" id="hs-g-sold"><span class="hs__num">5</span> Sold when?</h2>
+              <div class="hs-seg hs-seg--4" role="group" aria-labelledby="hs-g-sold">
+                {Object.entries(SOLD_WINDOWS).map(([k, w]) => (
+                  <a class="hs__choice hs-seg__item" data-key="sold" data-value={k === '90' ? '' : k} href={k === '90' ? '?' : `?sold=${k}`}>{w.label}</a>
+                ))}
+              </div>
+            </section>
+          </HomeChoices>
           </div>
-        </HomeChoices>
-        <a class="btn btn--primary hs__big hs__jump" id="jump" href="#results-top">See the sold homes ↓</a>
-        <div class="hs__summary" id="results-top">
-          <p id="status" aria-live="polite"></p>
-          <a class="btn btn--ghost" id="reset" href="/sold/" hidden>Start over</a>
+          <div class="hs-layout__results">
+          <div class="hs__summary" id="results-top">
+            <p id="status" aria-live="polite"></p>
+            <a class="btn btn--ghost" id="reset" href="/sold/" hidden>Start over</a>
+          </div>
+          <ul class="hs__results" id="results"></ul>
+          <nav class="hs__pager" aria-label="More sold homes">
+            <a class="btn btn--ghost hs__big" id="prev" href="#" hidden>Previous homes</a>
+            <a class="btn btn--primary hs__big" id="next" href="#" hidden>Show more homes</a>
+          </nav>
+          </div>
         </div>
-        <ul class="hs__results" id="results"></ul>
-        <nav class="hs__pager" aria-label="More sold homes">
-          <a class="btn btn--ghost hs__big" id="prev" href="#" hidden>Previous homes</a>
-          <a class="btn btn--primary hs__big" id="next" href="#" hidden>Show more homes</a>
-        </nav>
+        <a class="btn btn--primary hs__jump" id="jump" href="#results-top">See the sold homes ↓</a>
       </div>
 
       <div class="prose hs__intro">
@@ -195,7 +202,7 @@ const faq = [
 <script>
   import site from '../../data/site.json';
   import { SOLD_MAX_RESULTS, SOLD_PAGE_SIZE, SOLD_WINDOWS } from '../../lib/proptx';
-  import { $, bindChoices, current, describe, el, factsLine, money, photo, syncChoices, withValue } from '../../scripts/home-search';
+  import { $, bindChoices, current, describe, el, factsRow, homeType, media, money, syncChoices, watchJump, withValue } from '../../scripts/home-search';
 
   const KEYS = ['home', 'area', 'price', 'beds', 'sold', 'sort', 'page'];
   const CALL = `call us at ${site.contact.phone}`;
@@ -327,12 +334,12 @@ const faq = [
       el('p', 'hs__facts', [l.listPrice && `Asked ${money(l.listPrice)}`, l.soldDate && `Sold ${date(l.soldDate)}`].filter(Boolean).join(' · ')),
       el('p', 'hs__addr', l.address || 'Address not shown at the seller’s request'),
       el('p', 'hs__where', [l.community, l.city].filter(Boolean).join(', ')),
-      el('p', 'hs__facts', factsLine(l)),
-      l.days != null ? el('p', 'hs__facts', `On the market ${l.days} day${l.days === 1 ? '' : 's'}`) : '',
+      factsRow(l),
+      l.days != null ? el('p', 'hs__where', `On the market ${l.days} day${l.days === 1 ? '' : 's'}`) : '',
       ask,
       el('p', 'hs__brokerage', `Listed by ${l.brokerage || 'the listing brokerage'}. MLS® ${l.key}`),
     );
-    li.append(photo(l.photo, l.address ? `${l.address}, ${l.city}` : `Home in ${l.city}`), body);
+    li.append(media(l.photo, l.address ? `${l.address}, ${l.city}` : `Home in ${l.city}`, homeType(l)), body);
     return li;
   };
 
@@ -407,6 +414,7 @@ const faq = [
     if (!bound) {
       bound = true;
       bindChoices(load);
+      watchJump();
     }
   }
   start();

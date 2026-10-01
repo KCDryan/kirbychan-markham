@@ -19,49 +19,59 @@ const crumbs = [
   h1="Markham homes for sale"
   lede="Press a button to see homes. There is nothing to type. The list changes as soon as you choose."
   crumbs={crumbs}
+  compact
 >
-  <section class="section">
+  <section class="section hs-section">
     <div class="wrap hs">
       <div class="hs__call">
         <p>Prefer to talk to a person? We will search for you.</p>
-        <a class="btn btn--primary hs__big" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
-        <a class="btn btn--ghost hs__big" href="/sold/">See what homes sold for</a>
-      </div>
-
-      <HomeChoices />
-
-      <a class="btn btn--primary hs__big hs__jump" id="jump" href="#results-top">See the homes ↓</a>
-
-      <details class="hs__more">
-        <summary>More choices: another city, homes for rent, sort order</summary>
-        <div class="hs__step">
-          <h3>City</h3>
-          <div class="hs__choices">
-            {CITIES.map((c) => <a class="hs__choice" data-key="city" data-value={c === 'Markham' ? '' : c} href={`?city=${encodeURIComponent(c)}`}><strong>{c}</strong></a>)}
-          </div>
-          <h3>Buy or rent</h3>
-          <div class="hs__choices">
-            <a class="hs__choice" data-key="for" data-value="" href="?"><strong>To buy</strong></a>
-            <a class="hs__choice" data-key="for" data-value="lease" href="?for=lease"><strong>To rent</strong></a>
-          </div>
-          <h3>Show first</h3>
-          <div class="hs__choices">
-            <a class="hs__choice" data-key="sort" data-value="" href="?"><strong>Newest</strong></a>
-            <a class="hs__choice" data-key="sort" data-value="low" href="?sort=low"><strong>Lowest price</strong></a>
-            <a class="hs__choice" data-key="sort" data-value="high" href="?sort=high"><strong>Highest price</strong></a>
-          </div>
+        <div class="hs__call-actions">
+          <a class="btn btn--primary hs__big" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
+          <a class="btn btn--ghost hs__big" href="/sold/">See what homes sold for</a>
         </div>
-      </details>
-
-      <div class="hs__summary" id="results-top">
-        <p id="status" aria-live="polite">Loading homes…</p>
-        <a class="btn btn--ghost" id="reset" href="/homes-for-sale/" hidden>Start over</a>
       </div>
-      <ul class="hs__results" id="results"></ul>
-      <nav class="hs__pager" aria-label="More homes">
-        <a class="btn btn--ghost hs__big" id="prev" href="#" hidden>Previous homes</a>
-        <a class="btn btn--primary hs__big" id="next" href="#" hidden>Show more homes</a>
-      </nav>
+
+      <div class="hs-layout">
+        <div class="hs-layout__filters">
+          <HomeChoices>
+            <details class="hs__more">
+              <summary>More choices: another city or homes for rent</summary>
+              <h3>City</h3>
+              <div class="hs-chips">
+                {CITIES.map((c) => <a class="hs__choice hs-chip" data-key="city" data-value={c === 'Markham' ? '' : c} href={`?city=${encodeURIComponent(c)}`}>{c}</a>)}
+              </div>
+              <h3>Buy or rent</h3>
+              <div class="hs-seg hs-seg--2">
+                <a class="hs__choice hs-seg__item" data-key="for" data-value="" href="?">To buy</a>
+                <a class="hs__choice hs-seg__item" data-key="for" data-value="lease" href="?for=lease">To rent</a>
+              </div>
+            </details>
+          </HomeChoices>
+        </div>
+
+        <div class="hs-layout__results">
+          <div class="hs__summary" id="results-top">
+            <p id="status" aria-live="polite">Loading homes…</p>
+            <div class="hs-active" id="active" hidden></div>
+            <div class="hs__summary-row">
+              <div class="hs-sort" role="group" aria-label="Show first">
+                <span class="hs-sort__label">Show first:</span>
+                <a class="hs__choice hs-chip hs-chip--sm" data-key="sort" data-value="" href="?">Newest</a>
+                <a class="hs__choice hs-chip hs-chip--sm" data-key="sort" data-value="low" href="?sort=low">Lowest price</a>
+                <a class="hs__choice hs-chip hs-chip--sm" data-key="sort" data-value="high" href="?sort=high">Highest price</a>
+              </div>
+              <a class="btn btn--ghost" id="reset" href="/homes-for-sale/" hidden>Start over</a>
+            </div>
+          </div>
+          <ul class="hs__results" id="results"></ul>
+          <nav class="hs__pager" aria-label="More homes">
+            <a class="btn btn--ghost hs__big" id="prev" href="#" hidden>Previous homes</a>
+            <a class="btn btn--primary hs__big" id="next" href="#" hidden>Show more homes</a>
+          </nav>
+        </div>
+      </div>
+
+      <a class="btn btn--primary hs__jump" id="jump" href="#results-top">See the homes ↓</a>
 
       <div class="prose hs__intro">
         <h2>Downsizing in Markham</h2>
@@ -82,26 +92,39 @@ const crumbs = [
 
 <script>
   import site from '../../data/site.json';
-  import { $, bindChoices, current, describe, el, factsLine, money, photo, syncChoices, withValue } from '../../scripts/home-search';
+  import { AREAS, HOMES, PRICES } from '../../lib/proptx';
+  import { $, activeChips, bindChoices, current, describe, el, factsRow, homeType, media, money, syncChoices, syncCounts, watchJump, withValue } from '../../scripts/home-search';
 
   const KEYS = ['home', 'area', 'price', 'beds', 'city', 'for', 'sort', 'page'];
   const FALLBACK = 'https://kirbychanandco.com/homes-for-sale-markham';
   type Listing = { key: string; price: number; address: string | null; city: string; community: string | null; beds: number | null; baths: number | null; type: string | null; style: string | null; lease: boolean; brokerage: string | null; photo: string | null };
 
+  const LABEL = (key: string, value: string) =>
+    ({
+      home: HOMES[value]?.label,
+      area: AREAS[value]?.label,
+      price: PRICES[value]?.label,
+      beds: `${value}+ bedrooms`,
+      city: value,
+      for: 'For rent',
+      sort: value === 'low' ? 'Lowest price first' : 'Highest price first',
+    })[key] ?? value;
+
   const card = (l: Listing) => {
     const li = el('li', 'hs__card');
     const a = el('a', 'hs__link') as HTMLAnchorElement;
     a.href = '/homes-for-sale/listing/?id=' + encodeURIComponent(l.key);
+    const where = [l.community, l.city].filter(Boolean).join(', ');
     const body = el('div', 'hs__body');
     body.append(
       el('p', 'hs__price', money(l.price) + (l.lease ? ' a month' : '')),
       el('p', 'hs__addr', l.address || 'Address given on request'),
-      el('p', 'hs__where', [l.community, l.city].filter(Boolean).join(', ')),
-      el('p', 'hs__facts', factsLine(l)),
+      el('p', 'hs__where', where),
+      factsRow(l),
       el('span', 'btn btn--primary hs__see', 'See photos and details'),
       el('p', 'hs__brokerage', `Listed by ${l.brokerage || 'the listing brokerage'}. MLS® ${l.key}`),
     );
-    a.append(photo(l.photo, l.address ? `${l.address}, ${l.city}` : `Home in ${l.city}`), body);
+    a.append(media(l.photo, l.address ? `${l.address}, ${l.city}` : `Home in ${l.city}`, homeType(l)), body);
     li.append(a);
     return li;
   };
@@ -112,7 +135,9 @@ const crumbs = [
     const verb = p.get('for') === 'lease' ? 'for rent' : 'for sale';
     const page = Math.max(1, Number(p.get('page')) || 1);
     syncChoices(p);
-    if (p.get('city') || p.get('for') || p.get('sort')) (document.querySelector('.hs__more') as HTMLDetailsElement).open = true;
+    syncCounts(p);
+    activeChips(p, $('active'), LABEL);
+    if (p.get('city') || p.get('for')) (document.querySelector('.hs__more') as HTMLDetailsElement).open = true;
     $('reset').hidden = ![...p.keys()].length;
     $('status').textContent = 'Finding ' + describe(p, verb) + '…';
     $('jump').textContent = 'See the homes ↓';
@@ -147,4 +172,5 @@ const crumbs = [
   };
 
   bindChoices(load);
+  watchJump();
 </script>

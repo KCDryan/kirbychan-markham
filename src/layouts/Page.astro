@@ -17,6 +17,8 @@ interface Props {
   extraJsonLd?: unknown[];
   noindex?: boolean;
   tone?: 'cream' | 'sand';
+  /** A shorter header for tool pages, so the tool starts higher on the screen. */
+  compact?: boolean;
   prev?: string;
   next?: string;
 }
@@ -33,6 +35,7 @@ const {
   extraJsonLd = [],
   noindex = false,
   tone = 'cream',
+  compact = false,
   prev,
   next,
 } = Astro.props;
@@ -42,7 +45,7 @@ const jsonLd = [breadcrumbList(crumbs), faqPage(faq), ...extraJsonLd].filter(Boo
 
 <Base title={title} description={description} noindex={noindex} jsonLd={jsonLd} prev={prev} next={next}>
   <Breadcrumbs crumbs={crumbs} />
-  <section class:list={['page-hero', tone === 'sand' && 'page-hero--mist']}>
+  <section class:list={['page-hero', tone === 'sand' && 'page-hero--mist', compact && 'page-hero--compact']}>
     <div class="wrap">
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <h1>
@@ -60,6 +63,12 @@ const jsonLd = [breadcrumbList(crumbs), faqPage(faq), ...extraJsonLd].filter(Boo
     background:
       radial-gradient(110% 80% at 90% 0%, rgba(31, 80, 69, 0.1), transparent 60%),
       var(--paper);
+  }
+  .page-hero--compact {
+    padding-block: var(--sp-6) var(--sp-4);
+  }
+  .page-hero--compact :global(.lede) {
+    margin-top: var(--sp-3);
   }
   .page-hero--mist {
     background: var(--mist);

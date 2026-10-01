@@ -1,63 +1,154 @@
-/* The one-click home search, shared by /homes-for-sale/ and /sold/. Global because the cards are built in the browser. */
+/* The one-click home search, shared by /homes-for-sale/ and /sold/. Global because the cards are built in the browser.
+   Built for older eyes and hands: 18px+ text, 52px+ targets, labels always visible, no dropdowns or sliders,
+   and the chosen button is marked by colour, a tick and weight, not colour alone. */
 .hs [hidden] { display: none !important; }
-  .hs { font-size: 1.15rem; }
-  .hs h2 { font-size: var(--step-2); display: flex; align-items: center; gap: var(--sp-3); margin: 0 0 var(--sp-4); }
-  .hs h2 small { font-size: 1rem; font-family: var(--font-body); color: var(--text-muted); font-weight: 400; }
-  .hs h3 { font-size: var(--step-1); margin: var(--sp-5) 0 var(--sp-3); }
-  .hs__num {
-    display: inline-grid; place-items: center; width: 2.2rem; height: 2.2rem; flex: none;
-    border-radius: 50%; background: var(--brand); color: var(--paper); font-family: var(--font-body); font-size: 1.1rem;
-  }
-  .hs__call {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3);
-    padding: var(--sp-4) var(--sp-5); margin-bottom: var(--sp-6);
-    background: var(--mist); border: 1px solid var(--rule); border-radius: var(--radius-lg);
-  }
-  .hs__call p { margin: 0; font-weight: 600; }
-  .hs__big { min-height: 60px; font-size: 1.05rem; padding-inline: var(--sp-6); }
-  .hs__step { margin-bottom: var(--sp-6); }
-  .hs__choices { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); }
-  .hs__choices--tiles { grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
-  .hs__choice {
-    display: grid; align-content: center; gap: 0.2rem; min-height: 64px; padding: var(--sp-3) var(--sp-4);
-    background: #fff; color: var(--text); text-decoration: none; text-align: center;
-    border: 2px solid var(--rule); border-radius: var(--radius-lg);
-    transition: border-color 0.15s var(--ease), background-color 0.15s var(--ease);
-  }
-  .hs__choices--tiles .hs__choice { min-height: 96px; }
-  .hs__choice strong { font-size: 1.2rem; }
-  .hs__choice span { font-size: 1rem; color: var(--text-muted); }
-  .hs__choice:hover { border-color: var(--brand); color: var(--text); }
-  .hs__choice:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
-  .hs__choice[aria-current] { background: var(--brand); border-color: var(--brand); color: var(--paper); }
-  .hs__choice[aria-current] span { color: var(--paper); }
-  .hs__choice[aria-current] strong::before { content: '✓ '; }
-  .hs__jump { width: 100%; margin-bottom: var(--sp-5); font-size: 1.15rem; }
-  .hs__more { margin-bottom: var(--sp-6); }
-  .hs__more summary {
-    cursor: pointer; font-weight: 600; padding: var(--sp-3) 0; color: var(--brand);
-    text-decoration: underline; text-underline-offset: 4px; min-height: 48px;
-  }
-  .hs__summary {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3);
-    border-top: 2px solid var(--rule); padding-top: var(--sp-5); margin-bottom: var(--sp-5); scroll-margin-top: 90px;
-  }
-  .hs__summary p { margin: 0; font-size: 1.3rem; font-weight: 600; max-width: 60ch; }
-  .hs__results { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--sp-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
-  .hs__card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden; }
-  .hs__card:hover { border-color: var(--brass); box-shadow: var(--shadow); }
-  .hs__link, .hs__link:hover { display: block; color: inherit; text-decoration: none; }
-  .hs__img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--mist); }
-  .hs__body { padding: var(--sp-4) var(--sp-5) var(--sp-5); display: grid; gap: 0.3rem; }
-  .hs__body p { margin: 0; }
-  .hs__price { font-family: var(--font-heading); font-size: var(--step-3); color: var(--brand); }
-  .hs__addr { font-weight: 700; font-size: 1.2rem; }
-  .hs__facts { font-size: 1.1rem; }
-  .hs__see { margin-top: var(--sp-3); min-height: 56px; }
-  .hs__brokerage { font-size: 0.85rem; color: var(--text-muted); margin-top: var(--sp-2) !important; }
-  .hs__pager { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-3); margin-top: var(--sp-6); }
-  .hs__intro { max-width: 70ch; margin-top: var(--sp-8); }
+.hs { font-size: 1.125rem; }
+.hs-section { padding-top: var(--sp-4); }
 
+/* Layout: filters beside results on wide screens, so every press visibly changes the list next to it. */
+.hs-layout { display: grid; gap: var(--sp-6); align-items: start; }
+@media (min-width: 1080px) {
+  .hs-layout { grid-template-columns: 400px minmax(0, 1fr); gap: var(--sp-7); }
+  .hs-layout__filters { position: sticky; top: 96px; max-height: calc(100vh - 112px); overflow-y: auto; padding-right: var(--sp-2); scrollbar-gutter: stable; }
+}
+.hs-layout__results { min-width: 0; }
+
+/* Call strip */
+.hs__call {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5); margin-bottom: var(--sp-6);
+  background: var(--mist); border: 1px solid var(--rule); border-radius: var(--radius-lg);
+}
+.hs__call p { margin: 0; font-weight: 600; flex: 1 1 260px; }
+.hs__call-actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+.hs__big { min-height: 56px; font-size: 1rem; padding-inline: var(--sp-5); }
+
+/* Filter groups */
+.hs-filters { display: grid; gap: var(--sp-5); }
+.hs-group { display: grid; gap: var(--sp-3); }
+.hs-group__title { display: flex; align-items: center; gap: var(--sp-3); font-size: 1.3rem; margin: 0; }
+.hs-group__title small { font-family: var(--font-body); font-size: 0.95rem; font-weight: 400; color: var(--text-muted); text-transform: none; }
+.hs__num {
+  display: inline-grid; place-items: center; width: 2rem; height: 2rem; flex: none; border-radius: 50%;
+  background: var(--brand); color: var(--paper); font-family: var(--font-body); font-size: 1rem; font-weight: 700;
+}
+
+/* Shared chosen and focus states */
+.hs__choice { color: var(--text); text-decoration: none; -webkit-tap-highlight-color: transparent; transition: border-color .15s var(--ease), background-color .15s var(--ease), box-shadow .15s var(--ease); }
+.hs__choice:hover { color: var(--text); border-color: var(--brand); }
+.hs__choice:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
+.hs__choice[aria-current] { background: var(--brand); border-color: var(--brand); color: var(--paper); font-weight: 700; }
+.hs__choice[aria-current] .hs-tile__hint, .hs__choice[aria-current] .hs-chip__count, .hs__choice[aria-current] .hs-count { color: var(--paper); }
+
+/* Home type tiles with a picture */
+.hs-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3); }
+.hs-tile {
+  position: relative; display: grid; justify-items: center; align-content: start; gap: 0.15rem; text-align: center;
+  padding: var(--sp-4) var(--sp-3) var(--sp-3); min-height: 132px;
+  background: #fff; border: 2px solid var(--rule); border-radius: var(--radius-lg);
+}
+.hs-tile strong { font-size: 1.15rem; line-height: 1.25; }
+.hs-tile__hint { font-size: 0.95rem; color: var(--text-muted); line-height: 1.3; }
+.hs-icon { width: 56px; height: 42px; color: var(--brand); margin-bottom: 0.2rem; }
+.hs__choice[aria-current] .hs-icon { color: var(--paper); }
+.hs-count {
+  position: absolute; top: 8px; right: 8px; min-width: 2rem; padding: 0.1rem 0.5rem; border-radius: 999px;
+  font-size: 0.85rem; font-weight: 700; color: var(--brand); background: var(--mist); font-variant-numeric: tabular-nums;
+}
+.hs__choice[aria-current] .hs-count { background: rgba(255, 255, 255, 0.18); }
+.hs-count:empty { display: none; }
+/* "Any home" spans the row as a slim bar, so no tile is left alone on a line. */
+.hs-tile--any { grid-column: 1 / -1; grid-template-columns: auto 1fr auto; justify-items: start; align-items: center; text-align: left; min-height: 64px; padding: var(--sp-3) var(--sp-4); column-gap: var(--sp-3); row-gap: 0; }
+.hs-tile--any .hs-icon { grid-column: 1; grid-row: 1 / span 2; width: 40px; height: 30px; margin: 0; }
+.hs-tile--any strong { grid-column: 2; grid-row: 1; }
+.hs-tile--any .hs-tile__hint { grid-column: 2; grid-row: 2; }
+.hs-tile--any .hs-count { grid-column: 3; grid-row: 1 / span 2; position: static; }
+
+/* Chips: neighbourhoods and prices */
+.hs-chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.hs-chip {
+  display: inline-flex; align-items: center; gap: 0.5rem; min-height: 52px; padding: 0.55rem 1rem;
+  background: #fff; border: 2px solid var(--rule); border-radius: 999px; font-size: 1.05rem; font-weight: 600; line-height: 1.2;
+}
+.hs-chip__count { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.hs-chip__count:empty { display: none; }
+.hs-chips--price .hs-chip { flex: 1 1 calc(50% - var(--sp-2)); justify-content: center; text-align: center; }
+
+/* Segmented row: bedrooms */
+.hs-seg { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 2px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden; background: #fff; }
+.hs-seg__item { display: grid; place-items: center; min-height: 56px; font-size: 1.15rem; font-weight: 700; border-left: 2px solid var(--rule); }
+.hs-seg__item:first-child { border-left: 0; }
+
+/* Two-way switch: buy or rent */
+.hs-seg--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Sold when? (sold prices) */
+.hs-seg--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.hs-seg--4 .hs-seg__item { border-top: 2px solid var(--rule); font-size: 1.05rem; }
+.hs-seg--4 .hs-seg__item:nth-child(-n+2) { border-top: 0; }
+.hs-seg--4 .hs-seg__item:nth-child(odd) { border-left: 0; }
+
+/* Sort, beside the results like the big listing sites */
+.hs-sort { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.hs-sort__label { font-weight: 700; margin-right: var(--sp-1); }
+.hs-chip--sm { min-height: 48px; padding: 0.4rem 0.9rem; font-size: 1rem; }
+
+/* More choices */
+.hs__more { border-top: 1px solid var(--rule); padding-top: var(--sp-3); }
+.hs__more summary { cursor: pointer; font-weight: 700; color: var(--brand); min-height: 48px; display: flex; align-items: center; gap: var(--sp-2); }
+.hs__more summary::marker { content: ''; }
+.hs__more summary::before { content: '+'; display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border: 2px solid currentColor; border-radius: 50%; font-size: 1.1rem; line-height: 1; }
+.hs__more[open] summary::before { content: '–'; }
+.hs__more h3 { font-size: 1.05rem; margin: var(--sp-4) 0 var(--sp-2); }
+
+/* Results header: what is showing, with each choice removable */
+.hs__summary { display: grid; gap: var(--sp-3); margin-bottom: var(--sp-5); scroll-margin-top: 96px; }
+.hs__summary > .btn { justify-self: start; }
+.hs__summary-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+.hs__summary p { margin: 0; font-size: 1.3rem; font-weight: 700; max-width: 60ch; line-height: 1.35; }
+.hs-active { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.hs-active a {
+  display: inline-flex; align-items: center; gap: 0.5rem; min-height: 44px; padding: 0.4rem 0.6rem 0.4rem 0.9rem;
+  border-radius: 999px; background: var(--mist); border: 1px solid var(--rule); color: var(--text); text-decoration: none; font-weight: 600; font-size: 1rem;
+}
+.hs-active a:hover { border-color: var(--brand); }
+.hs-active a span { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--brand); color: var(--paper); font-size: 0.9rem; line-height: 1; }
+
+/* Phones: a bar at the bottom always says how many homes match and jumps to them. */
+.hs__jump { display: none; }
+@media (max-width: 1079px) {
+  .hs__jump {
+    display: flex; position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 40;
+    min-height: 60px; font-size: 1.05rem; box-shadow: 0 10px 30px rgba(16, 37, 31, 0.28);
+  }
+  .hs__jump.is-away { display: none; }
+  .hs { padding-bottom: 84px; }
+}
+
+/* Result cards */
+.hs__results { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--sp-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.hs__card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }
+.hs__card:hover { border-color: var(--brass); box-shadow: var(--shadow); }
+.hs__link, .hs__link:hover { display: flex; flex-direction: column; height: 100%; color: inherit; text-decoration: none; }
+.hs__media { position: relative; aspect-ratio: 4 / 3; background: var(--mist); }
+.hs__img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.hs__noimg { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: var(--sp-2); color: var(--text-muted); font-size: 0.95rem; }
+.hs__noimg .hs-icon { width: 72px; height: 54px; opacity: 0.6; }
+.hs__badge {
+  position: absolute; top: 10px; left: 10px; padding: 0.25rem 0.65rem; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95); color: var(--brand); font-size: 0.85rem; font-weight: 700; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+.hs__body { padding: var(--sp-4) var(--sp-5) var(--sp-5); display: grid; gap: 0.35rem; flex: 1; align-content: start; }
+.hs__body p { margin: 0; }
+.hs__price { font-family: var(--font-heading); font-size: var(--step-3); color: var(--brand); line-height: 1.1; }
+.hs__addr { font-weight: 700; font-size: 1.15rem; line-height: 1.3; }
+.hs__where { color: var(--text-muted); }
+.hs__facts { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); font-size: 1.05rem; margin-top: var(--sp-2) !important; }
+.hs__fact { display: inline-flex; align-items: center; gap: 0.4rem; }
+.hs__fact svg { width: 22px; height: 22px; color: var(--brand); flex: none; }
+.hs__see { margin-top: var(--sp-4); min-height: 56px; width: 100%; }
+.hs__brokerage { font-size: 0.85rem; color: var(--text-muted); margin-top: var(--sp-2) !important; }
+.hs__pager { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-3); margin-top: var(--sp-6); }
+.hs__intro { max-width: 70ch; margin-top: var(--sp-8); }
 /* Sign-up and sign-in forms on /sold/: large type, large targets, labels always visible. */
 .hs-msg {
   padding: var(--sp-4) var(--sp-5); margin: 0 0 var(--sp-5);

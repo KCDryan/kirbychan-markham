@@ -1,57 +1,79 @@
 ---
-/** The four one-click steps (home type, neighbourhood, price, bedrooms). Wired up by src/scripts/home-search.ts. */
+/**
+ * The one-click filters for /homes-for-sale/ and /sold/: home type, neighbourhood, price and bedrooms.
+ * Every control is a plain link carrying data-key and data-value; src/scripts/home-search.ts turns
+ * clicks into in-place updates and marks the chosen one with aria-current.
+ */
+import HomeIcon from './HomeIcon.astro';
+import counts from '../data/listing-counts.json';
 import { AREAS, HOMES, PRICES } from '../lib/proptx';
 
 interface Props {
   /** Label for the price step: asking price or sold price. */
   priceLabel?: string;
+  /** Show today's for-sale counts on the buttons. Off for sold prices. */
+  showCounts?: boolean;
 }
-const { priceLabel = 'Your price' } = Astro.props;
+const { priceLabel = 'Your price', showCounts = true } = Astro.props;
 const BEDS = ['1', '2', '3', '4'];
+const n = (v: number | undefined) => (typeof v === 'number' && v > 0 ? v.toLocaleString('en-CA') : '');
+const markham = counts.markham as Record<string, number>;
+const areas = counts.areas as Record<string, Record<string, number>>;
 ---
 
-<div class="hs__step">
-  <h2><span class="hs__num">1</span> What kind of home?</h2>
-  <div class="hs__choices hs__choices--tiles">
-    <a class="hs__choice" data-key="home" data-value="" href="?">
-      <strong>Any home</strong><span>Show everything</span>
-    </a>
-    {Object.entries(HOMES).map(([k, h]) => (
-      <a class="hs__choice" data-key="home" data-value={k} href={`?home=${k}`}>
-        <strong>{h.label}</strong><span>{h.hint}</span>
+<div class="hs-filters" data-counts={showCounts ? JSON.stringify({ markham, areas }) : undefined}>
+  <section class="hs-group" aria-labelledby="hs-g-home">
+    <h2 class="hs-group__title" id="hs-g-home"><span class="hs__num">1</span> What kind of home?</h2>
+    <div class="hs-tiles">
+      {Object.entries(HOMES).map(([k, h]) => (
+        <a class="hs__choice hs-tile" data-key="home" data-value={k} href={`?home=${k}`}>
+          <HomeIcon kind={k} />
+          <strong>{h.label}</strong>
+          <span class="hs-tile__hint">{h.hint}</span>
+          {showCounts && <span class="hs-count" data-count={k}>{n(markham[k])}</span>}
+        </a>
+      ))}
+      <a class="hs__choice hs-tile hs-tile--any" data-key="home" data-value="" href="?">
+        <HomeIcon kind="any" />
+        <strong>Any home</strong>
+        <span class="hs-tile__hint">Show every type</span>
+        {showCounts && <span class="hs-count" data-count="total">{n(markham.total)}</span>}
       </a>
-    ))}
-  </div>
-</div>
+    </div>
+  </section>
 
-<div class="hs__step" id="area-step">
-  <h2><span class="hs__num">2</span> Where in Markham? <small>(optional)</small></h2>
-  <div class="hs__choices">
-    <a class="hs__choice" data-key="area" data-value="" href="?"><strong>All of Markham</strong></a>
-    {Object.entries(AREAS).map(([k, a]) => (
-      <a class="hs__choice" data-key="area" data-value={k} href={`?area=${k}`}><strong>{a.label}</strong></a>
-    ))}
-  </div>
-</div>
+  <section class="hs-group" id="area-step" aria-labelledby="hs-g-area">
+    <h2 class="hs-group__title" id="hs-g-area"><span class="hs__num">2</span> Where in Markham? <small>Optional</small></h2>
+    <div class="hs-chips hs-chips--areas">
+      <a class="hs__choice hs-chip" data-key="area" data-value="" href="?">All of Markham</a>
+      {Object.entries(AREAS).map(([k, a]) => (
+        <a class="hs__choice hs-chip" data-key="area" data-value={k} href={`?area=${k}`}>
+          {a.label}
+          {showCounts && <span class="hs-chip__count" data-area-count={k}>{n(areas[k]?.total)}</span>}
+        </a>
+      ))}
+    </div>
+  </section>
 
-<div class="hs__step">
-  <h2><span class="hs__num">3</span> {priceLabel} <small>(optional)</small></h2>
-  <div class="hs__choices">
-    <a class="hs__choice" data-key="price" data-value="" href="?"><strong>Any price</strong></a>
-    {Object.entries(PRICES).map(([k, p]) => (
-      <a class="hs__choice" data-key="price" data-value={k} href={`?price=${k}`}><strong>{p.label}</strong></a>
-    ))}
-  </div>
-</div>
+  <section class="hs-group" aria-labelledby="hs-g-price">
+    <h2 class="hs-group__title" id="hs-g-price"><span class="hs__num">3</span> {priceLabel} <small>Optional</small></h2>
+    <div class="hs-chips hs-chips--price">
+      <a class="hs__choice hs-chip" data-key="price" data-value="" href="?">Any price</a>
+      {Object.entries(PRICES).map(([k, p]) => (
+        <a class="hs__choice hs-chip" data-key="price" data-value={k} href={`?price=${k}`}>{p.label}</a>
+      ))}
+    </div>
+  </section>
 
-<div class="hs__step">
-  <h2><span class="hs__num">4</span> Bedrooms <small>(optional)</small></h2>
-  <div class="hs__choices">
-    <a class="hs__choice" data-key="beds" data-value="" href="?"><strong>Any</strong></a>
-    {BEDS.map((b) => (
-      <a class="hs__choice" data-key="beds" data-value={b} href={`?beds=${b}`}><strong>{b} or more</strong></a>
-    ))}
-  </div>
-</div>
+  <section class="hs-group" aria-labelledby="hs-g-beds">
+    <h2 class="hs-group__title" id="hs-g-beds"><span class="hs__num">4</span> Bedrooms <small>Optional</small></h2>
+    <div class="hs-seg" role="group" aria-labelledby="hs-g-beds">
+      <a class="hs__choice hs-seg__item" data-key="beds" data-value="" href="?">Any</a>
+      {BEDS.map((b) => (
+        <a class="hs__choice hs-seg__item" data-key="beds" data-value={b} href={`?beds=${b}`} aria-label={`${b} or more bedrooms`}>{b}+</a>
+      ))}
+    </div>
+  </section>
 
-<slot />
+  <slot />
+</div>

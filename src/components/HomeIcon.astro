@@ -1,0 +1,50 @@
+---
+/** Simple line drawings for the home type buttons, so each choice is recognisable before it is read. */
+interface Props {
+  kind: string;
+}
+const { kind } = Astro.props;
+---
+
+<svg class="hs-icon" viewBox="0 0 64 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+  {
+    kind === 'bungalow' ? (
+      <>
+        <path d="M6 24 32 8l26 16" />
+        <path d="M11 21v21h42V21" />
+        <path d="M27 42V30h10v12" />
+        <path d="M15 28h7v6h-7zM42 28h7v6h-7z" />
+      </>
+    ) : kind === 'condo' ? (
+      <>
+        <path d="M18 44V6h28v38" />
+        <path d="M10 44h44" />
+        <path d="M24 12h4M36 12h4M24 19h4M36 19h4M24 26h4M36 26h4M24 33h4M36 33h4" />
+        <path d="M29 44v-6h6v6" />
+      </>
+    ) : kind === 'townhouse' ? (
+      <>
+        <path d="M4 22 14 12l10 10 8-10 8 10 10-10 10 10" />
+        <path d="M7 19v25h50V19" />
+        <path d="M24 22v22M40 22v22" />
+        <path d="M12 44v-8h5v8M29 44v-8h5v8M45 44v-8h5v8" />
+      </>
+    ) : kind === 'house' ? (
+      <>
+        <path d="M8 22 32 6l24 16" />
+        <path d="M13 19v25h38V19" />
+        <path d="M18 24h8v6h-8zM38 24h8v6h-8z" />
+        <path d="M28 44V34h8v10" />
+        <path d="M42 11V6h5v8" />
+      </>
+    ) : (
+      <>
+        <path d="M6 44h52" />
+        <path d="M8 44V26l9-7 9 7v18" />
+        <path d="M28 44V14h14v30" />
+        <path d="M44 44V28l7-5 7 5v16" />
+        <path d="M32 20h6M32 27h6M32 34h6" />
+      </>
+    )
+  }
+</svg>
