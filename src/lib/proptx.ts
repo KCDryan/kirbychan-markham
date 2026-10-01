@@ -79,8 +79,11 @@ const int = (v: string | null, max: number) => {
 };
 
 /** The filters the active and sold searches share: city, neighbourhood, home type, price band and bedrooms. */
+/** Parking spaces and lockers are sold on the MLS® as "Residential Condo & Other", but nobody searching for a home wants them. */
+export const NOT_HOMES = "PropertySubType ne 'Parking Space' and PropertySubType ne 'Locker'";
+
 function shared(params: URLSearchParams, priceField: string): string[] {
-  const f: string[] = [];
+  const f: string[] = [NOT_HOMES];
   const city = CITIES.find((c) => c === (params.get('city') ?? 'Markham'));
   if (city) f.push(`City eq ${q(city)}`);
   const area = city === 'Markham' ? AREAS[params.get('area') ?? ''] : undefined;
@@ -118,7 +121,7 @@ export function mapQuery(params: URLSearchParams, page: number): string {
   const f = ["ContractStatus eq 'Available'", "startswith(PropertyType,'Residential')", `TransactionType eq ${q(lease ? 'For Lease' : 'For Sale')}`, ...shared(params, 'ListPrice')];
   return odata({
     $filter: f.join(' and '),
-    $select: 'ListingKey,ListPrice,BedroomsTotal,BathroomsTotalInteger,PropertySubType,ArchitecturalStyle,UnparsedAddress,InternetEntireListingDisplayYN,InternetAddressDisplayYN',
+    $select: 'ListingKey,ListPrice,BedroomsTotal,BathroomsTotalInteger,PropertySubType,ArchitecturalStyle,UnparsedAddress,StreetNumber,StreetName,StreetSuffix,StreetDirSuffix,City,StateOrProvince,PostalCode,InternetEntireListingDisplayYN,InternetAddressDisplayYN',
     $orderby: 'ListingKey',
     $top: String(MAP_PAGE),
     $skip: String(page * MAP_PAGE),
@@ -197,10 +200,10 @@ export function photos(media: Media[] = [], prefer = ['Large', 'Largest', 'Mediu
 if (typeof process !== 'undefined' && import.meta.filename === process.argv[1]) {
   const s = new URLSearchParams(searchQuery(new URLSearchParams("home=bungalow&price=800-1200&beds=2&page=2&sort=low&x=1' or 1 eq 1")));
   const filter = s.get('$filter')!;
-  if (filter !== "ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale' and City eq 'Markham' and ArchitecturalStyle/any(a:a eq 'Bungalow' or a eq 'Bungaloft') and ListPrice ge 800000 and ListPrice le 1200000 and BedroomsTotal ge 2") throw new Error(filter);
+  if (filter !== "ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale' and PropertySubType ne 'Parking Space' and PropertySubType ne 'Locker' and City eq 'Markham' and ArchitecturalStyle/any(a:a eq 'Bungalow' or a eq 'Bungaloft') and ListPrice ge 800000 and ListPrice le 1200000 and BedroomsTotal ge 2") throw new Error(filter);
   if (s.get('$skip') !== '24' || s.get('$orderby') !== 'ListPrice asc,ListingKey') throw new Error('paging');
   const evil = new URLSearchParams(searchQuery(new URLSearchParams("city=Markham' or 1 eq 1&home=x' or 1&price=5 or true")));
-  if (evil.get('$filter') !== "ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale'") throw new Error('injection ' + evil.get('$filter'));
+  if (evil.get('$filter') !== "ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale' and PropertySubType ne 'Parking Space' and PropertySubType ne 'Locker'") throw new Error('injection ' + evil.get('$filter'));
   const a = new URLSearchParams(searchQuery(new URLSearchParams('area=thornhill&home=condo'))).get('$filter')!;
   if (!a.includes("City eq 'Markham' and CityRegion in ('Thornhill','Royal Orchard'")) throw new Error(a);
   if (new URLSearchParams(searchQuery(new URLSearchParams('city=Vaughan&area=cornell'))).get('$filter')!.includes('CityRegion')) throw new Error('area outside Markham');

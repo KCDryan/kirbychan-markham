@@ -27,7 +27,7 @@ type Geo = { key: string; lat: number | null; lng: number | null };
 let tableReady: Promise<unknown> | null = null;
 const ensureTable = (db: D1) =>
   (tableReady ??= db
-    .prepare('CREATE TABLE IF NOT EXISTS geocodes (key TEXT PRIMARY KEY, lat REAL, lng REAL, accuracy REAL, address TEXT NOT NULL, at INTEGER NOT NULL)')
+    .prepare('CREATE TABLE IF NOT EXISTS geocodes_v2 (key TEXT PRIMARY KEY, lat REAL, lng REAL, accuracy REAL, address TEXT NOT NULL, at INTEGER NOT NULL)')
     .bind()
     .run()
     .catch((e) => {
@@ -35,12 +35,25 @@ const ensureTable = (db: D1) =>
       throw e;
     }));
 
+/**
+ * The address as Geocodio reads it best: street number, name and suffix, then city, province,
+ * postal code and country. Unit numbers and parking levels are left out, and "Canada" stops it
+ * matching a street of the same name in the United States, which it assumes by default.
+ * geocodes_v2: the first table was filled before "Canada" was added and is not used.
+ */
+export function geocodeAddress(r: Record<string, unknown>): string | null {
+  const street = [r.StreetNumber, r.StreetName, r.StreetSuffix, r.StreetDirSuffix].filter((x) => typeof x === 'string' && x.trim()).join(' ');
+  const city = typeof r.City === 'string' ? r.City : '';
+  if (!street || !city) return null;
+  return [street, city, `${typeof r.StateOrProvince === 'string' && r.StateOrProvince ? r.StateOrProvince : 'ON'} ${typeof r.PostalCode === 'string' ? r.PostalCode : ''}`.trim(), 'Canada'].join(', ');
+}
+
 /** Stored positions for these listings. A row with null lat means "looked up, no reliable point". */
 async function stored(db: D1, keys: string[]): Promise<Map<string, Geo>> {
   const out = new Map<string, Geo>();
   for (let i = 0; i < keys.length; i += 90) {
     const chunk = keys.slice(i, i + 90);
-    const { results } = await db.prepare(`SELECT key, lat, lng FROM geocodes WHERE key IN (${chunk.map(() => '?').join(',')})`).bind(...chunk).all<Geo>();
+    const { results } = await db.prepare(`SELECT key, lat, lng FROM geocodes_v2 WHERE key IN (${chunk.map(() => '?').join(',')})`).bind(...chunk).all<Geo>();
     for (const r of results) out.set(r.key, r);
   }
   return out;
@@ -67,7 +80,7 @@ async function lookup(db: D1, apiKey: string, todo: { key: string; address: stri
     const geo = { key: t.key, lat: good ? best.location.lat : null, lng: good ? best.location.lng : null };
     out.set(t.key, geo);
     return db
-      .prepare('INSERT OR REPLACE INTO geocodes (key, lat, lng, accuracy, address, at) VALUES (?, ?, ?, ?, ?, ?)')
+      .prepare('INSERT OR REPLACE INTO geocodes_v2 (key, lat, lng, accuracy, address, at) VALUES (?, ?, ?, ?, ?, ?)')
       .bind(t.key, geo.lat, geo.lng, best?.accuracy ?? null, t.address, now);
   });
   // Batched: one D1 call per 100 rows, not one per row.
@@ -96,6 +109,15 @@ export async function onRequestGet({ request, env, waitUntil }: Context): Promis
   if (hit) return hit;
 
   if (!env.GEOCODIO_API_KEY || !env.VOW_DB) return json({ error: 'map-not-configured' }, 503);
+  // TEMP: check 5 addresses before a full run. Stores nothing. Remove after.
+  if (url.searchParams.get('sample') === '5') {
+    const r0 = await fetch(`${PROPTX_BASE}/Property?${mapQuery(params, 0).replace('%24top=1000', '%24top=5').replace('$top=1000', '$top=5')}`, { headers: { authorization: `Bearer ${env.PROPTX_IDX_TOKEN}` } });
+    const rows0 = ((await r0.json()) as { value: Record<string, unknown>[] }).value.slice(0, 5);
+    const addrs = rows0.map((r) => geocodeAddress(r) ?? '');
+    const g = await fetch('https://api.geocod.io/v2/geocode', { method: 'POST', headers: { authorization: `Bearer ${env.GEOCODIO_API_KEY}`, 'content-type': 'application/json' }, body: JSON.stringify(addrs) });
+    const gj = (await g.json()) as { results?: { query: string; response?: { results?: { location: { lat: number; lng: number }; accuracy: number; accuracy_type: string; formatted_address: string }[] } }[] };
+    return json({ sent: addrs, unparsed: rows0.map((r) => r.UnparsedAddress), got: (gj.results ?? []).map((x) => x.response?.results?.[0] && { lat: x.response.results[0].location.lat, lng: x.response.results[0].location.lng, acc: x.response.results[0].accuracy, type: x.response.results[0].accuracy_type, f: x.response.results[0].formatted_address }) });
+  }
   await ensureTable(env.VOW_DB);
 
   const rows: Record<string, unknown>[] = [];
@@ -114,12 +136,12 @@ export async function onRequestGet({ request, env, waitUntil }: Context): Promis
   }
 
   // Seller choices first: a hidden listing or a hidden address never gets a pin.
-  const shown = rows.filter((r) => r.InternetEntireListingDisplayYN !== false && r.InternetAddressDisplayYN !== false && typeof r.UnparsedAddress === 'string');
+  const shown = rows.filter((r) => r.InternetEntireListingDisplayYN !== false && r.InternetAddressDisplayYN !== false && geocodeAddress(r));
   const known = await stored(env.VOW_DB, shown.map((r) => String(r.ListingKey)));
   const todo = shown
     .filter((r) => !known.has(String(r.ListingKey)))
     .slice(0, MAX_LOOKUPS)
-    .map((r) => ({ key: String(r.ListingKey), address: String(r.UnparsedAddress) }));
+    .map((r) => ({ key: String(r.ListingKey), address: geocodeAddress(r)! }));
   const found = await lookup(env.VOW_DB, env.GEOCODIO_API_KEY, todo);
 
   const pins: unknown[] = [];
