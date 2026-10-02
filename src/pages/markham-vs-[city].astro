@@ -2,6 +2,7 @@
 import CreditedPhoto from '../components/CreditedPhoto.astro';
 import type { GetStaticPaths } from 'astro';
 import Page from '../layouts/Page.astro';
+import site from '../data/site.json';
 import { cad } from '../lib/format';
 import { ontarioLtt, torontoMltt } from '../lib/ltt';
 import { CITIES, MARKHAM, PERIOD, type Stats } from '../lib/comparisons';
@@ -74,6 +75,17 @@ const faq = [
           </>
         ))
       }
+
+      {c.slug === 'toronto' && (
+        <>
+          <h2>Buying in Toronto instead?</h2>
+          <p>
+            If a home in Toronto itself is on your list, our team works there too. See
+            <a href={`${site.torontoSite}neighbourhoods/`}>our Toronto neighbourhood guides</a> on
+            kirbychantoronto.com for home types, prices and transit by neighbourhood.
+          </p>
+        </>
+      )}
 
       <h2>Choosing within Markham</h2>
       <p>
