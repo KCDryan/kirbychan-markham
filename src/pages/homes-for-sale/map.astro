@@ -59,7 +59,8 @@ const crumbs = [
       <div class="prose hs__intro">
         <h2>Using the map</h2>
         <p>
-          Every price on the map is a home for sale in Markham today, placed at its street address.
+          Every price on the map is a home for sale today, placed at its street address. The map opens
+          on Markham and zoomed out it also shows homes across the GTA.
           Choose a kind of home, a neighbourhood, a price or a number of bedrooms on the left and the
           map changes straight away. Homes close together are grouped into a circle with a number. Press
           it to zoom in.
@@ -114,6 +115,8 @@ const crumbs = [
   map.on('mouseout', () => map.scrollWheelZoom.disable());
 
   const group = L.markerClusterGroup({
+    // Adds markers a few at a time, so thousands of GTA homes never freeze the page.
+    chunkedLoading: true,
     showCoverageOnHover: false,
     maxClusterRadius: 50,
     iconCreateFunction: (c) => L.divIcon({ className: 'hs-cluster', html: `<span>${c.getChildCount()}</span>`, iconSize: L.point(52, 52) }),
@@ -178,7 +181,7 @@ const crumbs = [
         if (!ok) throw body;
         const pins = body.pins as Pin[];
         group.clearLayers();
-        const markers = pins.map((pin) => {
+        const marker = (pin: Pin) => {
           const m = L.marker([pin.la, pin.ln], {
             icon: L.divIcon({ className: 'hs-pin', html: `<span>${short(pin.p, lease)}</span>`, iconSize: undefined }),
             title: `${money(pin.p)}, ${pin.a}`,
@@ -188,7 +191,8 @@ const crumbs = [
           m.on('click', () => pick(pin, m, lease));
           m.on('keypress', (e) => (e.originalEvent as KeyboardEvent).key === 'Enter' && pick(pin, m, lease));
           return m;
-        });
+        };
+        const markers = pins.map(marker);
         group.addLayers(markers);
         if (markers.length) map.fitBounds(L.latLngBounds(pins.map((x) => [x.la, x.ln] as [number, number])), { padding: [40, 40], maxZoom: 15 });
         const off = body.hidden as number;
@@ -196,6 +200,18 @@ const crumbs = [
           ? `${pins.length.toLocaleString('en-CA')} ${describe(p, verb)} on the map.` + (off ? ` ${off.toLocaleString('en-CA')} more ${off === 1 ? 'is' : 'are'} in the list, without a mapped address.` : '')
           : `There are no ${describe(p, verb)} on the map right now. Try "Any price" or "All of Markham".`;
         $('jump').textContent = pins.length ? `See the ${pins.length.toLocaleString('en-CA')} homes on the map ↓` : 'See the map ↓';
+        // The rest of the GTA, from the shared map, added around Markham without moving the view.
+        // A chosen Markham neighbourhood shows only that neighbourhood.
+        if (p.get('area') || p.get('city')) return;
+        const gtaParams = new URLSearchParams([...p].filter(([k]) => ['home', 'price', 'beds', 'for'].includes(k)));
+        fetch('/api/map-gta?' + gtaParams)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((g: { pins?: Pin[] } | null) => {
+            if (mine !== seq || !g?.pins?.length) return;
+            group.addLayers(g.pins.map(marker));
+            $('status').append(` The map also shows ${g.pins.length.toLocaleString('en-CA')} more across the GTA: zoom out to see them.`);
+          })
+          .catch(() => {});
       })
       .catch((err: { error?: string }) => {
         if (mine !== seq) return;
