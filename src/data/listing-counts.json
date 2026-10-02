@@ -1,61 +1,61 @@
 {
-  "updated": "2026-10-01T12:11:55.642Z",
+  "updated": "2026-10-02T11:24:29.798Z",
   "markham": {
-    "total": 1092,
-    "bungalow": 42,
-    "condo": 327,
-    "townhouse": 234,
-    "house": 479
+    "total": 1098,
+    "bungalow": 45,
+    "condo": 329,
+    "townhouse": 233,
+    "house": 489
   },
   "areas": {
-    "unionville": {
-      "total": 262,
-      "bungalow": 1,
-      "condo": 151,
-      "townhouse": 37,
-      "house": 64
-    },
     "berczy-village": {
-      "total": 34,
+      "total": 35,
       "bungalow": 0,
       "condo": 1,
       "townhouse": 11,
-      "house": 21
+      "house": 22
+    },
+    "unionville": {
+      "total": 261,
+      "bungalow": 3,
+      "condo": 151,
+      "townhouse": 36,
+      "house": 66
     },
     "thornhill": {
       "total": 193,
       "bungalow": 15,
-      "condo": 60,
-      "townhouse": 26,
-      "house": 102
+      "condo": 62,
+      "townhouse": 25,
+      "house": 103
     },
     "cornell": {
       "total": 90,
       "bungalow": 0,
       "condo": 7,
-      "townhouse": 47,
-      "house": 36
+      "townhouse": 46,
+      "house": 37
     },
     "box-grove": {
-      "total": 16,
+      "total": 17,
       "bungalow": 0,
       "condo": 1,
       "townhouse": 1,
-      "house": 14
+      "house": 15
     },
     "markham-village": {
-      "total": 37,
-      "bungalow": 6,
+      "total": 35,
+      "bungalow": 5,
       "condo": 0,
       "townhouse": 6,
-      "house": 27
+      "house": 25
     },
     "milliken-mills": {
-      "total": 39,
+      "total": 42,
       "bungalow": 0,
       "condo": 2,
       "townhouse": 2,
-      "house": 23
+      "house": 25
     },
     "wismer": {
       "total": 59,
@@ -65,22 +65,22 @@
       "house": 29
     },
     "cathedraltown": {
-      "total": 26,
+      "total": 25,
       "bungalow": 0,
-      "condo": 14,
+      "condo": 15,
       "townhouse": 6,
-      "house": 6
+      "house": 4
     },
     "angus-glen": {
-      "total": 35,
+      "total": 37,
       "bungalow": 2,
       "condo": 2,
-      "townhouse": 17,
+      "townhouse": 19,
       "house": 14
     },
     "greensborough": {
       "total": 55,
-      "bungalow": 9,
+      "bungalow": 11,
       "condo": 11,
       "townhouse": 26,
       "house": 16
