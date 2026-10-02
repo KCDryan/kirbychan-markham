@@ -29,6 +29,8 @@ export type TypePage = {
   h1: string;
   intro: string[];
   links: { href: string; label: string }[];
+  /** Questions downsizers ask about this kind of home, shown with the page's other FAQs. */
+  faq: { q: string; a: string }[];
 };
 
 export const TYPE_PAGES: Record<string, TypePage> = {
@@ -47,6 +49,16 @@ export const TYPE_PAGES: Record<string, TypePage> = {
       { href: '/blog/bungalow-condo-or-townhouse-downsizing/', label: 'Bungalow, condo or townhouse: choosing your next home' },
       { href: '/downsizing-markham/', label: 'Our Markham downsizing guide' },
     ],
+    faq: [
+      {
+        q: 'What counts as a bungalow on this page?',
+        a: 'Homes the listing brokerage describes on the MLS® as a bungalow or a bungaloft, where the main bedroom is on the ground floor with a loft above. Raised bungalows are left out because they have stairs at the front door. Always confirm the layout at a showing, since basements and entrances vary.',
+      },
+      {
+        q: 'Is a bungalow or a condo better for downsizing?',
+        a: 'It depends on what you want to keep. A bungalow keeps a yard, a garage and no monthly condo fee but still needs outside upkeep. A condo apartment removes the outside work in exchange for a monthly fee. Our guide to choosing a bungalow, condo or townhouse compares them on cost and maintenance.',
+      },
+    ],
   },
   condos: {
     home: 'condo',
@@ -62,6 +74,16 @@ export const TYPE_PAGES: Record<string, TypePage> = {
       { href: '/blog/condo-status-certificate-markham/', label: 'The status certificate for an Ontario condo' },
       { href: '/downtown-markham/', label: 'Downtown Markham neighbourhood guide' },
       { href: '/best-markham-neighbourhoods-for-downsizing/', label: 'Where to downsize in Markham' },
+    ],
+    faq: [
+      {
+        q: 'Do all condo apartments have an elevator?',
+        a: 'Not always. Most mid-rise and high-rise buildings do, but some low-rise buildings do not. If stairs are a concern, check the listing and ask before you book a showing.',
+      },
+      {
+        q: 'What does a condo maintenance fee cover?',
+        a: 'Each condo corporation sets its own budget, so it varies. The fee pays for the shared parts of the building and the reserve fund, and in some buildings it also covers some utilities. The status certificate and the budget show exactly what a particular unit pays for.',
+      },
     ],
   },
   townhouses: {
@@ -79,6 +101,12 @@ export const TYPE_PAGES: Record<string, TypePage> = {
       { href: '/upsizing-markham/', label: 'Moving to a bigger home in Markham' },
       { href: '/mortgage-calculator-markham/', label: 'Markham mortgage calculator' },
     ],
+    faq: [
+      {
+        q: 'What is the difference between a freehold and a condo townhouse?',
+        a: 'With a freehold townhouse you own the house and the land under it and you look after both. With a condo townhouse you own your unit within a condo corporation, which looks after the outside and the grounds in exchange for a monthly fee.',
+      },
+    ],
   },
   houses: {
     home: 'house',
@@ -94,6 +122,12 @@ export const TYPE_PAGES: Record<string, TypePage> = {
       { href: '/markham-house-prices/', label: 'Markham house prices by property type' },
       { href: '/sold/', label: 'Markham sold prices' },
       { href: '/best-markham-neighbourhoods-for-families/', label: 'Markham neighbourhoods with the most room' },
+    ],
+    faq: [
+      {
+        q: 'Which houses are on this page?',
+        a: 'Detached houses and semi-detached houses, which share one wall with the house next door. Bungalows that are detached or semi-detached appear here as well as on our bungalow page.',
+      },
     ],
   },
 };

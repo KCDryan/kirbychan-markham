@@ -62,6 +62,7 @@ const extraJsonLd = withBlogSchema
 >
   <section class="section">
     <div class="wrap">
+      <slot />
       {
         categories.length > 1 && (
           <nav class="cats" aria-label="Blog categories">

@@ -56,6 +56,8 @@ async function frontmatterValues(dir, key) {
 }
 
 const hoodSlugs = (await readdir('src/content/neighbourhoods')).filter((n) => n.endsWith('.mdx')).map((n) => n.replace(/\.mdx$/, ''));
+// The pillar guides, read from the same top-level .mdx files the guides collection uses.
+const guideSlugs = (await readdir('src/content/guides')).filter((n) => n.endsWith('.mdx')).map((n) => n.replace(/\.mdx$/, ''));
 const serviceSlugs = (await readdir('src/content/services')).filter((n) => n.endsWith('.mdx')).map((n) => n.replace(/\.mdx$/, ''));
 const moneyPages = new Set([
   ...hoodSlugs.map((s) => `/${s}-markham/`),
@@ -147,7 +149,6 @@ for (const name of files) {
     if (!String(item.q ?? '').trim().endsWith('?')) fail(file, `FAQ question "${item.q}" must end with a question mark`);
   }
 
-  const guideSlugs = ['downsizing-markham'];
   if (data.guide && !guideSlugs.includes(data.guide)) fail(file, `guide "${data.guide}" is not a guide slug`);
   if (data.guide && !uniqueInternal.has(`/${data.guide}/`)) fail(file, `a post in the ${data.guide} cluster must link to /${data.guide}/ in the body`);
   if (data.neighbourhood && !hoodSlugs.includes(data.neighbourhood)) fail(file, `neighbourhood "${data.neighbourhood}" is not a neighbourhood slug`);

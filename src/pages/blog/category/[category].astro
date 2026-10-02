@@ -17,6 +17,21 @@ const posts = all.filter((p) => p.data.category === category);
 // A category page with only one or two posts is thin, so it stays out of the
 // index until it has three. Readers can still use it.
 const thin = posts.length < 3;
+
+/** A short, useful start for each category: what it covers and where the deeper guide or tool is. */
+const INTRO: Partial<Record<BlogCategory, { text: string; links: { href: string; label: string }[] }>> = {
+  buying: { text: 'Posts for buying a home in Markham: the steps, the paperwork and the costs, checked against government and board sources.', links: [{ href: '/first-time-home-buyers-markham/', label: 'First time home buyer guide' }, { href: '/mortgage-calculator-markham/', label: 'Mortgage calculator' }, { href: '/homes-for-sale/', label: 'Markham homes for sale' }] },
+  selling: { text: 'Posts for selling a home in Markham, including selling for a parent or an estate, with the rules that decide who can sign and when.', links: [{ href: '/sellers/', label: 'How we sell homes' }, { href: '/selling-an-estate-home-markham/', label: 'Selling an estate home' }, { href: '/home-valuation/', label: 'Free home valuation' }] },
+  downsizing: { text: 'Posts for moving to a smaller home in Markham: what it costs, how long it takes, where the smaller homes are and the choices in between.', links: [{ href: '/downsizing-markham/', label: 'Markham downsizing guide' }, { href: '/best-markham-neighbourhoods-for-downsizing/', label: 'Where to downsize in Markham' }, { href: '/homes-for-sale/bungalows/', label: 'Bungalows for sale' }] },
+  'costs-and-taxes': { text: 'Posts on the money side of a Markham move: land transfer tax, property tax, closing costs and the programs that can lower them.', links: [{ href: '/land-transfer-tax-calculator-markham/', label: 'Land transfer tax calculator' }, { href: '/mortgage-calculator-markham/', label: 'Mortgage calculator' }, { href: '/markham-house-prices/', label: 'Markham house prices' }] },
+  neighbourhoods: { text: 'Posts about individual Markham neighbourhoods: the homes, the prices and the transit, street by street.', links: [{ href: '/neighbourhoods/', label: 'All Markham neighbourhood guides' }, { href: '/homes-for-sale/map/', label: 'Homes for sale on a map' }] },
+  'moving-to-markham': { text: 'Posts for anyone moving to Markham: getting settled, getting around and choosing where to live.', links: [{ href: '/relocating-to-markham/', label: 'Relocating to Markham guide' }, { href: '/best-markham-neighbourhoods-for-commuters/', label: 'Markham neighbourhoods by commute' }] },
+  condos: { text: 'Posts about buying and owning a condo in Markham, from status certificates to monthly fees.', links: [{ href: '/homes-for-sale/condos/', label: 'Condos for sale in Markham' }, { href: '/downtown-markham/', label: 'Downtown Markham guide' }] },
+  'new-construction': { text: 'Posts about buying new and pre-construction homes in Markham: contracts, deposits and warranties.', links: [{ href: '/new-construction-markham/', label: 'New construction guide' }] },
+  investing: { text: 'Posts about owning investment property in Markham: rental rules, costs and returns.', links: [{ href: '/investment-property-markham/', label: 'Investment property guide' }] },
+  market: { text: 'Posts about the Markham market, with every figure taken from the Toronto Regional Real Estate Board.', links: [{ href: '/markham-house-prices/', label: 'Markham house prices' }, { href: '/market-reports/', label: 'Monthly market reports' }] },
+};
+const intro = INTRO[category];
 ---
 
 <BlogListing
@@ -34,4 +49,17 @@ const thin = posts.length < 3;
   categories={usedCategories(all)}
   activeCategory={category}
   noindex={thin}
-/>
+>
+  {intro && (
+    <div class="cat-intro">
+      <p>{intro.text}</p>
+      <p class="cat-intro__links">Start here: {intro.links.map((l, i) => <>{i > 0 && ' · '}<a href={l.href}>{l.label}</a></>)}</p>
+    </div>
+  )}
+</BlogListing>
+
+<style>
+  .cat-intro { max-width: 70ch; margin-bottom: var(--sp-6); font-size: var(--step-0); }
+  .cat-intro p { margin: 0 0 var(--sp-2); }
+  .cat-intro__links { font-weight: 600; }
+</style>

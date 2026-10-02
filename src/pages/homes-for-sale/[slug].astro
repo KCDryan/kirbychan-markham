@@ -95,6 +95,7 @@ const faq = [
           ? `On ${today}: ${list(byType.map((x) => `${x.n} ${x.label.toLowerCase()}`))}. ${hood?.data.quickStats.propertyTypes ? `The housing here: ${hood.data.quickStats.propertyTypes}.` : ''}`
           : `It changes daily. Open the live search to see what is listed now.`,
       },
+  ...(kind === 'type' ? t!.faq : []),
   {
     q: 'How do I see what homes actually sold for?',
     a: 'Board rules let us show sold prices only to people with a free account. Create one on our sold prices page and you can see sales by home type, neighbourhood and price for the last two years.',
