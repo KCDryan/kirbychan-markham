@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-04T17:59:15.945Z",
+  "updated": "2026-10-05T11:26:41.293Z",
   "markham": {
     "total": 1100,
     "bungalow": 49,
@@ -16,18 +16,18 @@
       "house": 23
     },
     "unionville": {
-      "total": 259,
+      "total": 260,
       "bungalow": 3,
       "condo": 152,
       "townhouse": 35,
-      "house": 64
+      "house": 65
     },
     "thornhill": {
-      "total": 192,
+      "total": 191,
       "bungalow": 15,
       "condo": 60,
       "townhouse": 25,
-      "house": 103
+      "house": 102
     },
     "cornell": {
       "total": 92,
@@ -51,11 +51,11 @@
       "house": 26
     },
     "milliken-mills": {
-      "total": 43,
+      "total": 44,
       "bungalow": 1,
       "condo": 2,
       "townhouse": 2,
-      "house": 26
+      "house": 27
     },
     "wismer": {
       "total": 60,
