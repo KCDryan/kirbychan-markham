@@ -46,3 +46,16 @@ One entry per blog run, newest at the bottom. See `BLOG-PLAYBOOK.md`, section 9.
 - parent-moving-to-retirement-home-house. Keyword: moving parents to retirement home what to do with house. Sources: CRA principal residence (change in use, 45(2) election), T776, Residential Tenancies Act and standard lease, ontario.ca long-term care co-payments. Left out: rent guideline, vacant home insurance specifics, vacancy tax
 - stay-or-sell-aging-in-place-ontario. Keywords: aging in place grants ontario, renovate or downsize. Sources: CRA Home Accessibility Tax Credit, Multigenerational Home Renovation Tax Credit, Budget 2025 measures, Ontario Seniors Care at Home Tax Credit, 2023 Ontario fact sheet (Seniors' Home Safety Tax Credit ended after 2022), markham.ca permits. Left out: York Region homeowner grants (none open confirmed), renovation costs
 - Needs owner attention: none beyond normal review. The OHRC note on age-restricted housing is worth reading before promoting the life lease post
+
+## 2026-10-06, eight posts dated October 3 to 6 (two a day)
+
+- Written on the owner's request, each by a research writer (Sonnet) from primary sources, then checked with check-style, check-blog and npm run verify
+- title-insurance-ontario (Oct 3). Keyword: title insurance ontario. Sources: FSRA Understanding Title insurance (opened in a browser and checked line by line, since the writer was blocked), FCAC Buying a home. Left out: premium amounts
+- markham-water-bill (Oct 3). Keyword: markham water bill. Sources: markham.ca rates page, Alectra billing pages. Left out: due dates, late fees, account setup fee
+- principal-residence-exemption-downsizing (Oct 4). Keyword: principal residence exemption downsizing. Sources: CRA principal residence page, Folio S1-F3-C2. Left out: inclusion rate, penalties
+- condo-fees-markham (Oct 4). Keyword: condo fees markham. Sources: Condominium Act 1998, CAO pages. Left out: any typical fee amounts
+- home-inspection-ontario-buyers (Oct 5). Keyword: home inspection ontario. Sources: ontario.ca, RECO, CMHC, FCAC. Left out: Home Inspection Act 2017 status, Tarion
+- deposit-on-a-house-ontario (Oct 5). Keyword: deposit on a house ontario. Sources: RECO deposit insurance, FAQ and Bulletin 8.1, FCAC, Tarion, ontario.ca. Left out: typical deposit percentage, the trust deposit timing rule
+- selling-house-in-probate-ontario (Oct 6). Keyword: selling house in probate ontario. Sources: ontario.ca apply for probate, estate administration tax. Left out: listing before the certificate is issued
+- estate-administration-tax-ontario (Oct 6). Keyword: estate administration tax ontario. Source: ontario.ca Estate Administration Tax (one source only; the return page and the Act would not load). Worked example recalculated: $9,150 on $660,000
+- Needs owner attention: the probate and estate tax posts are law heavy and worth a read; the "15 business days" probate figure is ontario.ca's "typically"

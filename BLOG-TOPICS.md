@@ -48,7 +48,7 @@ Every Sunday post sets `guide: downsizing-markham` in frontmatter and links to `
 in the body. This is the cluster that feeds the pillar guide, so it stays the priority.
 
 - [ ] Downsizing to a condo in Downtown Markham: what to check | downsizing | downsize to condo markham
-- [ ] Capital gains and the principal residence exemption when you downsize | downsizing | principal residence exemption downsizing
+- [x] Capital gains and the principal residence exemption when you downsize | downsizing | principal residence exemption downsizing | principal-residence-exemption-downsizing
 - [ ] Pricing a long-time family home in Markham | downsizing | how to price family home markham
 - [ ] Downsizing from a Thornhill detached home on the Markham side | downsizing | downsizing thornhill markham
 - [ ] Downsizing in Unionville: smaller homes near Main Street | downsizing | downsizing unionville
@@ -57,16 +57,16 @@ in the body. This is the cluster that feeds the pillar guide, so it stays the pr
 - [ ] Downsizing in Milliken Mills and south Markham | downsizing | downsizing milliken mills
 - [ ] Downsizing from north Markham: Berczy, Wismer, Cathedraltown and Angus Glen | downsizing | downsizing north markham
 - [ ] Selling a family home after decades: a planning checklist | downsizing | selling family home ontario
-- [ ] Condo fees when you downsize in Markham: what they pay for | condos | condo fees markham
+- [x] Condo fees when you downsize in Markham: what they pay for | condos | condo fees markham | condo-fees-markham
 
 ## Monday: first time home buyers in Markham
 
-- [ ] Home inspections in Markham: what they cover and what they miss | buying | home inspection markham
+- [x] Home inspections in Markham: what they cover and what they miss | buying | home inspection markham | home-inspection-ontario-buyers
 - [ ] Offer dates and bidding in Ontario: how multiple offers work | buying | multiple offers ontario
 - [ ] York Region schools: how to confirm a school boundary before you buy | buying | yrdsb school boundary
 - [ ] Markham townhouses: freehold or condo, and what each costs | buying | markham townhouse for sale
 - [ ] Buying a home with family members on title in Ontario | buying | joint tenancy tenants in common ontario
-- [ ] How much deposit a Markham buyer needs and when it is due | buying | deposit on a house ontario
+- [x] How much deposit a Markham buyer needs and when it is due | buying | deposit on a house ontario | deposit-on-a-house-ontario
 - [ ] Conditions in an Ontario offer: financing, inspection and status certificate | buying | conditions in an offer ontario
 - [ ] What a buyer representation agreement commits you to under TRESA | buying | buyer representation agreement ontario
 - [ ] Home insurance basics for a Markham home | buying | home insurance ontario
@@ -78,9 +78,9 @@ Law heavy. Every post states plainly that it is general information rather than 
 points the reader to an estates lawyer. Never state a rule that is not on a government or regulator
 page opened during the run.
 
-- [ ] Selling a house during probate in Ontario | selling | selling house in probate ontario
+- [x] Selling a house during probate in Ontario | selling | selling house in probate ontario | selling-house-in-probate-ontario
 - [ ] Selling a parent's home in Markham under a power of attorney | selling | sell parents house power of attorney ontario
-- [ ] The estate administration tax in Ontario and how a home is valued for it | costs-and-taxes | estate administration tax ontario
+- [x] The estate administration tax in Ontario and how a home is valued for it | costs-and-taxes | estate administration tax ontario | estate-administration-tax-ontario
 - [ ] What a Certificate of Appointment of Estate Trustee is and when a sale needs one | selling | certificate of appointment estate trustee ontario
 - [ ] An estate trustee's duties when the estate includes a Markham home | selling | estate trustee duties ontario
 - [ ] Right of survivorship and what happens to jointly owned Ontario homes | costs-and-taxes | right of survivorship ontario
@@ -144,10 +144,10 @@ data, neighbourhoods, condos, investing, city services. Pick from this list or a
 - [ ] Secondary suites and basement apartments in Markham | investing | basement apartment markham
 - [ ] Renting out a condo in Markham: rules landlords must follow | investing | landlord rules ontario
 - [ ] The Ontario standard lease for landlords and tenants | investing | ontario standard lease
-- [ ] Title insurance in Ontario: what it covers | costs-and-taxes | title insurance ontario
+- [x] Title insurance in Ontario: what it covers | costs-and-taxes | title insurance ontario | title-insurance-ontario
 - [ ] Heritage conservation districts in Markham: what owners should know | neighbourhoods | markham heritage district
 - [ ] Parks and trails in Markham neighbourhoods | neighbourhoods | markham parks and trails
 - [ ] Living in Downtown Markham: condos and transit | neighbourhoods | downtown markham condos
-- [ ] Water and wastewater bills in Markham | costs-and-taxes | markham water bill
+- [x] Water and wastewater bills in Markham | costs-and-taxes | markham water bill | markham-water-bill
 - [ ] Reserve funds and special assessments in Markham condos | condos | special assessment ontario condo
 - [ ] Snow clearing, leaf collection and the Markham service calendar | moving-to-markham | markham waste collection calendar
