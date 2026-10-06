@@ -1,6 +1,7 @@
 ---
 import { BLOG_CATEGORIES, type BlogCategory } from '../lib/blog';
 import { longDate } from '../lib/format';
+import BlogCardMedia from './BlogCardMedia.astro';
 
 interface Props {
   slug: string;
@@ -10,12 +11,16 @@ interface Props {
   published: Date;
   /** Heading level for the card title, so lists keep a correct outline. */
   level?: 2 | 3;
+  /** Lead with a picture: this neighbourhood's photo, or a colour band when there is none. */
+  media?: boolean;
+  photo?: string;
 }
-const { slug, title, subtitle, category, published, level = 3 } = Astro.props;
+const { slug, title, subtitle, category, published, level = 3, media = false, photo } = Astro.props;
 const Tag = `h${level}` as 'h2' | 'h3';
 ---
 
 <a class="bcard" href={`/blog/${slug}/`}>
+  {media && <BlogCardMedia photo={photo} category={category} />}
   <span class="bcard__meta">
     <span class="bcard__cat">{BLOG_CATEGORIES[category]}</span>
     <span aria-hidden="true">&middot;</span>

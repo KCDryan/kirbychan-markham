@@ -1,0 +1,47 @@
+---
+/**
+ * The picture that leads a blog card: the photo of the neighbourhood the post is about, or a colour
+ * band naming the topic when it is about none.
+ */
+import { BLOG_CATEGORIES, type BlogCategory } from '../lib/blog';
+import Photo from './Photo.astro';
+import { neighbourhoodPhoto, photoAlt } from '../lib/photos';
+
+interface Props {
+  /** Neighbourhood slug. */
+  photo?: string;
+  category: BlogCategory;
+}
+const { photo, category } = Astro.props;
+const has = Boolean(photo && neighbourhoodPhoto(photo));
+---
+
+<span class="bcard__media" data-hood={has ? photo : 'none'}>
+  {
+    has ? (
+      <Photo name={`neighbourhoods/${photo}`} alt={photoAlt(photo!) ?? ''} label="" ratio="16 / 9" sizes="(min-width: 1000px) 380px, (min-width: 660px) 46vw, 92vw" />
+    ) : (
+      <span class="bcard__band" aria-hidden="true">{BLOG_CATEGORIES[category]}</span>
+    )
+  }
+</span>
+
+<style>
+  .bcard__media {
+    display: block;
+    margin: calc(-1 * var(--sp-6)) calc(-1 * var(--sp-6)) var(--sp-3);
+  }
+  .bcard__media :global(.photo) {
+    border-radius: 0;
+  }
+  .bcard__band {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(135deg, var(--ground), var(--brand));
+    color: #fff;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+</style>

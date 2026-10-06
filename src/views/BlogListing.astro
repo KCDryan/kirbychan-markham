@@ -94,6 +94,8 @@ const extraJsonLd = withBlogSchema
                   category={p.data.category}
                   published={p.data.published}
                   level={2}
+                  media
+                  photo={p.data.neighbourhood ?? p.data.related[0]}
                 />
               </li>
             ))}
