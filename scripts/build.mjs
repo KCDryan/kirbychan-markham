@@ -12,6 +12,8 @@ const run = (cmd) => execSync(cmd, { stdio: 'inherit' });
 // that still fails, so one post can never stop the whole site deploying. Files
 // are only changed in a throwaway build checkout (Cloudflare Pages or CI).
 const throwaway = Boolean(process.env.CF_PAGES || process.env.CI);
+// Posts uploaded at /upload/ join the blog list, sitemap and feed (they are live already).
+if (process.env.CF_PAGES) run('node scripts/pull-uploads.mjs');
 run(`node scripts/prepare-quick-posts.mjs${throwaway ? ' --apply' : ''}`);
 
 // Content edited in TinaCMS is committed straight to main and deploys without

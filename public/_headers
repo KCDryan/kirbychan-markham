@@ -40,6 +40,14 @@
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; base-uri 'self'; frame-ancestors 'self'; object-src 'none'; img-src 'self' data: blob: https:; font-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: https://static.cloudflareinsights.com; connect-src 'self' https://*.tinajs.io https://*.tina.io https://cloudflareinsights.com https://cloudflareinsights.com; frame-src 'self'
 
+# The blog upload page and the empty post pages it fills. Never indexed.
+/upload/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+
+/blog/upload-shell/*
+  X-Robots-Tag: noindex, nofollow
+
 # MLS® listing search. Listing photos come from PropTx's image host, so images may load from any https source.
 /homes-for-sale/*
   ! Content-Security-Policy

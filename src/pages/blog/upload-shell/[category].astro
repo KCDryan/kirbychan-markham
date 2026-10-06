@@ -1,0 +1,53 @@
+---
+/**
+ * One empty blog post page per category, built with the real blog layout. Uploaded posts are
+ * poured into it by functions/blog/[[path]].ts (fillShell in src/lib/uploads.ts), so a post that
+ * goes live before the next build looks exactly like a built one. Never indexed or linked.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
+import { neighbourhoodPhoto } from '../../../lib/photos';
+import BlogPostLayout from '../../../layouts/BlogPostLayout.astro';
+import { CATEGORY_SLUGS } from '../../../lib/blog';
+import { SHELL_DATE } from '../../../lib/uploads';
+import { HOODS, SERVICES } from '../../../lib/post-links';
+
+export const getStaticPaths = () => CATEGORY_SLUGS.map((category) => ({ params: { category } }));
+
+const { category } = Astro.params;
+const entry = {
+  id: 'kcupload-slug',
+  collection: 'blog',
+  body: '',
+  data: {
+    quick: true,
+    h1: 'KCUPLOAD-HONE',
+    title: 'KCUPLOAD-TITLE',
+    description: 'KCUPLOAD-DESC',
+    subtitle: 'KCUPLOAD-SUB',
+    takeaway: 'KCUPLOAD-TAKEAWAY',
+    showTakeaway: true,
+    category,
+    published: SHELL_DATE,
+    faq: [{ q: 'KCUPLOAD-FAQQ', a: 'KCUPLOAD-FAQA' }],
+    sources: [{ name: 'KCUPLOAD-SRCNAME', url: 'https://kcupload.invalid/' }],
+    // Every guide is listed; the post's own choices are kept and the rest removed.
+    related: Object.keys(HOODS),
+    relatedServices: Object.keys(SERVICES),
+    noindex: true,
+    draft: false,
+  },
+} as unknown as CollectionEntry<'blog'>;
+const toc = { depth: 2, slug: 'KCUPLOAD-TOCID', text: 'KCUPLOAD-TOCTEXT' };
+// Share image for a post about one neighbourhood, made exactly as the blog layout makes it.
+const photos: Record<string, string> = {};
+for (const id of Object.keys(HOODS)) {
+  const photo = neighbourhoodPhoto(id);
+  if (photo) photos[id] = (await getImage({ src: photo, width: 1200, height: 630, format: 'jpg', fit: 'cover' })).src;
+}
+---
+
+<BlogPostLayout entry={entry} headings={[toc, toc, toc]} minutes={'KCUPLOAD-MIN' as unknown as number} words={0}>
+  KCUPLOAD-BODY
+  <template data-hood-photos={JSON.stringify(photos)}></template>
+</BlogPostLayout>

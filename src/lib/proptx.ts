@@ -198,7 +198,7 @@ export function photos(media: Media[] = [], prefer = ['Large', 'Largest', 'Mediu
 }
 
 // ponytail: self-check, run with `node --experimental-strip-types src/lib/proptx.ts`.
-if (typeof process !== 'undefined' && import.meta.filename === process.argv[1]) {
+if (typeof process !== 'undefined' && !!import.meta.filename && import.meta.filename === process.argv[1]) {
   const s = new URLSearchParams(searchQuery(new URLSearchParams("home=bungalow&price=800-1200&beds=2&page=2&sort=low&x=1' or 1 eq 1")));
   const filter = s.get('$filter')!;
   if (filter !== "ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and TransactionType eq 'For Sale' and PropertySubType ne 'Parking Space' and PropertySubType ne 'Locker' and City eq 'Markham' and ArchitecturalStyle/any(a:a eq 'Bungalow' or a eq 'Bungaloft') and ListPrice ge 800000 and ListPrice le 1200000 and BedroomsTotal ge 2") throw new Error(filter);

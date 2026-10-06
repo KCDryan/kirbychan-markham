@@ -148,6 +148,7 @@ const quickPost = z.object({
   related: z.array(z.string()).default([]).describe('Neighbourhood slugs linked at the end'),
   relatedServices: z.array(z.string()).default([]),
   draft: z.boolean().default(false),
+  uploadVersion: z.string().optional().describe('Set on posts uploaded at /upload/'),
   ...author,
 });
 
@@ -162,9 +163,10 @@ const clip = (text: string, max: number) => {
 const blog = defineCollection({
   loader: glob({
     base: './src/content/blog',
-    pattern: '**/[^_]*.mdx',
+    // Posts uploaded at /upload/ are plain .md, so nothing in them can run as code at build.
+    pattern: '**/[^_]*.{md,mdx}',
     // Quick posts live in quick/ but are served at /blog/<file-name>/ like any other post.
-    generateId: ({ entry }) => entry.replace(/\.mdx$/, '').split('/').pop()!,
+    generateId: ({ entry }) => entry.replace(/\.mdx?$/, '').split('/').pop()!,
   }),
   schema: z
     .preprocess(

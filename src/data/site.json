@@ -37,5 +37,7 @@
   "marketSource": "TRREB",
   "ga4": "G-HPFLBDZHG5",
   "leadsEmail": "info@kirbychanmarkham.com",
+  "requireOneCutPro": true,
+  "oneCutOnly": true,
   "torontoSite": "https://kirbychantoronto.com/"
 }

@@ -28,7 +28,9 @@ async function walk(dir) {
 const pages = [];
 for (const file of await walk('dist')) {
   // The TinaCMS editor at /admin/ is not a content page and is served with noindex.
-  if (relative('dist', file).split(sep)[0] === 'admin') continue;
+  // So are /upload/ and the empty post pages that uploads are poured into.
+  const path = relative('dist', file).split(sep);
+  if (path[0] === 'admin' || path[0] === 'upload' || path[1] === 'upload-shell') continue;
   const html = await readFile(file, 'utf8');
   const body = (html.match(/<main[^>]*>([\s\S]*?)<\/main>/) ?? ['', ''])[1];
   const words = body

@@ -52,7 +52,8 @@ if (!existsSync(DIST)) {
   process.exit(1);
 }
 
-const files = await walk(DIST);
+// The empty post pages that uploads are poured into link to category pages that may not exist yet.
+const files = (await walk(DIST)).filter((f) => !f.includes(`${DIST}/blog/upload-shell/`.replace(/\/\//g, '/')));
 const broken = [];
 const external = new Set();
 let checked = 0;

@@ -18,6 +18,8 @@ requirements, not polish.
 | 4 | Done | The sample case study is gone. `/client-stories/` shows the stories published on kirbychanandco.com and `/case-studies/` redirects there |
 | 5 | Set `LEAD_WEBHOOK_URL` in Cloudflare | Cloudflare dashboard | Until this is set the form refuses submissions and tells visitors to phone. It does not silently lose leads, but it does not deliver them either |
 | 6 | Set `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` | Cloudflare dashboard | Without them there is no spam filtering beyond the honeypot and timing check |
+| 6a | Blog uploads at `/upload/`: add the secret `UPLOAD_PASSWORD` (one shared password, at least 12 characters) for Production, then retry the latest deployment so it takes effect. After signing in at `/upload/`, paste the OneCut Content website key (it starts with `oc_live_`) once | Cloudflare, **Settings > Variables and secrets** | Until it is set `/upload/` says uploads are not switched on. TinaCMS at `/admin/` is not affected |
+| 6b | Optional: create a deploy hook for branch `main` and save its URL as the secret `DEPLOY_HOOK_URL`, so the blog list, sitemap and RSS feed catch up a few minutes after each upload instead of at the next deploy | Cloudflare, **Settings > Builds > Deploy hooks** | Does not block. Uploaded posts are live either way |
 
 ---
 

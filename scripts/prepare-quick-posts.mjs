@@ -13,6 +13,10 @@
  * checkout such as a Cloudflare or GitHub Actions build. Without --apply it
  * only reports, so running it locally never rewrites anyone's post.
  *
+ * Posts uploaded at /upload/ arrive here as .md files (scripts/pull-uploads.mjs). They are live
+ * already, exactly as written, so they are never rewritten: one that fails a check is only held
+ * back from the blog list, sitemap and feed. Its own page stays up.
+ *
  * Full blog posts are not touched. Their problems still fail the build.
  */
 import { execFileSync } from 'node:child_process';
@@ -69,7 +73,7 @@ function problemsFor(script) {
     const byFile = new Map();
     const other = [];
     for (const line of out.split('\n')) {
-      const m = line.match(/^\s+(src\/content\/blog\/quick\/[^:\s]+\.mdx)(?::\d+)?:?\s+(.*)$/);
+      const m = line.match(/^\s+(src\/content\/blog\/quick\/[^:\s]+\.mdx?)(?::\d+)?:?\s+(.*)$/);
       if (m) {
         const name = m[1].split('/').pop();
         byFile.set(name, [...(byFile.get(name) ?? []), m[2].replace(/\s+->\s+/, ': ').trim()]);
@@ -81,7 +85,8 @@ function problemsFor(script) {
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
-const names = (await readdir(QUICK).catch(() => [])).filter((n) => n.endsWith('.mdx') && !n.startsWith('_'));
+const all = (await readdir(QUICK).catch(() => [])).filter((n) => /\.mdx?$/.test(n) && !n.startsWith('_'));
+const names = all.filter((n) => n.endsWith('.mdx'));
 const fixed = [];
 
 for (const name of names) {
@@ -116,7 +121,7 @@ for (const [name, reasons] of held) {
   console.warn(`Quick post ${name} held back from this deploy:`);
   for (const r of reasons) console.warn(`  - ${r}`);
 }
-if (!fixed.length && !held.size) console.log(`Quick posts ready: ${names.length}`);
+if (!fixed.length && !held.size) console.log(`Quick posts ready: ${all.length}`);
 
 if (apply) {
   const when = new Date().toLocaleString('en-CA', { timeZone: 'America/Toronto', dateStyle: 'long', timeStyle: 'short' });
@@ -124,7 +129,7 @@ if (apply) {
     ? [...held]
         .map(
           ([name, reasons]) =>
-            `<li><strong>${esc(name.replace(/\.mdx$/, ''))}</strong><ul>${reasons.map((r) => `<li>${esc(r)}</li>`).join('')}</ul></li>`
+            `<li><strong>${esc(name.replace(/\.mdx?$/, ''))}</strong><ul>${reasons.map((r) => `<li>${esc(r)}</li>`).join('')}</ul></li>`
         )
         .join('')
     : '<li>None. Every quick post is published.</li>';

@@ -1,7 +1,8 @@
 ---
 /**
  * The picture that leads a blog card: the photo of the neighbourhood the post is about, or a colour
- * band naming the topic when it is about none.
+ * band naming the topic when it is about none. functions/blog/[[path]].ts copies these blocks (from
+ * the hidden set on the blog page) onto posts published since the last build.
  */
 import { BLOG_CATEGORIES, type BlogCategory } from '../lib/blog';
 import Photo from './Photo.astro';

@@ -1,0 +1,895 @@
+---
+/**
+ * Blog upload, one screen at a time (the browser's Back button moves between them):
+ *   My blog posts   every uploaded post with Edit and Remove, plus a big "Upload a new post" button
+ *   #new            paste the article's HTML, check the details and the preview, publish or save a draft
+ *   #edit=<slug>    the same screen for a saved post
+ *   #done           "Your post is live", with nothing left on screen to publish twice
+ * One shared password, set as UPLOAD_PASSWORD in Cloudflare. The API is functions/api/upload/[action].ts.
+ */
+import Base from '../../layouts/Base.astro';
+import { BLOG_CATEGORIES } from '../../lib/blog';
+import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
+---
+
+<Base title="Upload a blog post" description="Upload a blog post to the Kirby Chan & Co. Markham website." noindex>
+  <div class="up wrap">
+    <p class="up__status" id="up-status" role="status" aria-live="polite"></p>
+
+    <section id="v-loading"><p class="up__lead">Loading…</p></section>
+
+    <section id="v-setup" hidden>
+      <h1>Blog posts</h1>
+      <p class="up__lead">Uploads are not switched on yet. The website owner needs to set the upload password in Cloudflare.</p>
+    </section>
+
+    <section id="v-pro" hidden>
+      <h1>Connect your OneCut account</h1>
+      <p class="up__lead">Publishing your own blog posts needs a OneCut Content Pro account. You only do this once.</p>
+      <ol class="up__steps">
+        <li>Sign in at <a href="https://onecutcontent.com/dashboard/settings" rel="noopener" target="_blank">onecutcontent.com</a> and open Account.</li>
+        <li>Under "Connect your website", press "Create website key" and copy it.</li>
+        <li>Paste it below and press Connect.</li>
+      </ol>
+      <form id="up-connect" class="up__box">
+        <label for="up-key">Website key</label>
+        <input id="up-key" type="password" autocomplete="off" placeholder="oc_live_..." required />
+        <button class="btn btn--primary up__big" type="submit">Connect</button>
+      </form>
+      <p>Not on Pro yet? <a href="https://onecutcontent.com/pricing" rel="noopener" target="_blank">See OneCut Content Pro</a>.</p>
+    </section>
+
+    <section id="v-login" hidden>
+      <h1>Blog posts</h1>
+      <form id="up-login" class="up__box">
+        <label for="up-password">Password</label>
+        <input id="up-password" type="password" autocomplete="current-password" required />
+        <button class="btn btn--primary up__big" type="submit">Sign in</button>
+      </form>
+    </section>
+
+    <section id="v-posts" hidden>
+      <h1>My blog posts</h1>
+      <a class="btn btn--primary up__big up__new" id="up-write-link" href="#write" hidden>+ Write a new post</a>
+      <a class="btn btn--primary up__big up__new" id="up-new-link" href="#new">+ Upload a new post</a>
+      <ul class="up__list" id="up-list"></ul>
+      <p class="up__signout"><button class="btn btn--ghost btn--sm" id="up-logout" type="button">Sign out</button></p>
+    </section>
+
+    <section id="v-write" hidden>
+      <p><a class="up__back" href="#">← Back to my posts</a></p>
+      <h1>Write a new post</h1>
+      <p class="up__lead">Tell us the topic. OneCut Content researches it and writes the post. It takes about a minute. You check it before anything goes on your website.</p>
+      <form id="up-write" class="up__box">
+        <label for="up-topic">What should the post be about?</label>
+        <input id="up-topic" type="text" maxlength="200" required placeholder="For example: What it costs to sell a house in my area" />
+        <button class="btn btn--primary up__big" id="up-write-go" type="submit">Write my post</button>
+        <p>Each post uses 2 tokens from your OneCut Content account. Please keep this page open while it writes.</p>
+      </form>
+      <div class="up__box up-prog" id="up-write-steps" role="status" aria-live="polite" hidden></div>
+    </section>
+
+    <section id="v-edit" hidden>
+      <p><a class="up__back" href="#">← Back to my posts</a></p>
+      <h1 id="edit-title">Upload a new post</h1>
+
+      <div class="up__box" id="paste-box">
+        <h2><span class="up__num">1</span> Paste the article</h2>
+        <p>Copy the HTML of the finished article, then click in the box and paste it.</p>
+        <textarea id="up-html" rows="6" spellcheck="false" placeholder="Paste here"></textarea>
+        <p>Or <label class="up__file">choose the saved HTML file<input id="up-file" type="file" accept=".html,.htm,.txt,text/html" /></label></p>
+      </div>
+
+      <div class="up__box up__added" id="added-box" hidden>
+        <p><strong>✓ Article added:</strong> <span id="added-name"></span></p>
+        <button class="btn btn--ghost btn--sm" id="up-repaste" type="button">Use a different article</button>
+      </div>
+
+      <div id="details" hidden>
+        <div class="up__box">
+          <h2><span class="up__num" id="num-details">2</span> Check the details</h2>
+          <p class="up__hint">These are filled in for you. Change anything that is not right.</p>
+          <form id="up-details" class="up__fields">
+            <label for="up-title">Title</label>
+            <input id="up-title" maxlength="90" />
+            <label for="up-category">Topic</label>
+            <select id="up-category">
+              {Object.entries(BLOG_CATEGORIES).map(([k, v]) => <option value={k}>{v}</option>)}
+            </select>
+            <div class="up__pair">
+              <div>
+                <label for="up-author">Written by</label>
+                <input id="up-author" list="up-authors" maxlength="80" placeholder="Leave empty for the team" />
+                <datalist id="up-authors"><option value="Kirby Chan"></option></datalist>
+              </div>
+              <div>
+                <label for="up-role">Their title</label>
+                <input id="up-role" list="up-roles" maxlength="80" placeholder="Choose or type" />
+                <datalist id="up-roles">{ROLES.map((r) => <option value={r} />)}</datalist>
+              </div>
+            </div>
+            <fieldset>
+              <legend>Neighbourhoods this post is about</legend>
+              <div class="up__ticks">
+                {Object.entries(HOODS).map(([k, h]) => <label><input type="checkbox" name="related" value={k} /> {h.label}</label>)}
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Service guides it relates to</legend>
+              <div class="up__ticks">
+                {Object.entries(SERVICES).map(([k, s]) => <label><input type="checkbox" name="relatedServices" value={k} /> {s.label}</label>)}
+              </div>
+            </fieldset>
+          </form>
+          <ul class="up__notes" id="up-notes"></ul>
+        </div>
+
+        <div class="up__box">
+          <h2><span class="up__num" id="num-preview">3</span> Read the preview</h2>
+          <p>This is exactly how the post will look on the website.</p>
+          <iframe id="up-preview" title="Preview of the post" sandbox="allow-same-origin"></iframe>
+        </div>
+
+        <div class="up__box">
+          <h2><span class="up__num" id="num-publish">4</span> Publish</h2>
+          <button class="btn btn--primary up__big" id="up-publish" type="button">Publish now</button>
+          <button class="btn btn--ghost" id="up-draft" type="button">Save as a draft (not on the website yet)</button>
+          <a class="up__back" href="#">Cancel and go back to my posts</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="v-done" hidden>
+      <div class="up__box up__success">
+        <p class="up__tick" aria-hidden="true">✓</p>
+        <h1 id="done-title">Your post is live</h1>
+        <p class="up__lead" id="done-text"></p>
+        <a class="btn btn--primary up__big" id="done-view" target="_blank" rel="noopener">View the post</a>
+        <a class="btn btn--ghost up__big" href="#">Back to my posts</a>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<script>
+  import { convertHtml, guessCategory, slugFor, type Imported } from '../../lib/html-import';
+  import { hoodsIn, servicesIn } from '../../lib/post-links';
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const input = (id: string) => $<HTMLInputElement>(id);
+  const status = $('up-status');
+  const say = (text: string, bad = false) => {
+    status.textContent = text;
+    status.classList.toggle('up__status--bad', bad);
+  };
+  const api = async (action: string, body?: unknown) => {
+    const res = await fetch(`/api/upload/${action}`, body === undefined ? {} : { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    if (res.status === 401 && action !== 'login') show('v-login');
+    if (res.status === 403 && action !== 'login' && action !== 'connect' && /OneCut/.test((await res.clone().json().catch(() => ({}))).error ?? '')) show('v-pro');
+    return { status: res.status, data: (await res.json().catch(() => ({}))) as Record<string, any> };
+  };
+  const VIEWS = ['v-loading', 'v-setup', 'v-pro', 'v-login', 'v-posts', 'v-write', 'v-edit', 'v-done'];
+  const show = (view: string) => {
+    for (const v of VIEWS) $(v).hidden = v !== view;
+    window.scrollTo(0, 0);
+  };
+  const ticked = (name: string) => [...document.querySelectorAll<HTMLInputElement>(`input[name="${name}"]:checked`)].map((c) => c.value);
+  const tick = (name: string, ids: string[]) =>
+    document.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`).forEach((c) => (c.checked = ids.includes(c.value)));
+  // The writer's name and title are remembered on this computer for the next post.
+  const remember = (key: string, value?: string) => {
+    try {
+      if (value === undefined) return localStorage.getItem(key) ?? '';
+      localStorage.setItem(key, value);
+    } catch {}
+    return '';
+  };
+
+  type Article = Pick<Imported, 'summary' | 'quickAnswer' | 'faq' | 'sources' | 'markdown'>;
+  let article: Article | null = null;
+  /** Set while changing a saved post: it keeps its web address. */
+  let editing = '';
+  let busy = false;
+
+  const post = (draft = false) => {
+    const headline = input('up-title').value.trim();
+    return {
+      ...article,
+      headline,
+      slug: editing || slugFor(headline),
+      category: $<HTMLSelectElement>('up-category').value,
+      author: input('up-author').value.trim(),
+      authorTitle: input('up-author').value.trim() ? input('up-role').value.trim() : '',
+      related: ticked('related'),
+      relatedServices: ticked('relatedServices'),
+      draft,
+    };
+  };
+
+  /** Empties the upload screen, so nothing from the last post is left on it. */
+  function clear() {
+    article = null;
+    editing = '';
+    $<HTMLTextAreaElement>('up-html').value = '';
+    input('up-file').value = '';
+    $('up-notes').replaceChildren();
+    $<HTMLIFrameElement>('up-preview').srcdoc = '';
+    $('paste-box').hidden = false;
+    $('added-box').hidden = true;
+    $('details').hidden = true;
+  }
+
+  // ---- My blog posts ----
+  const button = (text: string, cls: string, onclick: () => void) => {
+    const b = Object.assign(document.createElement('button'), { type: 'button', className: `btn ${cls}`, textContent: text });
+    b.onclick = onclick;
+    return b;
+  };
+  async function posts() {
+    show('v-posts');
+    const ul = $('up-list');
+    ul.innerHTML = '<li class="up__empty">Loading your posts…</li>';
+    const { data } = await api('list');
+    ul.replaceChildren();
+    for (const p of data.posts ?? []) {
+      const li = document.createElement('li');
+      const text = document.createElement('div');
+      text.className = 'up__item';
+      const name = p.live
+        ? Object.assign(document.createElement('a'), { href: p.url, target: '_blank', rel: 'noopener', textContent: p.headline })
+        : Object.assign(document.createElement('strong'), { textContent: p.headline });
+      const when = new Date(p.updated).toLocaleDateString('en-CA', { dateStyle: 'long' });
+      const state = Object.assign(document.createElement('span'), {
+        className: `up__state ${p.live ? 'up__state--live' : ''}`,
+        textContent: `${p.live ? 'On the website' : 'Draft, not on the website'} · ${when}`,
+      });
+      text.append(name, state);
+      const actions = document.createElement('div');
+      actions.className = 'up__actions';
+      actions.append(
+        button('Edit', 'btn--ghost', () => (location.hash = `edit=${p.slug}`)),
+        button('Remove', 'btn--danger', async () => {
+          const ask = p.live ? `Remove "${p.headline}" from the website?` : `Delete the draft "${p.headline}"?`;
+          if (!confirm(ask)) return;
+          await api('unpublish', { slug: p.slug });
+          say(`"${p.headline}" has been removed.`);
+          posts();
+        })
+      );
+      li.append(text, actions);
+      ul.append(li);
+    }
+    if (!ul.children.length) ul.innerHTML = `<li class="up__empty">No posts yet. Press "${canWrite ? 'Write a new post' : 'Upload a new post'}" to add the first one.</li>`;
+  }
+
+  // ---- Upload or edit ----
+  async function preview() {
+    say('Making the preview…');
+    const { data } = await api('preview', { post: post() });
+    if (data.error) return say(data.error, true);
+    $<HTMLIFrameElement>('up-preview').srcdoc = data.html;
+    say('');
+  }
+
+  /** Fills every box from a post, hides the pasted code and shows the preview. */
+  function fill(p: Partial<ReturnType<typeof post>> & Article, name: string) {
+    article = { summary: p.summary, quickAnswer: p.quickAnswer, faq: p.faq, sources: p.sources, markdown: p.markdown };
+    input('up-title').value = (p.headline ?? '').slice(0, 90);
+    $<HTMLSelectElement>('up-category').value = p.category ?? 'neighbourhoods';
+    input('up-author').value = p.author ?? '';
+    input('up-role').value = p.authorTitle ?? '';
+    tick('related', p.related ?? []);
+    tick('relatedServices', p.relatedServices ?? []);
+    $<HTMLTextAreaElement>('up-html').value = '';
+    $('paste-box').hidden = true;
+    $('added-box').hidden = !!editing;
+    $('added-name').textContent = name;
+    $('details').hidden = false;
+    // Numbers follow what is on screen: an edit has no paste step.
+    ['num-details', 'num-preview', 'num-publish'].forEach((id, i) => ($(id).textContent = String(i + (editing ? 1 : 2))));
+    $('up-publish').textContent = editing ? 'Publish the changes' : 'Publish now';
+    preview();
+  }
+
+  function load(html: string) {
+    if (!html.trim()) return;
+    let r: Imported | null = null;
+    try {
+      r = convertHtml(html, true);
+    } catch {}
+    if (!r?.headline || !r.markdown) {
+      return say('That does not look like a whole article. Copy all of the HTML of the article and paste it again.', true);
+    }
+    const about = `${r.headline} ${r.summary ?? ''}`;
+    $('up-notes').replaceChildren(...r.warnings.map((w) => Object.assign(document.createElement('li'), { textContent: w.replace(/^the /, 'The ') })));
+    fill(
+      { ...r, category: guessCategory(r.headline), author: remember('up-author'), authorTitle: remember('up-role'), related: hoodsIn(about, 3), relatedServices: servicesIn(about, 2) },
+      r.headline
+    );
+  }
+
+  async function edit(slug: string) {
+    clear();
+    show('v-edit');
+    $('edit-title').textContent = 'Edit a post';
+    say('Opening the post…');
+    const { data } = await api('get', { slug });
+    if (data.error) return say(data.error, true);
+    editing = slug;
+    fill(data.post, data.post.headline);
+  }
+
+  async function save(draft: boolean) {
+    if (busy) return;
+    busy = true;
+    [$('up-publish'), $('up-draft')].forEach((b) => ((b as HTMLButtonElement).disabled = true));
+    try {
+      say(draft ? 'Saving the draft…' : 'Publishing…');
+      remember('up-author', input('up-author').value.trim());
+      remember('up-role', input('up-role').value.trim());
+      let { status: code, data } = await api('publish', { post: post(draft), replace: !!editing, ticket });
+      if (code === 409 && data.error === 'exists') {
+        const question = data.live
+          ? 'A post with this title is already on the website. Replace it with this one?'
+          : 'You have a draft with this title. Replace it with this one?';
+        if (!confirm(question)) return say('Nothing was changed. You can change the title and try again.');
+        ({ data } = await api('publish', { post: post(draft), replace: true, ticket }));
+      }
+      if (data.error) return say(data.error, true);
+      $('done-title').textContent = data.draft ? 'Draft saved' : 'Your post is live';
+      $('done-text').textContent = data.draft
+        ? 'It is not on the website yet. To finish it later, go back to your posts and press Edit.'
+        : `"${post().headline}" is on the website now. It joins the blog page and Google's list of pages within a day.`;
+      ($('done-view') as HTMLAnchorElement).href = data.url;
+      $('done-view').hidden = !!data.draft;
+      clear();
+      say('');
+      // Replaces the upload screen in the history, so Back goes to the post list, not to an empty form.
+      location.replace('#done');
+    } finally {
+      busy = false;
+      [$('up-publish'), $('up-draft')].forEach((b) => ((b as HTMLButtonElement).disabled = false));
+    }
+  }
+
+  // ---- Screens follow the address, so Back works ----
+  let signedIn = false;
+  let canWrite = false;
+  // OneCut only: no pasting. Each new post carries the ticket OneCut's article came with.
+  let oneCutOnly = false;
+  let ticket = '';
+  // True while a post OneCut has just written waits in the edit screen.
+  let written = false;
+  function route() {
+    if (!signedIn) return;
+    say('');
+    const h = location.hash.slice(1);
+    if (h === 'new' && oneCutOnly && !written) {
+      location.replace(canWrite ? '#write' : '#');
+    } else if (h === 'new') {
+      // A post OneCut has just written is already loaded; anything else starts empty.
+      $('edit-title').textContent = written ? 'Check your new post' : 'Upload a new post';
+      if (!written) clear();
+      written = false;
+      show('v-edit');
+    } else if (h === 'write' && canWrite) {
+      $('up-write-steps').hidden = true;
+      show('v-write');
+    } else if (h.startsWith('edit=')) edit(decodeURIComponent(h.slice(5)));
+    else if (h === 'done' && $('done-view').getAttribute('href') !== null) show('v-done');
+    else {
+      clear();
+      posts();
+    }
+  }
+
+  async function start() {
+    const { data } = await api('me');
+    signedIn = !!data.signedIn;
+    if (!data.ready) return show('v-setup');
+    if (!signedIn) return show('v-login');
+    if (data.needsPro) return show('v-pro');
+    canWrite = !!data.canWrite;
+    oneCutOnly = !!data.oneCutOnly;
+    $('up-new-link').hidden = oneCutOnly;
+    $('up-repaste').hidden = oneCutOnly;
+    $('up-write-link').hidden = !canWrite;
+    // With OneCut connected, writing comes first and pasting is the quieter second choice.
+    $('up-new-link').classList.toggle('btn--primary', !canWrite);
+    $('up-new-link').classList.toggle('btn--ghost', canWrite);
+    $('up-new-link').textContent = canWrite ? 'Upload a post I already have' : '+ Upload a new post';
+    route();
+  }
+
+  addEventListener('hashchange', route);
+  $('up-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    say('Signing in…');
+    const { data } = await api('login', { password: input('up-password').value });
+    if (data.error) return say(data.error, true);
+    input('up-password').value = '';
+    say('');
+    start();
+  });
+  $('up-connect').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    say('Checking with OneCut…');
+    const { data } = await api('connect', { key: input('up-key').value });
+    if (data.error) return say(data.error, true);
+    input('up-key').value = '';
+    say('');
+    start();
+  });
+  // OneCut answers one JSON line per step, then the finished article, which goes into the same
+  // check, preview and publish screen as a pasted one.
+  $('up-write').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const go = $<HTMLButtonElement>('up-write-go');
+    // The same steps, search terms and keyword line OneCut Content shows in its own dashboard.
+    const STEPS = ['Researching keywords', 'Searching the web', 'Reading sources', 'Writing the article', 'Checking the links', 'Optimizing for search', 'Saving'];
+    const ORIGIN: Record<string, string> = {
+      searches: 'chosen from what people actually search on Google',
+      'your keywords': 'the keyword you gave',
+      estimate: "our best estimate, as search data wasn't available just now",
+    };
+    const events: Record<string, any>[] = [];
+    const startedAt = Date.now();
+    const panel = $('up-write-steps');
+    const el = (tag: string, cls: string, text = '') => Object.assign(document.createElement(tag), { className: cls, textContent: text });
+    const draw = () => {
+      const reported = events.filter((x) => STEPS.includes(x.stage));
+      const current = reported.length ? STEPS.indexOf(reported[reported.length - 1].stage) : 0;
+      const chosen = [...events].reverse().find((x) => x.stage === 'Keywords chosen' && x.focus);
+      const searched = [...events].reverse().find((x) => x.stage === 'Searched');
+      const read = events.filter((x) => x.stage === 'Read' && x.host).map((x) => String(x.host));
+      const seconds = Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+      const list = el('ol', 'up-prog__list');
+      STEPS.forEach((name, i) => {
+        const li = el('li', i < current ? 'is-done' : i === current ? 'is-now' : '');
+        li.append(el('span', 'up-prog__mark', i < current ? '✓' : ''));
+        const reading = name === 'Reading sources' && read.length;
+        const body = el('span', 'up-prog__text', name + (i === current && !reading ? '…' : '') + (reading ? `: ${read.join(', ')}${i === current ? '…' : ''}` : ''));
+        if (name === 'Searching the web' && searched?.queries?.length) {
+          body.append(el('small', '', searched.queries.map((q: string) => `“${q}”`).join(', ') + (searched.results ? ` · ${searched.results} results` : '')));
+        }
+        li.append(body);
+        if (i === current) li.append(el('span', 'up-prog__time', `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`));
+        list.append(li);
+      });
+      const parts: HTMLElement[] = [list];
+      if (chosen) {
+        const aim = el('p', 'up-prog__aim', 'Aimed at ');
+        aim.append(el('strong', '', `“${chosen.focus}”`), `, ${ORIGIN[chosen.from ?? 'estimate'] ?? ORIGIN.estimate}.`);
+        parts.push(aim);
+        if (chosen.related?.length) {
+          const tags = el('p', 'up-prog__tags');
+          tags.append(...chosen.related.slice(0, 6).map((k: string) => el('span', '', k)));
+          parts.push(tags);
+        }
+      }
+      parts.push(el('p', 'up-prog__note', "Usually about a minute. Keep this page open until it's done."));
+      panel.replaceChildren(...parts);
+    };
+    go.disabled = true;
+    panel.hidden = false;
+    draw();
+    // The panel sits under the form: bring it into view so the steps are not missed.
+    panel.scrollIntoView({ block: 'nearest' });
+    const clock = setInterval(draw, 1000);
+    say('');
+    const fail = (message: string) => {
+      clearInterval(clock);
+      panel.hidden = true;
+      go.disabled = false;
+      say(message, true);
+    };
+    let res: Response;
+    try {
+      res = await fetch('/api/upload/write', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ topic: input('up-topic').value }) });
+    } catch {
+      return fail('The connection dropped. Please try again.');
+    }
+    if (!res.ok || !res.body) return fail(((await res.json().catch(() => ({}))) as { error?: string }).error || 'The post could not be written. Please try again.');
+    const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buffer = '';
+    let blog: { embed_html?: string } | null = null;
+    let error = '';
+    for (;;) {
+      const { value, done } = await reader.read().catch(() => ({ value: undefined, done: true }));
+      buffer += value ?? '';
+      const lines = buffer.split('\n');
+      buffer = done ? '' : lines.pop()!;
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        let event: Record<string, any> = {};
+        try {
+          event = JSON.parse(line);
+        } catch {}
+        if (typeof event.stage === 'string') {
+          events.push(event);
+          draw();
+        }
+        if (event.error) error = String(event.error);
+        if (event.done) blog = event.blog;
+        if (typeof event.ticket === 'string') ticket = event.ticket;
+      }
+      if (done) break;
+    }
+    if (error || !blog?.embed_html) return fail(error || 'The post did not finish. Please try again.');
+    clearInterval(clock);
+    panel.hidden = true;
+    go.disabled = false;
+    clear();
+    load(blog.embed_html);
+    if (!article) return;
+    input('up-topic').value = '';
+    written = true;
+    location.hash = 'new';
+  });
+  $('up-html').addEventListener('input', (e) => load((e.target as HTMLTextAreaElement).value));
+  $('up-file').addEventListener('change', async (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (file) load(await file.text());
+  });
+  $('up-repaste').addEventListener('click', () => {
+    clear();
+    $<HTMLTextAreaElement>('up-html').focus();
+  });
+  $('up-details').addEventListener('change', preview);
+  $('up-details').addEventListener('submit', (e) => e.preventDefault());
+  $('up-publish').addEventListener('click', () => save(false));
+  $('up-draft').addEventListener('click', () => save(true));
+  $('up-logout').addEventListener('click', async () => {
+    await api('logout', {});
+    signedIn = false;
+    show('v-login');
+  });
+  start();
+</script>
+
+<style is:global>
+  .up [hidden] {
+    display: none;
+  }
+  .up {
+    max-width: 920px;
+    padding-block: var(--sp-7) var(--sp-8);
+    font-size: 1.1rem;
+  }
+  .up h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--sp-3);
+  }
+  .up__box {
+    display: grid;
+    gap: var(--sp-3);
+    margin-top: var(--sp-6);
+    padding: var(--sp-6);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+  .up__num {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.4rem;
+    border-radius: 50%;
+    background: var(--brand);
+    color: #fff;
+    font-size: 1rem;
+  }
+  .up label {
+    font-weight: 700;
+  }
+  .up input:not([type='file'], [type='checkbox']),
+  .up select,
+  .up textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font: inherit;
+    border: 2px solid var(--rule);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+  .up textarea {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 0.85rem;
+  }
+  .up input:focus,
+  .up select:focus,
+  .up textarea:focus {
+    outline: 3px solid var(--brand);
+    outline-offset: 1px;
+  }
+  .up__file {
+    color: var(--brand);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .up__file input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .up__status {
+    margin-top: var(--sp-4);
+    padding: var(--sp-4) var(--sp-5);
+    border-radius: var(--radius);
+    background: var(--mist);
+    font-weight: 700;
+  }
+  .up__status:empty {
+    display: none;
+  }
+  .up__status--bad {
+    background: #fdecea;
+    color: #8a1c12;
+  }
+  .up__notes:empty {
+    display: none;
+  }
+  .up__notes {
+    margin: 0;
+    padding-left: 1.2em;
+    color: var(--text-muted);
+  }
+  #up-preview {
+    width: 100%;
+    height: 75vh;
+    border: 2px solid var(--rule);
+    border-radius: var(--radius);
+  }
+  .up__big {
+    min-height: 64px;
+    font-size: 1.1rem;
+  }
+  .up__list {
+    display: grid;
+    gap: var(--sp-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .up__hint {
+    color: var(--text-muted);
+  }
+  .up__fields {
+    display: grid;
+    gap: var(--sp-3);
+  }
+  .up__pair {
+    display: grid;
+    gap: var(--sp-3);
+  }
+  .up__pair > div {
+    display: grid;
+    gap: var(--sp-2);
+  }
+  .up fieldset {
+    margin: var(--sp-3) 0 0;
+    padding: 0;
+    border: 0;
+  }
+  .up legend {
+    margin-bottom: var(--sp-3);
+    font-weight: 700;
+  }
+  .up__ticks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: var(--sp-2) var(--sp-4);
+  }
+  .up__ticks label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 44px;
+    font-weight: 400;
+    cursor: pointer;
+  }
+  .up__ticks input {
+    width: 1.4rem;
+    height: 1.4rem;
+    accent-color: var(--brand);
+  }
+  .up__state {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+  .up__actions {
+    display: flex;
+    gap: var(--sp-2);
+  }
+  @media (min-width: 640px) {
+    .up__pair {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .up h1 {
+    margin-bottom: var(--sp-5);
+  }
+  .up__lead {
+    font-size: 1.2rem;
+  }
+  .up__new {
+    width: 100%;
+    margin-bottom: var(--sp-6);
+  }
+  .up__back {
+    display: inline-block;
+    margin-bottom: var(--sp-3);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .up__added {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    background: var(--mist);
+  }
+  .up__success {
+    justify-items: center;
+    text-align: center;
+    padding-block: var(--sp-8);
+  }
+  .up__success .btn {
+    width: min(100%, 420px);
+  }
+  .up__tick {
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: var(--brand);
+    color: #fff;
+    font-size: 2.4rem;
+    line-height: 1;
+  }
+  .up__item {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .up__item a,
+  .up__item strong {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .up__state--live {
+    color: var(--brand);
+  }
+  .up__empty {
+    color: var(--text-muted);
+  }
+  .up-prog {
+    margin-top: var(--sp-4);
+    background: var(--mist);
+  }
+  .up-prog__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--sp-3);
+  }
+  .up-prog__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+  .up-prog__list li.is-done {
+    opacity: 1;
+  }
+  .up-prog__list li.is-now {
+    opacity: 1;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .up-prog__mark {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.15rem;
+    display: grid;
+    place-items: center;
+    color: var(--brand);
+    font-weight: 700;
+  }
+  .up-prog__list li:not(.is-done):not(.is-now) .up-prog__mark::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--rule);
+  }
+  .up-prog__list li.is-now .up-prog__mark::before {
+    content: '';
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    border: 3px solid var(--rule);
+    border-top-color: var(--brand);
+    animation: up-spin 0.9s linear infinite;
+  }
+  @keyframes up-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .up-prog__list li.is-now .up-prog__mark::before {
+      animation: none;
+    }
+  }
+  .up-prog__text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .up-prog__text small {
+    display: block;
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+  .up-prog__time {
+    margin-left: auto;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+  }
+  .up-prog__aim {
+    margin-top: var(--sp-4);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+  }
+  .up-prog__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+  .up-prog__tags span {
+    padding: 0.1rem 0.6rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: #fff;
+    font-size: 0.9rem;
+  }
+  .up-prog__note {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+  .btn--danger {
+    background: #fff;
+    color: #8a1c12;
+    border-color: #e8b4ae;
+  }
+  .btn--danger:hover {
+    background: #fdecea;
+    color: #8a1c12;
+  }
+  .up__signout {
+    margin-top: var(--sp-6);
+  }
+  .up__list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    padding: var(--sp-5);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+  .up__list li.up__empty {
+    display: block;
+  }
+</style>

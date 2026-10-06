@@ -69,6 +69,8 @@ function prose(file, text) {
   } else {
     t = t.replace(/\b(class|className|style)=("[^"]*"|\{[^}]*\})/g, '');
   }
+  // A web address is not prose: its spelling belongs to the site it points at.
+  t = t.replace(/https?:\/\/[^\s"'<>)\]]+/g, '');
   return t;
 }
 

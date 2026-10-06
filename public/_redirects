@@ -24,7 +24,11 @@
 /articles/ /blog/ 301
 /articles/* /blog/ 301
 /unionville-vs-markham-village/ /blog/unionville-vs-markham-village/ 301
+/blogs /blog/ 301
 /blogs/ /blog/ 301
+# The blog writer lives on the upload page.
+/createblog /upload/#write 302
+/createblog/ /upload/#write 302
 /map/ /map-of-markham/ 301
 /team/ /about/ 301
 /listings/ /homes-for-sale/ 301
