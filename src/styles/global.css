@@ -335,3 +335,8 @@ a.card { text-decoration: none; color: inherit; display: block; }
 [lang='ja'] { font-family: 'Hiragino Sans', 'Yu Gothic UI', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', sans-serif; }
 [lang='fa'] { font-family: 'Vazirmatn', Tahoma, sans-serif; }
 html[lang|='zh'], html[lang='ja'], html[lang='fa'] { font-family: var(--font-body); }
+
+/* The hidden attribute wins over any display rule set on a class. */
+[hidden] {
+  display: none !important;
+}

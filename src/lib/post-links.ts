@@ -43,6 +43,20 @@ export const ROLES = ['Broker', 'Broker of Record', 'Sales Representative', 'REA
 /** Neighbourhoods named in the text, at most `max`. */
 export const hoodsIn = (text: string, max = 12) => Object.keys(HOODS).filter((id) => HOODS[id].words.test(text)).slice(0, max);
 
+/**
+ * The picture for a post about no one neighbourhood: one of the neighbourhood photos, chosen from the
+ * post's address so the same post always gets the same picture and a page of posts gets a mix.
+ */
+export function anyHood(slug: string): string {
+  const ids = Object.keys(HOODS);
+  let n = 0;
+  for (const c of slug) n = (n * 31 + c.charCodeAt(0)) >>> 0;
+  return ids[n % ids.length];
+}
+
+/** The neighbourhood whose photo leads a post's card: the one it names, or anyHood. Every post gets one. */
+export const cardHood = (slug: string, named: (string | undefined)[], text: string) => named.find((h) => h && h in HOODS) ?? hoodsIn(text, 1)[0] ?? anyHood(slug);
+
 /** Service guides named in the text, at most `max`. */
 export const servicesIn = (text: string, max = 9) => Object.keys(SERVICES).filter((id) => SERVICES[id].words.test(text)).slice(0, max);
 

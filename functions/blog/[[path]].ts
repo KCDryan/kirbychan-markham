@@ -11,7 +11,7 @@
  * up at the next build.
  */
 import { BLOG_CATEGORIES } from '../../src/lib/blog';
-import { hoodsIn } from '../../src/lib/post-links';
+import { cardHood } from '../../src/lib/post-links';
 import { SHELL, addToList, ensureUploadSchema, fillShell, getUpload, type Post, type UploadEnv } from '../../src/lib/uploads';
 
 interface Context {
@@ -28,7 +28,7 @@ export async function onRequest({ request, env, next }: Context): Promise<Respon
     try {
       await ensureUploadSchema(env.VOW_DB);
       const { results } = await env.VOW_DB.prepare('SELECT post FROM uploads WHERE live = 1 ORDER BY updated DESC LIMIT 50').bind().all<{ post: string }>();
-      const out = addToList(html, results.map((r) => JSON.parse(r.post) as Post), BLOG_CATEGORIES, (p) => p.related?.[0] ?? hoodsIn(`${p.headline} ${p.summary}`, 1)[0]);
+      const out = addToList(html, results.map((r) => JSON.parse(r.post) as Post), BLOG_CATEGORIES, (p) => cardHood(p.slug, [p.related?.[0]], `${p.headline} ${p.summary}`));
       if (out === html) return new Response(html, built);
       const headers = new Headers(built.headers);
       headers.delete('etag');

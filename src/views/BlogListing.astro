@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import Page from '../layouts/Page.astro';
 import BlogCard from '../components/BlogCard.astro';
 import BlogCardMedia from '../components/BlogCardMedia.astro';
-import { HOODS, hoodsIn } from '../lib/post-links';
+import { HOODS, cardHood } from '../lib/post-links';
 import Cta from '../components/Cta.astro';
 import { BLOG_CATEGORIES, type BlogCategory } from '../lib/blog';
 import { blog } from '../lib/schema';
@@ -104,7 +104,7 @@ const extraJsonLd = withBlogSchema
                   published={p.data.published}
                   level={2}
                   media
-                  photo={p.data.neighbourhood ?? p.data.related[0] ?? hoodsIn(`${p.data.h1} ${p.data.description}`, 1)[0]}
+                  photo={cardHood(p.id.split('/').pop()!, [p.data.neighbourhood, p.data.related[0]], `${p.data.h1} ${p.data.description}`)}
                 />
               </li>
             ))}
