@@ -35,13 +35,31 @@ for (const post of [...frontmatter('./src/content/blog/'), ...frontmatter('./src
   const category = post.get('category');
   if (category) categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
 }
-for (const guide of frontmatter('./src/content/guides/')) {
-  const date = guide.get('updated');
-  if (date) lastmod.set(`${SITE}/${guide.slug}/`, date);
+for (const lang of ['', 'fa/', 'fr/', 'zh/']) {
+  for (const guide of frontmatter('./src/content/guides/', lang)) {
+    const date = guide.get('updated');
+    if (date) lastmod.set(`${SITE}/${lang}${guide.slug}/`, date);
+  }
 }
+let hoodsDate = '';
 for (const hood of frontmatter('./src/content/neighbourhoods/')) {
   const date = hood.get('lastReviewed');
-  if (date) lastmod.set(`${SITE}/${hood.slug}-markham/`, date);
+  if (!date) continue;
+  lastmod.set(`${SITE}/${hood.slug}-markham/`, date);
+  if (date > hoodsDate) hoodsDate = date;
+}
+// Pages built from other content change when that content does: the neighbourhood index and hubs
+// with the newest guide check, the blog lists with the newest post and the listings landing pages
+// every morning with the listing counts (src/data/listing-counts.json).
+const postsDate = [...lastmod].filter(([u]) => u.includes('/blog/')).map(([, d]) => d).sort().pop();
+const countsDate = JSON.parse(readFileSync(fileURLToPath(new URL('./src/data/listing-counts.json', import.meta.url)), 'utf8')).updated;
+/** @param {string} url */
+function derivedLastmod(url) {
+  const path = new URL(url).pathname;
+  if (path === '/neighbourhoods/' || path.startsWith('/best-markham-neighbourhoods-for-')) return hoodsDate || undefined;
+  if (path === '/' || path === '/blog/' || path.startsWith('/blog/category/') || path.startsWith('/blog/page/')) return postsDate;
+  if (/^\/homes-for-sale\/([a-z-]+\/)?$/.test(path) && path !== '/homes-for-sale/listing/' && path !== '/homes-for-sale/map/') return countsDate;
+  return undefined;
 }
 
 // The news index sets noindex while it has nothing to list, so the sitemap has
@@ -84,8 +102,11 @@ export default defineConfig({
         },
       },
       serialize: (item) => {
-        const date = lastmod.get(item.url);
-        return date ? { ...item, lastmod: new Date(date).toISOString() } : item;
+        const date = lastmod.get(item.url) ?? derivedLastmod(item.url);
+        // x-default points at the English page, matching the <link rel="alternate"> tags in Base.
+        const en = item.links?.find((l) => l.lang === 'en-CA');
+        const links = en ? [...item.links, { url: en.url, lang: 'x-default' }] : item.links;
+        return { ...item, links, ...(date ? { lastmod: new Date(date).toISOString() } : {}) };
       },
     }),
   ],

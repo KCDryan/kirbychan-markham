@@ -20,7 +20,7 @@ import NewsItems from '../components/NewsItems.astro';
 import credits from '../data/photo-credits.json';
 import { longDate, neighbourhoodPath } from '../lib/format';
 import { servicePath } from '../lib/guides';
-import { breadcrumbList, faqPage, place } from '../lib/schema';
+import { blogPosting, breadcrumbList, faqPage, place } from '../lib/schema';
 
 interface Props {
   entry: CollectionEntry<'neighbourhoods'>;
@@ -80,8 +80,19 @@ const ogImage = heroPhoto
 
 const credit = credits.find((c) => c.slug === entry.id);
 
+// The guide as an Article by Kirby Chan, dated by its last fact check, so readers and search
+// engines see who wrote it and when. Same pattern as GuideLayout.
+const article = d.lastReviewed
+  ? ({ ...blogPosting({ headline: d.h1, description: d.description, path, published: d.lastReviewed, image: ogImage, about: `${d.name}, Markham` }) } as Record<string, unknown>)
+  : null;
+if (article) {
+  article['@type'] = 'Article';
+  delete article.isPartOf;
+}
+
 const jsonLd = [
   breadcrumbList(crumbs),
+  article,
   place({ name: d.name, description: d.intro, path }),
   faqPage(d.faq),
 ].filter(Boolean);
@@ -93,6 +104,8 @@ const jsonLd = [
   description={d.description}
   noindex={d.noindex}
   ogImage={ogImage}
+  ogType={d.lastReviewed ? 'article' : undefined}
+  article={d.lastReviewed ? { published: d.lastReviewed, modified: d.lastReviewed, section: 'Neighbourhoods' } : undefined}
   jsonLd={jsonLd}
 >
   <Breadcrumbs crumbs={crumbs} />
@@ -105,6 +118,10 @@ const jsonLd = [
           <Accent text={d.h1} accent={d.accent} />
         </h1>
         <p class="lede">{d.intro}</p>
+        <p class="hood-byline">
+          By <a href="/about/">{site.brokerage.registrant}</a>, {site.brokerage.registrationCategory}, {site.brokerage.legalName}.
+          {d.lastReviewed && <> Facts checked <time datetime={d.lastReviewed.toISOString()}>{longDate(d.lastReviewed)}</time>.</>}
+        </p>
         <div class="page-hero__actions">
           <a
             class="btn btn--primary"
@@ -384,6 +401,10 @@ const jsonLd = [
   }
   .hood-hero h1 {
     max-width: 18ch;
+  }
+  .hood-byline {
+    font-size: 0.9rem;
+    color: var(--text-muted);
   }
   .hood-hero .lede {
     margin-top: var(--sp-5);

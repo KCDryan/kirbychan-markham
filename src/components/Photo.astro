@@ -45,6 +45,7 @@ const src = photo(name);
         alt={alt}
         formats={['avif', 'webp']}
         widths={[400, 640, 880, 1200]}
+        width={Math.min(1200, src.width)}
         sizes={sizes}
         loading={priority ? 'eager' : 'lazy'}
         fetchpriority={priority ? 'high' : 'auto'}
