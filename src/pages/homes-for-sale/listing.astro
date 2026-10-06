@@ -1,124 +1,19 @@
 ---
+/** The old address of a listing, /homes-for-sale/listing/?id=KEY. Each listing now has its own page at /listing/KEY/. */
 import Page from '../../layouts/Page.astro';
-import IdxDisclaimer from '../../components/IdxDisclaimer.astro';
-import site from '../../data/site.json';
-
-const crumbs = [
-  { name: 'Home', path: '/' },
-  { name: 'Homes for Sale', path: '/homes-for-sale/' },
-  { name: 'Listing', path: '/homes-for-sale/listing/' },
-];
 ---
 
-<Page
-  title="Home for Sale in Markham"
-  description="Details, photos and the listing brokerage for a home listed on the MLS®."
-  eyebrow="MLS® listing"
-  h1="Home for sale"
-  crumbs={crumbs}
-  noindex
->
+<Page title="Markham Home Listing" description="This address has moved: each home for sale in Markham now has its own page with photos, the asking price, property tax and the listing brokerage." h1="This listing has moved" crumbs={[{ name: 'Home', path: '/' }, { name: 'Homes for Sale', path: '/homes-for-sale/' }]} noindex>
   <section class="section">
-    <div class="wrap-narrow l">
-      <p><a class="btn btn--ghost" id="back" href="/homes-for-sale/">← Back to the list of homes</a></p>
-      <p id="status" aria-live="polite">Loading this home…</p>
-      <article id="listing" hidden>
-        <p class="l__price" id="price"></p>
-        <p class="l__meta" id="meta"></p>
-        <figure class="l__photo" id="photo-box" hidden>
-          <img id="photo" alt="" referrerpolicy="no-referrer" />
-          <figcaption class="l__photo-nav">
-            <button class="btn btn--ghost" type="button" id="photo-prev">← Previous photo</button>
-            <span id="photo-count" aria-live="polite"></span>
-            <button class="btn btn--primary" type="button" id="photo-next">Next photo →</button>
-          </figcaption>
-        </figure>
-        <div class="l__cta">
-          <a class="btn btn--primary" id="ask" href="/contact/">Ask about this home</a>
-          <a class="btn btn--ghost" href={site.contact.phoneHref}>Call {site.contact.phone}</a>
-        </div>
-        <div class="prose">
-          <h2>About this home</h2>
-          <p id="remarks"></p>
-          <h2>Details</h2>
-          <table><tbody id="facts"></tbody></table>
-          <p class="l__brokerage" id="brokerage"></p>
-        </div>
-      </article>
-      <IdxDisclaimer />
+    <div class="wrap-narrow">
+      <p id="moved">Opening the listing. If nothing happens, <a href="/homes-for-sale/">go back to the list of homes</a>.</p>
     </div>
   </section>
 </Page>
 
 <script is:inline>
   (() => {
-    const $ = (id) => document.getElementById(id);
-    const id = new URLSearchParams(location.search).get('id') || '';
-    // Back returns to the same search, with the same choices still selected.
-    const ref = document.referrer ? new URL(document.referrer) : null;
-    if (ref && ref.origin === location.origin && ref.pathname === '/homes-for-sale/') $('back').href = ref.pathname + ref.search;
-    const money = (n) => (typeof n === 'number' ? '$' + n.toLocaleString('en-CA') : '');
-    const label = (k) => ({ LivingAreaRange: 'Square feet', ApproximateAge: 'Age', DirectionFaces: 'Faces', TaxAnnualAmount: 'Property tax', AssociationFee: 'Maintenance fee', KitchensTotal: 'Kitchens', RoomsTotal: 'Rooms', ParkingTotal: 'Parking spaces', DaysOnMarket: 'Days on market' })[k]
-      || k.replace(/([a-z])([A-Z])/g, '$1 $2');
-    const show = (k, v) => (Array.isArray(v) ? v.join(', ') : ['TaxAnnualAmount', 'AssociationFee'].includes(k) ? money(v) : typeof v === 'boolean' ? (v ? 'Yes' : 'No') : String(v));
-
-    fetch('/api/listings?id=' + encodeURIComponent(id))
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((l) => {
-        const where = [l.address, l.community, l.city].filter(Boolean).join(', ');
-        document.title = `${where || 'Home for sale'} | ${money(l.price)}`;
-        document.querySelector('h1').textContent = l.address || `Home in ${l.city}`;
-        $('price').textContent = money(l.price) + (l.lease ? '/month' : '');
-        $('meta').textContent = [where, l.beds != null && `${l.beds} bedroom${l.beds === 1 ? '' : 's'}`, l.baths != null && `${l.baths} bathroom${l.baths === 1 ? '' : 's'}`, l.type, l.crossStreet && `Near ${l.crossStreet}`].filter(Boolean).join(' · ');
-        let at = 0;
-        const showPhoto = () => {
-          $('photo').src = l.photos[at];
-          $('photo').alt = `${where}, photo ${at + 1} of ${l.photos.length}`;
-          $('photo-count').textContent = `Photo ${at + 1} of ${l.photos.length}`;
-          // Load the next one early so it appears straight away.
-          if (l.photos[at + 1]) new Image().src = l.photos[at + 1];
-        };
-        if (l.photos.length) {
-          $('photo-box').hidden = false;
-          $('photo-prev').onclick = () => { at = (at - 1 + l.photos.length) % l.photos.length; showPhoto(); };
-          $('photo-next').onclick = () => { at = (at + 1) % l.photos.length; showPhoto(); };
-          if (l.photos.length === 1) $('photo-prev').hidden = $('photo-next').hidden = true;
-          showPhoto();
-        }
-        $('remarks').textContent = l.remarks || '';
-        for (const [k, v] of Object.entries(l.facts)) {
-          const tr = document.createElement('tr');
-          const th = document.createElement('th');
-          const td = document.createElement('td');
-          th.textContent = label(k);
-          td.textContent = show(k, v);
-          tr.append(th, td);
-          $('facts').append(tr);
-        }
-        if (l.tour && /^https:\/\//.test(l.tour)) {
-          const a = document.createElement('a');
-          a.href = l.tour; a.rel = 'noopener noreferrer'; a.target = '_blank'; a.textContent = 'Virtual tour';
-          $('remarks').after(a);
-        }
-        $('brokerage').textContent = `Listing courtesy of ${l.brokerage || 'the listing brokerage'}. MLS® ${l.key}.`;
-        $('ask').href = '/contact/?listing=' + encodeURIComponent(l.key);
-        $('status').remove();
-        $('listing').hidden = false;
-      })
-      .catch(() => { $('status').textContent = 'This listing is no longer available or could not be loaded.'; });
+    const id = (new URLSearchParams(location.search).get('id') || '').toUpperCase();
+    location.replace(/^[A-Z]{1,3}\d{5,10}$/.test(id) ? '/listing/' + id + '/' : '/homes-for-sale/');
   })();
 </script>
-
-<style is:global>
-  .l__price { font-family: var(--font-heading); font-size: var(--step-4); color: var(--brand); margin: 0; }
-  .l__meta { margin: var(--sp-2) 0 var(--sp-5); }
-  .l { font-size: 1.15rem; }
-  .l__photo { margin: 0; }
-  .l__photo img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; background: var(--mist); border-radius: var(--radius-lg); }
-  .l__photo-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-top: var(--sp-3); font-weight: 600; }
-  .l__photo-nav .btn { min-height: 56px; }
-  .l__cta .btn { min-height: 60px; font-size: 1.05rem; }
-  .l .prose th, .l .prose td { font-size: 1.05rem; }
-  .l__cta { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin: var(--sp-5) 0; }
-  .l__brokerage { font-size: var(--step--1); color: var(--text-muted); }
-</style>

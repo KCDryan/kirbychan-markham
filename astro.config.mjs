@@ -74,12 +74,16 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
+      // The listing pages come from the live feed (functions/sitemap-listings.xml.ts), so their
+      // sitemap is added to the index by address.
+      customSitemaps: [`${SITE}/sitemap-listings.xml`],
       filter: (page) => {
         if (page.includes('/contact/thank-you/')) return false;
         // The blog upload page and the empty post pages it fills are noindex.
         if (/\/upload\/$|\/blog\/upload-shell\//.test(page)) return false;
-        // The single-listing page is filled in the browser and is noindex.
-        if (page.includes('/homes-for-sale/listing/')) return false;
+        // The old single-listing address only forwards to /listing/<key>/ and is noindex. So is the
+        // empty shell the listing pages are poured into.
+        if (page.includes('/homes-for-sale/listing/') || page.includes('/homes-for-sale/listing-shell/')) return false;
         // The news index is noindex while the collection is empty, so listing it
         // in the sitemap would ask Google to crawl a page we told it to skip.
         if (/\/news\/$/.test(page) && newsCount === 0) return false;

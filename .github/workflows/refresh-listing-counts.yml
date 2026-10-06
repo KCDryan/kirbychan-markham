@@ -32,6 +32,10 @@ jobs:
           "
           cp /tmp/counts.json src/data/listing-counts.json
 
+      - name: Remember today's listings
+        # Records every active listing so its page stays up after it leaves the feed. Never stops the counts.
+        run: curl -sS --max-time 120 -o /dev/null -w 'listings recorded: %{http_code}\n' https://kirbychanmarkham.com/sitemap-listings.xml || true
+
       - name: Place new listings on the map
         # Looks up map positions for listings listed since yesterday, so the map is ready for visitors.
         # A failure here never stops the counts.

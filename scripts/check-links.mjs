@@ -12,7 +12,8 @@ import { existsSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 
 const DIST = resolve('dist');
-const IGNORE_PREFIXES = ['mailto:', 'tel:', 'javascript:', 'data:', '#'];
+// /listing/<key>/ pages are rendered by a Pages Function from the live feed, so they are not in dist.
+const IGNORE_PREFIXES = ['mailto:', 'tel:', 'javascript:', 'data:', '#', '/listing/'];
 
 async function walk(dir) {
   const out = [];

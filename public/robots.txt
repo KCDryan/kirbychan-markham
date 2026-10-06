@@ -140,3 +140,4 @@ Disallow: /homes-for-sale/map/?
 Disallow: /sold/?
 
 Sitemap: https://kirbychanmarkham.com/sitemap-index.xml
+Sitemap: https://kirbychanmarkham.com/sitemap-listings.xml

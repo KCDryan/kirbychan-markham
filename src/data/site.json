@@ -40,5 +40,6 @@
   "leadsEmail": "info@kirbychanmarkham.com",
   "requireOneCutPro": true,
   "oneCutOnly": true,
-  "torontoSite": "https://kirbychantoronto.com/"
+  "torontoSite": "https://kirbychantoronto.com/",
+  "indexListings": true
 }

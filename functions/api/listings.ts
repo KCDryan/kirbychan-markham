@@ -1,5 +1,5 @@
 /**
- * GET /api/listings           search, params: for, city, type, min, max, beds, baths, sort, page
+ * GET /api/listings           search, params: home, area, price, beds, bedrooms, city, for, sort, page
  * GET /api/listings?id=KEY    one listing with all its photos
  *
  * Cloudflare Pages Function. Proxies the PropTx IDX feed so PROPTX_IDX_TOKEN stays in the
@@ -23,10 +23,12 @@ type Row = Record<string, unknown>;
 const TTL = 300;
 
 /** Detail fields shown to the public. Allowlisted so nothing private, such as agent contact or commission, can leak. */
-const DETAIL = [
+export const DETAIL = [
   'LivingAreaRange', 'ApproximateAge', 'ArchitecturalStyle', 'Basement', 'LotWidth', 'LotDepth', 'LotSizeUnits',
   'DirectionFaces', 'ParkingTotal', 'GarageType', 'HeatType', 'Cooling', 'KitchensTotal', 'RoomsTotal',
   'AssociationFee', 'TaxAnnualAmount', 'TaxYear', 'Locker', 'PetsAllowed', 'Exposure', 'DaysOnMarket',
+  // More detail for the listing pages. A field the feed does not carry is simply absent from the row.
+  'AssociationFeeIncludes', 'AssociationAmenities', 'BalconyType', 'LaundryFeatures', 'ParkingFeatures', 'InteriorFeatures', 'PropertyFeatures', 'View', 'LegalStories',
 ];
 
 const json = (body: unknown, status = 200) =>
@@ -41,14 +43,14 @@ const json = (body: unknown, status = 200) =>
 
 export async function proptx(token: string, path: string): Promise<{ value: Row[]; '@odata.count'?: number }> {
   const res = await fetch(`${PROPTX_BASE}/${path}`, {
-    headers: { authorization: `Bearer ${token}`, accept: 'application/json' },
+    headers: { authorization: `Bearer ${token.trim()}`, accept: 'application/json' },
   });
   if (!res.ok) throw new Error(`PropTx ${res.status}: ${(await res.text()).slice(0, 300)}`);
   return res.json();
 }
 
 /** Listings the seller has kept off the internet are dropped, and hidden addresses stay hidden. */
-function publicCard(r: Row, cover?: string) {
+export function publicCard(r: Row, cover?: string) {
   const showAddress = r.InternetAddressDisplayYN !== false;
   return {
     key: r.ListingKey,
@@ -74,7 +76,7 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
   // Cache on the known params only, in a fixed order, so junk params cannot force fresh PropTx calls.
   const url = new URL(request.url);
   const params = new URLSearchParams();
-  for (const k of ['id', 'home', 'area', 'price', 'beds', 'city', 'for', 'sort', 'page']) {
+  for (const k of ['id', 'home', 'area', 'price', 'beds', 'bedrooms', 'city', 'for', 'sort', 'page']) {
     const v = url.searchParams.get(k);
     if (v) params.set(k, v.slice(0, 40));
   }

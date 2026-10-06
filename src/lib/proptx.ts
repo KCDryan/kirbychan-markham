@@ -1,5 +1,6 @@
 /**
- * PropTx (TRREB) RESO Web API query building, shared by functions/api/listings.ts.
+ * PropTx (TRREB) RESO Web API query building, shared by functions/api/listings.ts, functions/listing/[key].ts
+ * and functions/sitemap-listings.xml.ts.
  * Docs: https://developer.ampre.ca/docs/query-options
  *
  * Every value that reaches an OData $filter comes from an allowlist or is parsed as a number,
@@ -96,6 +97,9 @@ function shared(params: URLSearchParams, priceField: string): string[] {
   if (price?.max) f.push(`${priceField} le ${price.max}`);
   const beds = int(params.get('beds'), 10);
   if (beds) f.push(`BedroomsTotal ge ${beds}`);
+  // Exactly this many bedrooms, for the bedroom-count landing pages and the similar homes on a listing page.
+  const exact = int(params.get('bedrooms'), 5);
+  if (exact) f.push(`BedroomsTotal eq ${exact}`);
   return f;
 }
 
@@ -157,6 +161,23 @@ export function soldQuery(params: URLSearchParams, today = new Date()): string {
   });
 }
 
+/**
+ * Every Markham home for sale, lightly, a page of 1,000 at a time in a fixed order (PropTx's nextLink
+ * fails). For the listings sitemap and the listing memory behind /listing/<key>/.
+ */
+export const activeQuery = (page: number) =>
+  odata({
+    $filter: ["ContractStatus eq 'Available'", "startswith(PropertyType,'Residential')", "TransactionType eq 'For Sale'", NOT_HOMES, "City eq 'Markham'"].join(' and '),
+    $select: 'ListingKey,ModificationTimestamp,UnparsedAddress,City,CityRegion,InternetEntireListingDisplayYN,InternetAddressDisplayYN',
+    $orderby: 'ListingKey',
+    $top: String(MAP_PAGE),
+    $skip: String(page * MAP_PAGE),
+  });
+
+/** VOW: what became of one listing that has left the active feed. */
+export const closedQuery = (key: string) =>
+  odata({ $filter: `ListingKey eq ${q(key)}`, $select: 'ListingKey,MlsStatus,ClosePrice,CloseDate,InternetEntireListingDisplayYN', $top: '1' });
+
 /** PropTx wants literal $ in option names, so build the string by hand. */
 const odata = (o: Record<string, string>) => Object.entries(o).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
 
@@ -171,7 +192,9 @@ export const coverQuery = (keys: string[]) =>
 /** A PropTx ListingKey, e.g. N12345678. Anything else is rejected. */
 export const cleanKey = (v: string | null) => (v && /^[A-Z]{1,3}\d{5,10}$/i.test(v) ? v.toUpperCase() : null);
 
-export const listingQuery = (key: string) => odata({ $filter: `ListingKey eq ${q(key)} and ContractStatus eq 'Available'`, $top: '1' });
+/** One listing by key, in any city the search or the map covers. Homes only, like the search: a pasted key cannot open a shop, a parking space or a locker. */
+export const listingQuery = (key: string) =>
+  odata({ $filter: `ListingKey eq ${q(key)} and ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and ${NOT_HOMES}`, $top: '1' });
 
 export const mediaQuery = (key: string) =>
   odata({
@@ -216,5 +239,13 @@ if (typeof process !== 'undefined' && !!import.meta.filename && import.meta.file
   if (cleanKey("N1' or 1") !== null || cleanKey('n12345678') !== 'N12345678') throw new Error('key');
   const p = photos([{ MediaURL: 'b', Order: 2 }, { MediaURL: 'a-s', Order: 1, ImageSizeDescription: 'Thumbnail' }, { MediaURL: 'a-l', Order: 1, ImageSizeDescription: 'Large' }]);
   if (p.join() !== 'a-l,b') throw new Error(p.join());
+  const b2 = new URLSearchParams(searchQuery(new URLSearchParams('home=condo&bedrooms=2'))).get('$filter')!;
+  if (!b2.endsWith("PropertySubType eq 'Condo Apartment' and BedroomsTotal eq 2") || b2.includes('BedroomsTotal ge')) throw new Error('bedrooms ' + b2);
+  if (new URLSearchParams(searchQuery(new URLSearchParams('bedrooms=2 or 1 eq 1'))).get('$filter')!.includes('BedroomsTotal')) throw new Error('bedrooms injection');
+  if (!new URLSearchParams(searchQuery(new URLSearchParams('bedrooms=9'))).get('$filter')!.endsWith('BedroomsTotal eq 5')) throw new Error('bedrooms cap');
+  const act = new URLSearchParams(activeQuery(1));
+  if (!act.get('$filter')!.includes("TransactionType eq 'For Sale'") || !act.get('$filter')!.endsWith("City eq 'Markham'") || act.get('$skip') !== '1000') throw new Error('active ' + act);
+  if (new URLSearchParams(listingQuery("N1'x")).get('$filter') !== "ListingKey eq 'N1''x' and ContractStatus eq 'Available' and startswith(PropertyType,'Residential') and PropertySubType ne 'Parking Space' and PropertySubType ne 'Locker'") throw new Error('listingQuery');
+  if (!closedQuery("C1'x").includes(encodeURIComponent("'C1''x'"))) throw new Error('closed quoting');
   console.log('proptx ok');
 }

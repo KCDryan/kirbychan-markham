@@ -118,7 +118,7 @@ const crumbs = [
   const card = (l: Listing) => {
     const li = el('li', 'hs__card');
     const a = el('a', 'hs__link') as HTMLAnchorElement;
-    a.href = '/homes-for-sale/listing/?id=' + encodeURIComponent(l.key);
+    a.href = '/listing/' + encodeURIComponent(l.key) + '/';
     const where = [l.community, l.city].filter(Boolean).join(', ');
     const body = el('div', 'hs__body');
     body.append(

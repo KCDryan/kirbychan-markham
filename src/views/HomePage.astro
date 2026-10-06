@@ -14,6 +14,7 @@ import Testimonials from '../components/Testimonials.astro';
 import TranslationNotice from '../components/TranslationNotice.astro';
 import Cta from '../components/Cta.astro';
 import GuideFeature from '../components/GuideFeature.astro';
+import LeadForm from '../components/LeadForm.astro';
 import { langFromPath, localePath, t } from '../i18n';
 
 const lang = langFromPath(Astro.url.pathname);
@@ -134,6 +135,21 @@ const articles = (await getCollection('blog', ({ data }) => !data.draft))
     )
   }
 
+  {
+    en && (
+      <section class="section section--alt" id="enquire">
+        <div class="wrap home-lead">
+          <div>
+            <p class="eyebrow">Get in touch</p>
+            <h2>Tell us what you are looking for</h2>
+            <p class="lede">Send your price range, the type of home and the neighbourhoods you have in mind. We will get back to you about Markham listings that match. You can also ask about a street, a building or a listing you have seen.</p>
+          </div>
+          <LeadForm heading="Start your Markham home search" source="home-page" defaultIntent="Buying" compact />
+        </div>
+      </section>
+    )
+  }
+
   <Cta />
 </Base>
 
@@ -158,4 +174,7 @@ const articles = (await getCollection('blog', ({ data }) => !data.draft))
     margin: 0;
     padding: 0;
   }
+
+  .home-lead { display: grid; gap: var(--sp-6); align-items: start; }
+  @media (min-width: 900px) { .home-lead { grid-template-columns: 0.9fr 1.1fr; gap: var(--sp-8); } }
 </style>

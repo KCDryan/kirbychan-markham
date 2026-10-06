@@ -48,10 +48,16 @@
 /blog/upload-shell/*
   X-Robots-Tag: noindex, nofollow
 
-# MLS® listing search. Listing photos come from PropTx's image host, so images may load from any https source.
+# MLS® listing search and the listing pages (functions/listing/[key].ts serves them with the headers of
+# /homes-for-sale/listing-shell/). Listing photos come from PropTx's image host, so images may load from
+# any https source. The enquiry form on these pages needs the Turnstile spam check.
 /homes-for-sale/*
   ! Content-Security-Policy
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; object-src 'none'; img-src 'self' data: https:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://static.cloudflareinsights.com; frame-src 'none'; connect-src 'self' https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://cloudflareinsights.com; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; object-src 'none'; img-src 'self' data: https:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com https://static.cloudflareinsights.com; frame-src https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://cloudflareinsights.com; upgrade-insecure-requests
+
+# The empty page the listing pages are poured into. Never indexed under its own address.
+/homes-for-sale/listing-shell/*
+  X-Robots-Tag: noindex, nofollow
 
 # Sold prices (VOW). Listing photos from PropTx's image host, plus the Turnstile spam check on sign up.
 /sold/*

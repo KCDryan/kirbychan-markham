@@ -1,0 +1,72 @@
+---
+/**
+ * The empty page that functions/listing/[key].ts pours one listing into, so a listing page carries
+ * the site's header, footer and styles. It lives under /homes-for-sale/ for that folder's security
+ * headers, which let listing photos load from PropTx's image host. Never linked. The noindex here is
+ * for the shell itself: the function lifts it for the listings that are offered to search engines.
+ */
+import Page from '../../layouts/Page.astro';
+import IdxDisclaimer from '../../components/IdxDisclaimer.astro';
+import LeadForm from '../../components/LeadForm.astro';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Homes for Sale', path: '/homes-for-sale/' },
+  { name: '%%LISTING_CRUMB%%', path: '/homes-for-sale/listing-shell/' },
+];
+---
+
+<Page title="%%LISTING_TITLE%%" description="%%LISTING_DESCRIPTION%%" eyebrow="MLS® listing" h1="%%LISTING_H1%%" crumbs={crumbs} noindex>
+  <section class="section">
+    <div class="wrap lp">
+      <p><a class="btn btn--ghost" id="back" href="/homes-for-sale/">← Back to the list of homes</a></p>
+      <div id="listing-body">%%LISTING_BODY%%</div>
+      <div class="lp-lead" id="enquire">
+        <LeadForm heading="Ask about this home or book a showing" intro="Send your details and we will get back to you about this listing. The page you are on is sent with your message, so we know which home you mean." source="listing-page" defaultIntent="Buying" submitLabel="Send my enquiry" compact />
+      </div>
+      <IdxDisclaimer />
+    </div>
+  </section>
+</Page>
+
+<script is:inline>
+  (() => {
+    // Back returns to the same search or map, with the same choices still selected.
+    const ref = document.referrer ? new URL(document.referrer) : null;
+    if (ref && ref.origin === location.origin && /^\/homes-for-sale\/(map\/)?$/.test(ref.pathname)) document.getElementById('back').href = ref.pathname + ref.search;
+  })();
+</script>
+
+<style is:global>
+  .lp { max-width: 980px; font-size: 1.1rem; }
+  .lp-price { font-family: var(--font-heading); font-size: var(--step-4); font-weight: 700; color: var(--brand); margin: var(--sp-5) 0 0; }
+  .lp-meta { margin: var(--sp-2) 0 var(--sp-5); color: var(--text-muted); }
+  .lp-status { margin: var(--sp-5) 0; padding: var(--sp-4) var(--sp-5); background: var(--mist); border: 1px solid var(--rule); border-radius: var(--radius); font-weight: 600; }
+  .lp-sold { font-size: var(--step-1); }
+  .lp-sold strong { color: var(--brand); text-transform: uppercase; letter-spacing: 0.06em; }
+  .lp-hero { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; background: var(--mist); border-radius: var(--radius-lg); }
+  .lp-strip { display: flex; gap: var(--sp-3); margin-top: var(--sp-3); overflow-x: auto; padding-bottom: var(--sp-2); scroll-snap-type: x proximity; }
+  .lp-strip img { flex: 0 0 auto; width: 240px; height: 160px; object-fit: cover; background: var(--mist); border-radius: var(--radius); scroll-snap-align: start; }
+  .lp-cta { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin: var(--sp-6) 0; }
+  .lp-cta .btn { min-height: 60px; font-size: 1.05rem; }
+  .lp-brokerage, .lp-key { font-size: var(--step--1); color: var(--text-muted); }
+  .lp-area, .lp-more, .lp-faq { margin-top: var(--sp-7); }
+  .lp-lead { max-width: 720px; margin: var(--sp-7) 0; scroll-margin-top: 6rem; }
+  .lp h2 { margin-top: var(--sp-7); font-size: var(--step-2); }
+  .lp h3 { margin-top: var(--sp-5); font-size: var(--step-1); }
+  .lp h4 { margin-top: var(--sp-4); font-size: var(--step-0); }
+  .lp p, .lp ol { margin-top: var(--sp-3); max-width: 72ch; }
+  .lp ol { padding-left: 1.3em; }
+  .lp ol li { margin-top: var(--sp-2); }
+  .lp > #listing-body > table, .lp .prose table { width: 100%; max-width: 640px; margin: var(--sp-4) 0; border-collapse: collapse; }
+  .lp > #listing-body > table th, .lp > #listing-body > table td { padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+  .lp > #listing-body > table th { font-weight: 600; width: 55%; }
+  .lp-area table { width: 100%; margin: var(--sp-4) 0; border-collapse: collapse; font-size: var(--step--1); }
+  .lp-area th, .lp-area td { padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+  .lp-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: var(--sp-5); margin: var(--sp-5) 0 0; padding: 0; list-style: none; }
+  .lp-card a { display: grid; gap: 0.2rem; text-decoration: none; color: var(--text); }
+  .lp-card img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; background: var(--mist); border-radius: var(--radius); }
+  .lp-card strong { margin-top: var(--sp-2); font-family: var(--font-heading); font-size: var(--step-1); color: var(--brand); }
+  .lp-card span { font-size: var(--step--1); color: var(--text-muted); }
+  .lp-card span:first-of-type { color: var(--text); font-weight: 600; }
+</style>

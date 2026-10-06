@@ -132,7 +132,7 @@ const crumbs = [
     const card = el('div', 'hs__card hs-picked__card');
     const body = el('div', 'hs__body');
     const see = el('a', 'btn btn--primary hs__see', 'See photos and details') as HTMLAnchorElement;
-    see.href = '/homes-for-sale/listing/?id=' + encodeURIComponent(pin.k);
+    see.href = '/listing/' + encodeURIComponent(pin.k) + '/';
     const ask = el('a', 'btn btn--ghost hs__see', 'Ask about this home') as HTMLAnchorElement;
     ask.href = '/contact/?listing=' + encodeURIComponent(pin.k);
     body.append(

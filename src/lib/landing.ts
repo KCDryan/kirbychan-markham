@@ -23,6 +23,10 @@ export type Snapshot = { total: number; listings: Card[]; at: Date };
 
 export type TypePage = {
   home: string;
+  /** Set on pages narrower than a home type: the API query, the live search link and a test every listing must pass. */
+  query?: string;
+  search?: string;
+  accepts?: (c: Card) => boolean;
   label: string;
   title: string;
   description: string;
@@ -131,6 +135,52 @@ export const TYPE_PAGES: Record<string, TypePage> = {
     ],
   },
 };
+
+const ordinal = ['', 'one', 'two', 'three', 'four', 'five'];
+/** A page for one home type with exactly this many bedrooms, for example /homes-for-sale/2-bedroom-condos/. */
+function bedroomPage(home: 'condo' | 'townhouse' | 'house', n: number): TypePage {
+  const { noun, one, guide } = {
+    condo: { noun: 'condos', one: 'condo apartment', guide: { href: '/blog/condo-status-certificate-markham/', label: 'The status certificate for an Ontario condo' } },
+    townhouse: { noun: 'townhouses', one: 'townhouse', guide: { href: '/blog/home-inspection-ontario-buyers/', label: 'What a home inspection covers and misses' } },
+    house: { noun: 'houses', one: 'detached or semi-detached house', guide: { href: '/blog/home-inspection-ontario-buyers/', label: 'What a home inspection covers and misses' } },
+  }[home];
+  const count = `${ordinal[n]} bedroom${n > 1 ? 's' : ''}`;
+  return {
+    home,
+    query: `home=${home}&bedrooms=${n}`,
+    search: `home=${home}&beds=${n}`,
+    accepts: (c) => c.beds === n,
+    label: `${n} bedroom ${noun}`,
+    title: `${n} Bedroom ${noun[0].toUpperCase()}${noun.slice(1)} for Sale in Markham | MLS®`,
+    description: `${n} bedroom ${noun} for sale in Markham on the MLS® today, with photos, asking prices and the neighbourhood for each listing from TRREB. Refreshed every morning.`,
+    h1: `${n} bedroom ${noun} for sale in Markham`,
+    intro: [
+      `Each listing on this page is a Markham ${one} that the listing brokerage entered with ${count} in total. Brokerages count rooms differently. Some include a den or a basement bedroom in the total, so check the floor plan before you book a showing.`,
+      `Asking prices for the same bedroom count vary with the neighbourhood, the floor area and the age of the home. Our Markham house prices page has TRREB's sale figures by home type. Each neighbourhood guide has the figures for its own area.`,
+    ],
+    links: [
+      { href: '/markham-house-prices/', label: 'Markham house prices by property type' },
+      guide,
+      { href: '/mortgage-calculator-markham/', label: 'Markham mortgage calculator' },
+      { href: '/land-transfer-tax-calculator-markham/', label: 'Markham land transfer tax calculator' },
+    ],
+    faq: [
+      {
+        q: `Which listings are on the ${n} bedroom ${noun} page?`,
+        a: `Markham listings entered on TRREB's MLS® System as a ${one}, offered for sale, with ${count} in total. A home entered with a den or a basement room counted as a bedroom shows under the larger size, so look at the next page up as well.`,
+      },
+      {
+        q: 'Can I narrow these by neighbourhood or price?',
+        a: 'Yes. Open the live search from this page and pick a neighbourhood and a price range. The live search shows this bedroom count and larger.',
+      },
+    ],
+  };
+}
+
+/** Kept apart from TYPE_PAGES so the four home type pages stay first in every list. */
+for (const [home, n] of [['condo', 1], ['condo', 2], ['condo', 3], ['townhouse', 3], ['house', 3], ['house', 4], ['house', 5]] as const) {
+  TYPE_PAGES[`${n}-bedroom-${home === 'condo' ? 'condos' : home + 's'}`] = bedroomPage(home, n);
+}
 
 const cache = new Map<string, Promise<Snapshot | null>>();
 

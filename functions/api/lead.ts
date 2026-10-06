@@ -2,22 +2,26 @@
  * POST /api/lead
  *
  * Cloudflare Pages Function. Validates the enquiry, screens obvious spam,
- * verifies the Cloudflare Turnstile token when one is configured, then emails
- * the lead to the leads inbox (site.json leadsEmail) and, if LEAD_WEBHOOK_URL is
- * set, also forwards it there as JSON.
+ * verifies the Cloudflare Turnstile token when one is configured, keeps a copy
+ * in the database (VOW_DB, table `leads`), then emails the lead to the leads
+ * inbox (site.json leadsEmail) and, if LEAD_WEBHOOK_URL is set, also forwards it
+ * there as JSON. A stored enquiry counts as delivered: the visitor is only told
+ * to call when the database, the email and the webhook have all failed.
  *
  * Secrets live only in the Cloudflare dashboard. Nothing in src/ reads
  * TURNSTILE_SECRET_KEY or LEAD_WEBHOOK_URL, so neither can reach the browser.
  */
 
 import site from '../../src/data/site.json';
-import { sendEmail } from '../../src/lib/vow';
+import { sendEmail, type D1 } from '../../src/lib/vow';
 
 interface Env {
   LEAD_WEBHOOK_URL?: string;
   TURNSTILE_SECRET_KEY?: string;
   RESEND_API_KEY?: string;
   VOW_EMAIL_FROM?: string;
+  /** Every enquiry is also kept here, so one is never lost when email delivery fails. */
+  VOW_DB?: D1;
 }
 
 interface Context {
@@ -160,6 +164,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     ['Looking to', payload.intent],
     ['Timeline', payload.timeline],
     ['Page', payload.page],
+    ['Form', payload.source],
     ['Message', payload.message],
   ];
   const body = [
@@ -170,6 +175,23 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     `They agreed to be contacted about this enquiry and about Markham real estate.`,
     `Received: ${new Date().toLocaleString('en-CA', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Toronto' })}`,
   ].join('\n');
+
+  // Keep a copy first. If email is down, the enquiry is still on record.
+  let stored = false;
+  let id: unknown;
+  if (env.VOW_DB) {
+    try {
+      await env.VOW_DB.prepare('CREATE TABLE IF NOT EXISTS leads (id INTEGER PRIMARY KEY AUTOINCREMENT, received_at TEXT NOT NULL, source TEXT, page TEXT, name TEXT, email TEXT, phone TEXT, payload TEXT NOT NULL, emailed INTEGER NOT NULL DEFAULT 0)').bind().run();
+      const row = await env.VOW_DB.prepare('INSERT INTO leads (received_at, source, page, name, email, phone, payload) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7) RETURNING id')
+        .bind(payload.submittedAt, payload.source, payload.page, payload.name, payload.email, payload.phone, JSON.stringify(payload))
+        .first<{ id: number }>();
+      id = row?.id;
+      stored = true;
+    } catch (error) {
+      // Deliberately no personal data in the log line.
+      console.error('Lead not stored', error instanceof Error ? error.message : 'unknown error');
+    }
+  }
 
   // Email is the main delivery. The webhook is optional, for a CRM later.
   let delivered = await sendEmail(env, site.leadsEmail, `New website enquiry: ${name}`, body, email).catch((error) => {
@@ -192,7 +214,14 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     }
   }
 
-  if (!delivered) {
+  // Mark the copy, so the rows still waiting for a person are the ones with emailed = 0.
+  if (stored && delivered && id != null) {
+    await env.VOW_DB!.prepare('UPDATE leads SET emailed = 1 WHERE id = ?1').bind(id).run().catch(() => undefined);
+  } else if (stored && !delivered) {
+    console.error('Lead stored but not emailed or forwarded. See the leads table, emailed = 0, id', id);
+  }
+
+  if (!delivered && !stored) {
     // Deliberately no personal data in the log line.
     return reply(request, 502, {
       ok: false,
