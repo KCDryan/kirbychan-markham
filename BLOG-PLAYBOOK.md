@@ -37,7 +37,7 @@ record the failure under "Needs owner attention" in `BLOG-LOG.md`, then commit a
 
 ## 3. Choosing the topic
 
-The blog runs once a day and each weekday has a fixed theme, so the reader always knows what
+The blog runs twice a day (about 9 a.m. and 3 p.m. Toronto time), one post per run, and each weekday has a fixed theme, so the reader always knows what
 Tuesday is for and the site builds depth in six areas rather than a scatter of one-off posts.
 
 | Day in Toronto | Theme | Section of `BLOG-TOPICS.md` |
@@ -64,7 +64,15 @@ because the run fires in the early afternoon UTC and the Toronto day can differ.
    a Markham buyer, seller, owner or newcomer would type into Google. Mix the categories over a week.
    Never write a topic that duplicates a neighbourhood guide or a service page. Link to those instead.
 
-6. **A missed day is cheaper than a weak post.** Daily publishing only helps while each post is
+6. **Two posts a day must not look like bulk publishing.** Google's spam policy on scaled content
+   abuse targets pages produced in volume mainly to rank, with little value added. Before writing,
+   check today's other post and the last ten posts: `git log --since="10 days ago" --name-only --format= -- src/content/blog | sort -u`.
+   The new post must answer a different question from all of them, add facts from a primary source
+   that those posts do not contain and be something a Markham reader would look for. Never write a
+   near copy of an existing post with a different place or audience swapped in. If it cannot meet
+   that bar, publish nothing.
+
+7. **A missed day is cheaper than a weak post.** Daily publishing only helps while each post is
    genuinely different from the ones before it. Google judges the site as a whole, so a run of thin
    or overlapping posts drags down the pages that already rank, the downsizing guide included. If
    today's theme has nothing left worth writing, publish nothing, say so in `BLOG-LOG.md` and push

@@ -1,6 +1,6 @@
 # Blog topics
 
-The blog writer runs once a day and takes the first unticked topic **from the section for today's
+The blog writer runs twice a day, one post per run, and takes the first unticked topic **from the section for today's
 weekday in Toronto** (see `BLOG-PLAYBOOK.md`, section 3).
 
 Format: `- [ ] Working title | category | primary keyword`. `category` must be one of the slugs in
