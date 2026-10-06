@@ -50,3 +50,6 @@
 # Listing search
 /homes-for-sale-markham/ /homes-for-sale/ 301
 /sold-prices/ /sold/ 301
+
+# Tools and directories often guess this name for the sitemap.
+/sitemap.xml /sitemap-index.xml 301
