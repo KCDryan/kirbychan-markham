@@ -37,25 +37,24 @@ record the failure under "Needs owner attention" in `BLOG-LOG.md`, then commit a
 
 ## 3. Choosing the topic
 
-The blog runs twice a day (about 9 a.m. and 3 p.m. Toronto time), one post per run, and each weekday has a fixed theme, so the reader always knows what
-Tuesday is for and the site builds depth in six areas rather than a scatter of one-off posts.
+The blog publishes **one post on Monday, Wednesday and Friday only**, about 9 a.m. Toronto
+time. Scheduled runs may still fire more often. On Tuesday, Thursday, Saturday and Sunday, and on a
+Monday, Wednesday or Friday that already has a post (check `git log` for today's date), publish nothing,
+change no file and push nothing. Each publishing day has a fixed theme, so the reader always knows what
+Wednesday is for.
 
 | Day in Toronto | Theme | Section of `BLOG-TOPICS.md` |
 | --- | --- | --- |
-| Sunday | Downsizing in Markham | Sunday |
 | Monday | First time home buyers in Markham | Monday |
-| Tuesday | Probate and estate sales in Markham | Tuesday |
 | Wednesday | Selling a home in Markham | Wednesday |
-| Thursday | Relocating to Markham | Thursday |
 | Friday | Upsizing in Markham | Friday |
-| Saturday | Writer's choice, outside the six themes above | Saturday |
 
 Get the day with `TZ=America/Toronto date "+%Y-%m-%d %A"`. Never assume it from the UTC clock,
 because the run fires in the early afternoon UTC and the Toronto day can differ.
 
 1. List what already exists: `grep -h "^title:\|^h1:" src/content/blog/*.mdx`.
 2. Take the first unticked topic from **today's section only**. Do not borrow from another day to
-   keep a streak going. A Sunday post also sets `guide: downsizing-markham` and links to the guide.
+   keep a streak going.
 3. Before writing, answer the test in `SEO-PLAYBOOK.md` section 1: what would be missing from the index if this post did not exist? If the honest answer is "very little", skip the topic and note why. Each post must be more specific than the ones already published, not another pass at the same ground.
 4. Skip it (leave it unticked and note why in the log) if an existing post already targets the same
    search intent, or if the facts it needs cannot be verified from the sources in section 4.
@@ -64,15 +63,15 @@ because the run fires in the early afternoon UTC and the Toronto day can differ.
    a Markham buyer, seller, owner or newcomer would type into Google. Mix the categories over a week.
    Never write a topic that duplicates a neighbourhood guide or a service page. Link to those instead.
 
-6. **Two posts a day must not look like bulk publishing.** Google's spam policy on scaled content
+6. **Frequent posts must not look like bulk publishing.** Google's spam policy on scaled content
    abuse targets pages produced in volume mainly to rank, with little value added. Before writing,
-   check today's other post and the last ten posts: `git log --since="10 days ago" --name-only --format= -- src/content/blog | sort -u`.
+   check the last ten posts: `git log --since="10 days ago" --name-only --format= -- src/content/blog | sort -u`.
    The new post must answer a different question from all of them, add facts from a primary source
    that those posts do not contain and be something a Markham reader would look for. Never write a
    near copy of an existing post with a different place or audience swapped in. If it cannot meet
    that bar, publish nothing.
 
-7. **A missed day is cheaper than a weak post.** Daily publishing only helps while each post is
+7. **A missed day is cheaper than a weak post.** Regular publishing only helps while each post is
    genuinely different from the ones before it. Google judges the site as a whole, so a run of thin
    or overlapping posts drags down the pages that already rank, the downsizing guide included. If
    today's theme has nothing left worth writing, publish nothing, say so in `BLOG-LOG.md` and push

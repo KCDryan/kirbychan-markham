@@ -1,23 +1,19 @@
 # Blog topics
 
-The blog writer runs twice a day, one post per run, and takes the first unticked topic **from the section for today's
+The blog writer publishes one post on Monday, Wednesday and Friday only, and takes the first unticked topic **from the section for today's
 weekday in Toronto** (see `BLOG-PLAYBOOK.md`, section 3).
 
 Format: `- [ ] Working title | category | primary keyword`. `category` must be one of the slugs in
 `src/lib/blog.ts`. When a topic is published, tick it, move it to Published and add the slug. New
 ideas go at the bottom of the day they belong to.
 
-The daily rota:
+The rota (no posts on other days):
 
 | Day (Toronto) | Theme |
 | --- | --- |
-| Sunday | Downsizing in Markham |
 | Monday | First time home buyers in Markham |
-| Tuesday | Probate and estate sales in Markham |
 | Wednesday | Selling a home in Markham |
-| Thursday | Relocating to Markham |
 | Friday | Upsizing in Markham |
-| Saturday | Writer's choice, outside the six themes above |
 
 If no topic in today's section passes the index test in `SEO-PLAYBOOK.md` section 1, publish nothing
 and record why in `BLOG-LOG.md`. A near duplicate of an existing post is worse than a missed day.
