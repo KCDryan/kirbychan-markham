@@ -59,3 +59,10 @@ One entry per blog run, newest at the bottom. See `BLOG-PLAYBOOK.md`, section 9.
 - selling-house-in-probate-ontario (Oct 6). Keyword: selling house in probate ontario. Sources: ontario.ca apply for probate, estate administration tax. Left out: listing before the certificate is issued
 - estate-administration-tax-ontario (Oct 6). Keyword: estate administration tax ontario. Source: ontario.ca Estate Administration Tax (one source only; the return page and the Act would not load). Worked example recalculated: $9,150 on $660,000
 - Needs owner attention: the probate and estate tax posts are law heavy and worth a read; the "15 business days" probate figure is ontario.ca's "typically"
+
+## 2026-10-07, no post published (Wednesday, selling a home in Markham)
+
+- Topic considered: Selling your Markham home: a step by step timeline (left unticked)
+- Reason: WebFetch to reco.on.ca, ontario.ca, canada.ca, cmhc-schl.gc.ca and markham.ca all returned EGRESS_BLOCKED from the network egress proxy, so no primary source page could be opened this run. WebSearch snippets are not an opened page, so nothing could be cited or verified
+- Claims verified: 0
+- Needs owner attention: the egress proxy allowlist for this environment needs the government and regulator domains in playbook section 4 (reco.on.ca, ontario.ca, canada.ca, cmhc-schl.gc.ca, markham.ca at minimum) before posts can resume
