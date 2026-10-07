@@ -1,0 +1,83 @@
+---
+/**
+ * Every photo on the site with who made it, its licence and where it came from. Cards and grids
+ * show photos without a caption, so this page is where their licences are credited. Read from
+ * src/data/photo-credits.json; scripts/check-photos.mjs fails the build if a photo is missing here.
+ */
+import Page from '../layouts/Page.astro';
+import site from '../data/site.json';
+import credits from '../data/photo-credits.json';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Photo credits', path: '/photo-credits/' },
+];
+type Credit = { slug: string; shows: string; author: string; license: string; licenseUrl?: string; source?: string; title?: string; own?: boolean };
+const licensed = (credits as Credit[]).filter((c) => !c.own);
+const own = (credits as Credit[]).filter((c) => c.own);
+---
+
+<Page
+  title="Photo Credits and Image Sources | Kirby Chan & Co."
+  description="Who took each photo on kirbychanmarkham.com, the licence it is used under and a link to the original, plus where listing photos and video stills come from."
+  eyebrow="Legal"
+  h1="Photo credits and image sources"
+  accent="credits"
+  lede="Every photo on this website, who made it and the licence that lets us show it."
+  crumbs={crumbs}
+  tone="sand"
+>
+  <section class="section">
+    <div class="wrap-narrow prose">
+      <h2>Photos used under an open licence</h2>
+      <p>
+        These photos come from Wikimedia Commons. Each one is used under the licence named beside it,
+        with a link to the original file. We resized and cropped them to fit the page and made no
+        other changes. The photographers do not endorse this website or our services. Where a
+        licence is a share-alike licence, our resized copy is offered under the same licence.
+      </p>
+      <ul>
+        {
+          licensed.map((c) => (
+            <li>
+              {c.shows} Photo by {c.author}, <a href={c.licenseUrl} rel="noopener noreferrer license" target="_blank">{c.license}</a>.{' '}
+              <a href={c.source} rel="noopener noreferrer" target="_blank">Original file{c.title ? `: ${c.title}` : ''}</a>.
+            </li>
+          ))
+        }
+      </ul>
+      <p>
+        The same photos appear on neighbourhood guides, blog cards, comparison pages and the images
+        shown when a page is shared. The credit on this page covers each of those uses.
+      </p>
+
+      <h2>Our own photos</h2>
+      <p>These belong to {site.name} and may not be reused without permission.</p>
+      <ul>
+        {own.map((c) => <li>{c.shows}</li>)}
+        <li>The {site.shortName} logo and the site icon.</li>
+      </ul>
+
+      <h2>Listing photos</h2>
+      <p>
+        Photos of homes for sale come from the listing brokerage through the Toronto Regional Real
+        Estate Board data feed. Each listing page names the brokerage that listed the home. Those
+        photos belong to the brokerage or its photographer.
+      </p>
+
+      <h2>Video stills</h2>
+      <p>The still shown on each video is the cover image of our own video on YouTube.</p>
+
+      <h2>Maps</h2>
+      <p>
+        Map images on the map search are © <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">OpenStreetMap contributors</a>.
+      </p>
+
+      <h2>Found a mistake?</h2>
+      <p>
+        If you made one of these photos and the credit is wrong or you would like it removed, email{' '}
+        <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a> and we will fix it.
+      </p>
+    </div>
+  </section>
+</Page>

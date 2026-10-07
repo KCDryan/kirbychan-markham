@@ -22,6 +22,7 @@ const legalLinks = [
   { label: dict.ui.footer.privacy, href: '/privacy/' },
   { label: dict.ui.footer.terms, href: '/terms/' },
   { label: dict.ui.footer.accessibility, href: '/accessibility/' },
+  { label: 'Photo credits', href: '/photo-credits/' },
 ];
 
 const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft)).sort(

@@ -146,5 +146,29 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "source": "https://commons.wikimedia.org/wiki/File:Stouffville_GO_Train_at_Unionville_GO_Station,_October_25_2025_(01).jpg",
     "title": "Stouffville GO Train at Unionville GO Station, October 25 2025 (01).jpg"
+  },
+  {
+    "slug": "kirby-portrait",
+    "file": "kirby-portrait",
+    "shows": "Portrait of Kirby Chan, Broker.",
+    "author": "Kirby Chan & Co. Real Estate Team",
+    "license": "All rights reserved",
+    "own": true
+  },
+  {
+    "slug": "about-team",
+    "file": "about-team",
+    "shows": "The Kirby Chan & Co. Real Estate Team.",
+    "author": "Kirby Chan & Co. Real Estate Team",
+    "license": "All rights reserved",
+    "own": true
+  },
+  {
+    "slug": "home-hero",
+    "file": "home-hero",
+    "shows": "Kirby Chan, Broker, on the home page.",
+    "author": "Kirby Chan & Co. Real Estate Team",
+    "license": "All rights reserved",
+    "own": true
   }
 ]
