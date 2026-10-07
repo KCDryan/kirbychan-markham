@@ -158,7 +158,8 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
         </p>
         <p>
           Office: {site.office.street}, {site.office.city}, {site.office.region}{' '}
-          {site.office.postalCode}. Serving Markham and the surrounding York Region communities.
+          {site.office.postalCode}. Phone: <a href={site.contact.phoneHref}>{site.contact.phone}</a>. Serving Markham and the
+          surrounding York Region communities.
         </p>
         <p>
           Market figures shown on this site are general information drawn from Toronto Regional
