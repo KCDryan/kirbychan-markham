@@ -14,6 +14,7 @@
  *   - links internally without a trailing slash, or externally without https
  *   - repeats a source URL, or has an FAQ question without a question mark
  *   - contains a placeholder such as TODO, TBD, lorem or [insert
+ *   - shares more than 15% of its wording with another post
  *
  * Usage: node scripts/check-blog.mjs
  */
@@ -214,6 +215,32 @@ for (const name of quickFiles) {
   for (const r of data.relatedServices ?? []) if (!serviceSlugs.includes(r)) fail(file, `relatedServices "${r}" is not a service slug`);
   const placeholder = `${JSON.stringify(data)}\n${body}`.match(/\b(TODO|TBD|FIXME|lorem ipsum)\b|\[insert/i);
   if (placeholder) fail(file, `contains the placeholder "${placeholder[0]}"`);
+}
+
+// No two posts may share much of their wording, whoever wrote them. Compares runs of five words:
+// distinct posts on related topics share well under 5%, so 15% of the shorter post means copied text.
+// ponytail: every pair is compared, fine for hundreds of posts; index the phrases if it gets slow.
+const phrases = new Map();
+for (const [dir, names] of [[BLOG, files], [QUICK, quickFiles]]) {
+  for (const name of names) {
+    const parsed = split(await readFile(join(dir, name), 'utf8'));
+    if (!parsed || parsed.data.draft) continue;
+    const w = parsed.body.toLowerCase().replace(/\]\([^)]*\)/g, ' ').match(/[a-z']+/g) ?? [];
+    const set = new Set();
+    for (let i = 0; i + 5 <= w.length; i++) set.add(w.slice(i, i + 5).join(' '));
+    phrases.set(`${dir}/${name}`, set);
+  }
+}
+const all = [...phrases];
+for (let i = 0; i < all.length; i++) {
+  for (let j = i + 1; j < all.length; j++) {
+    const [small, big] = all[i][1].size <= all[j][1].size ? [all[i], all[j]] : [all[j], all[i]];
+    if (small[1].size < 50) continue;
+    let shared = 0;
+    for (const ph of small[1]) if (big[1].has(ph)) shared++;
+    const share = shared / small[1].size;
+    if (share > 0.15) fail(small[0], `shares ${Math.round(share * 100)}% of its wording with ${big[0]}. Each post must be its own text`);
+  }
 }
 
 if (problems.length > 0) {
