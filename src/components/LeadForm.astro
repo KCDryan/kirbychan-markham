@@ -211,8 +211,8 @@ const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft))
           status.classList.add('is-error');
           status.textContent =
             document.documentElement.lang.startsWith('en') && error instanceof Error
-              ? `${error.message}. You can also call 416-305-8008.`
-              : (form.dataset.error ?? 'Something went wrong. You can also call 416-305-8008.');
+              ? `${error.message}. You can also call (647) 249-7105.`
+              : (form.dataset.error ?? 'Something went wrong. You can also call (647) 249-7105.');
         }
         if (button) {
           button.disabled = false;

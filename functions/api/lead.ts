@@ -225,7 +225,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     // Deliberately no personal data in the log line.
     return reply(request, 502, {
       ok: false,
-      error: 'We could not deliver that just now. Please call 416-305-8008',
+      error: 'We could not deliver that just now. Please call (647) 249-7105',
     });
   }
 

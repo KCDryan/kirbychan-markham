@@ -26,7 +26,7 @@ interface Context {
   waitUntil(p: Promise<unknown>): void;
 }
 
-const SIGNATURE = 'Kirby Chan & Co. Real Estate Team | eXp Realty Brokerage\n416-305-8008 | kirbychanmarkham.com';
+const SIGNATURE = 'Kirby Chan & Co. Real Estate Team | eXp Realty Brokerage\n(647) 249-7105 | kirbychanmarkham.com';
 /** Sign ups and reset requests from one IP address in an hour. */
 const SENDS_PER_HOUR = 10;
 
