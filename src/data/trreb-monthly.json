@@ -1,19 +1,19 @@
 {
   "_readme": "TRREB Market Watch figures for one month. Updated by the biweekly routine (UPDATE-PLAYBOOK.md, task D). Every page that quotes monthly prices reads from here. The comparison pages write their sentences from these numbers.",
-  "period": "August 2026",
-  "sourceUrl": "https://trreb.ca/wp-content/files/market-stats/market-watch/mw2608.pdf",
-  "report": "/market-reports/august-2026/",
-  "markham": { "sales": 282, "average": 1208692, "median": 1095000, "detSales": 137, "detAvg": 1611773, "condoSales": 57, "condoAvg": 638332 },
+  "period": "September 2026",
+  "sourceUrl": "https://trreb.ca/wp-content/files/market-stats/market-watch/mw2609.pdf",
+  "report": "/market-reports/september-2026/",
+  "markham": { "sales": 245, "average": 1125353, "median": 1051000, "detSales": 108, "detAvg": 1534139, "condoSales": 55, "condoAvg": 574612 },
   "markhamByType": [
-    { "type": "Detached", "sales": 137, "average": 1611773, "median": 1488000 },
-    { "type": "Semi-detached", "sales": 15, "average": 958133, "median": 945000 },
-    { "type": "Freehold townhouse", "sales": 39, "average": 1031119, "median": 995000 },
-    { "type": "Condo townhouse", "sales": 28, "average": 812567, "median": 750000 },
-    { "type": "Condo apartment", "sales": 57, "average": 638332, "median": 563800 }
+    { "type": "Detached", "sales": 108, "average": 1534139, "median": 1381500 },
+    { "type": "Semi-detached", "sales": 18, "average": 1019322, "median": 999000 },
+    { "type": "Freehold townhouse", "sales": 30, "average": 977959, "median": 918490 },
+    { "type": "Condo townhouse", "sales": 23, "average": 829470, "median": 735000 },
+    { "type": "Condo apartment", "sales": 55, "average": 574612, "median": 535000 }
   ],
   "cities": {
-    "richmond-hill": { "sales": 161, "average": 1205777, "median": 1068888, "detSales": 74, "detAvg": 1667913, "condoSales": 33, "condoAvg": 538509 },
-    "vaughan": { "sales": 242, "average": 1234758, "median": 1148750, "detSales": 122, "detAvg": 1671824, "condoSales": 63, "condoAvg": 607650 },
-    "toronto": { "sales": 1767, "average": 979684, "median": 770000, "detSales": 550, "detAvg": 1525749, "condoSales": 885, "condoAvg": 651648 }
+    "richmond-hill": { "sales": 172, "average": 1189203, "median": 1079000, "detSales": 84, "detAvg": 1580643, "condoSales": 34, "condoAvg": 574564 },
+    "vaughan": { "sales": 213, "average": 1163441, "median": 1080000, "detSales": 108, "detAvg": 1599218, "condoSales": 62, "condoAvg": 548958 },
+    "toronto": { "sales": 1937, "average": 1034320, "median": 810000, "detSales": 640, "detAvg": 1562966, "condoSales": 884, "condoAvg": 640248 }
   }
 }
