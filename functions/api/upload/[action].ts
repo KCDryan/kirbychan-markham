@@ -5,10 +5,16 @@
  * /api/upload/preview    POST  post   the finished page, exactly as it will look
  * /api/upload/publish    POST  post   live at once (or saved only, when post.draft); replace: true to update a post already up
  * /api/upload/get        POST  slug   a saved post, to edit it
- * /api/upload/list       GET   uploaded posts, newest first
+ * /api/upload/list       GET   every post, newest first: uploaded ones (source "upload") and the ones built
+ *                              from the website's own files that have not been saved here (source "website")
  * /api/upload/unpublish  POST  slug   removes the post from the website and from the list (live = -1;
  *                              the row stays so the built copy answers 404 until the next build)
- * /api/upload/export     GET   public: live uploaded posts, read by scripts/pull-uploads.mjs at build
+ * /api/upload/export     GET   public: live uploaded posts, plus the addresses of website posts taken
+ *                              down here ("down"), read by scripts/pull-uploads.mjs at build
+ *
+ * Posts built from the website's own files come from /blog/built-posts.json (builtPosts). Saving or
+ * removing one stores it in the uploads table, which wins from then on. If that file cannot be read
+ * the list simply has the uploaded posts.
  *
  * One shared password, set by the owner as the UPLOAD_PASSWORD secret in Cloudflare. Ten wrong
  * passwords from one address in an hour (or fifty from anywhere) pause sign in for the hour.
@@ -25,14 +31,14 @@
  *
  * With oneCutOnly in site.json as well, OneCut Content is the only way to make a post: each article
  * it finishes writing comes with a one-use ticket and a new post is not saved without one. Posts
- * already saved can still be edited, unpublished and removed.
+ * already saved or already built into the website can still be edited, unpublished and removed.
  * ponytail: the ticket proves an article was written, not that the saved words are that article. A
  * signed-in owner editing requests by hand could swap the text. Bind the ticket to a hash of the
  * article if that ever matters.
  */
 import { randomHex, same, sameOrigin, sha256 } from '../../../src/lib/vow';
 import site from '../../../src/data/site.json';
-import { SHELL, cleanPost, ensureUploadSchema, fillShell, getUpload, rebuild, type Post, type UploadEnv } from '../../../src/lib/uploads';
+import { SHELL, builtPosts, cleanPost, ensureUploadSchema, fillShell, getUpload, rebuild, type Post, type UploadEnv } from '../../../src/lib/uploads';
 
 interface Context {
   request: Request;
@@ -123,8 +129,10 @@ export async function onRequest({ request, env, params, waitUntil }: Context): P
   await ensureUploadSchema(db);
 
   if (action === 'export' && request.method === 'GET') {
-    const { results } = await db.prepare('SELECT post FROM uploads WHERE live = 1 ORDER BY updated DESC').bind().all<{ post: string }>();
-    return json({ posts: results.map((r) => JSON.parse(r.post)) });
+    const { results } = await db.prepare('SELECT slug, live, post FROM uploads ORDER BY updated DESC').bind().all<{ slug: string; live: number; post: string }>();
+    const rows = results.map((r) => ({ ...r, post: JSON.parse(r.post) as Post }));
+    // down: website posts removed or held as a draft here, so the build leaves their files out. Other drafts stay private.
+    return json({ posts: rows.filter((r) => r.live === 1).map((r) => r.post), down: rows.filter((r) => r.live !== 1 && r.post.fromWebsite).map((r) => r.slug) });
   }
 
   if (request.method === 'POST') {
@@ -226,12 +234,15 @@ export async function onRequest({ request, env, params, waitUntil }: Context): P
   }
 
   if (action === 'list' && request.method === 'GET') {
-    const { results } = await db.prepare('SELECT live, post FROM uploads WHERE live >= 0 ORDER BY updated DESC LIMIT 200').bind().all<{ live: number; post: string }>();
+    const { results } = await db.prepare('SELECT live, post FROM uploads WHERE live >= 0 ORDER BY updated DESC LIMIT 500').bind().all<{ live: number; post: string }>();
+    const taken = new Set((await db.prepare('SELECT slug FROM uploads').bind().all<{ slug: string }>()).results.map((r) => r.slug));
+    const item = (p: Post, live: boolean, source: 'upload' | 'website', locked?: string) =>
+      ({ slug: p.slug, headline: p.headline, live, draft: !!p.draft, updated: p.updated, url: postUrl(p.slug), source, ...(locked ? { locked } : {}) });
     return json({
-      posts: results.map((r) => {
-        const p = JSON.parse(r.post) as Post;
-        return { slug: p.slug, headline: p.headline, live: r.live === 1, draft: !!p.draft, updated: p.updated, url: postUrl(p.slug) };
-      }),
+      posts: [
+        ...results.map((r) => item(JSON.parse(r.post) as Post, r.live === 1, 'upload')),
+        ...(await builtPosts(env, request.url)).filter((p) => !taken.has(p.slug)).map((p) => item(p, true, 'website', p.locked)),
+      ].sort((a, b) => b.updated - a.updated),
     });
   }
 
@@ -239,27 +250,32 @@ export async function onRequest({ request, env, params, waitUntil }: Context): P
     const post = cleanPost(body.post);
     if (typeof post === 'string') return problem(post);
     const existing = await getUpload(db, post.slug);
+    // The same address in the website's own files: saving is an edit of that post and it keeps its date.
+    const built = (await builtPosts(env, request.url)).find((p) => p.slug === post.slug);
+    if (built?.locked && !existing) return problem(built.locked, 409);
     const now = Date.now();
-    post.published = existing?.post.published ?? now;
+    post.published = existing?.post.published ?? built?.published ?? now;
     post.updated = now;
+    if (built || existing?.post.fromWebsite) post.fromWebsite = true;
 
     if (action === 'preview') {
       const html = await page(env, request, post);
-      return html ? json({ html, exists: !!existing && !existing.removed }) : problem('The preview could not be made. Please try again.', 500);
+      return html ? json({ html, exists: existing ? !existing.removed : !!built }) : problem('The preview could not be made. Please try again.', 500);
     }
-    // A post built into the site (not uploaded here) keeps its address.
-    if (!existing && (await env.ASSETS!.fetch(new URL(`/blog/${post.slug}/`, request.url))).ok) {
+    // Any other page built at this address (a blog list page or a post the list above could not read) keeps it.
+    if (!existing && !built && (await env.ASSETS!.fetch(new URL(`/blog/${post.slug}/`, request.url))).ok) {
       return problem('The site already has a post with this title. Change the title a little and try again.', 409);
     }
     // OneCut only: a new post needs the ticket from an article OneCut wrote. It is used up when saved.
-    if (oneCutOnly && (!existing || existing.removed)) {
+    // A post is new unless it is saved here and not removed or it is built into the website.
+    if (oneCutOnly && (existing ? existing.removed : !built)) {
       const ticket = typeof body.ticket === 'string' && /^[0-9a-f]{64}$/.test(body.ticket) ? await sha256(body.ticket) : '';
       const row = ticket ? await db.prepare('SELECT expires FROM upload_tickets WHERE hash = ?').bind(ticket).first<{ expires: number }>() : null;
       if (!row || row.expires < now) return problem('New posts on this website are written with OneCut Content. Press "Write a new post" to start one.', 403);
       await db.prepare('DELETE FROM upload_tickets WHERE hash = ?').bind(ticket).run();
     }
     // Same title as a post in the list (live or draft): ask before replacing it.
-    if (existing && !existing.removed && body.replace !== true) return json({ error: 'exists', live: existing.live, url: postUrl(post.slug) }, 409);
+    if ((existing ? !existing.removed : built) && body.replace !== true) return json({ error: 'exists', live: existing?.live ?? true, url: postUrl(post.slug) }, 409);
     await db
       .prepare('INSERT INTO uploads (slug, live, post, updated) VALUES (?, ?, ?, ?) ON CONFLICT(slug) DO UPDATE SET live = excluded.live, post = excluded.post, updated = excluded.updated')
       .bind(post.slug, post.draft ? 0 : 1, JSON.stringify(post), now)
@@ -269,13 +285,30 @@ export async function onRequest({ request, env, params, waitUntil }: Context): P
   }
 
   if (action === 'get' && request.method === 'POST') {
-    const found = await getUpload(db, typeof body.slug === 'string' ? body.slug : '');
-    return found ? json({ post: found.post, live: found.live }) : problem('That post was not found.', 404);
+    const slug = typeof body.slug === 'string' ? body.slug : '';
+    const found = await getUpload(db, slug);
+    if (found) return json({ post: found.post, live: found.live, source: 'upload' });
+    const built = (await builtPosts(env, request.url)).find((p) => p.slug === slug);
+    if (built?.locked) return problem(built.locked, 409);
+    return built ? json({ post: built, live: true, source: 'website' }) : problem('That post was not found.', 404);
   }
 
   if (action === 'unpublish' && request.method === 'POST') {
     const slug = typeof body.slug === 'string' ? body.slug : '';
-    await db.prepare('UPDATE uploads SET live = -1, updated = ? WHERE slug = ?').bind(Date.now(), slug).run();
+    const now = Date.now();
+    // A post in the website's own files gets a row (or its row is marked), so its page answers 404
+    // and the build leaves the file out.
+    const built = (await builtPosts(env, request.url)).find((p) => p.slug === slug);
+    if (built) {
+      const { locked: _locked, ...post } = built;
+      await db
+        .prepare(
+          `INSERT INTO uploads (slug, live, post, updated) VALUES (?, -1, ?, ?)
+           ON CONFLICT(slug) DO UPDATE SET live = -1, updated = excluded.updated, post = json_set(uploads.post, '$.fromWebsite', json('true'))`
+        )
+        .bind(slug, JSON.stringify({ ...post, fromWebsite: true }), now)
+        .run();
+    } else await db.prepare('UPDATE uploads SET live = -1, updated = ? WHERE slug = ?').bind(now, slug).run();
     waitUntil(rebuild(env));
     return json({ ok: true });
   }

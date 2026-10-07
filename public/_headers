@@ -48,6 +48,10 @@
 /blog/upload-shell/*
   X-Robots-Tag: noindex, nofollow
 
+# The list of built posts the upload page reads. Public text only, never indexed.
+/blog/built-posts.json
+  X-Robots-Tag: noindex, nofollow
+
 # MLS® listing search and the listing pages (functions/listing/[key].ts serves them with the headers of
 # /homes-for-sale/listing-shell/). Listing photos come from PropTx's image host, so images may load from
 # any https source. The enquiry form on these pages needs the Turnstile spam check.

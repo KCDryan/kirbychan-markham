@@ -11,6 +11,7 @@ import BlogPostLayout from '../../../layouts/BlogPostLayout.astro';
 import { CATEGORY_SLUGS } from '../../../lib/blog';
 import { SHELL_DATE } from '../../../lib/uploads';
 import { HOODS, SERVICES } from '../../../lib/post-links';
+import { GUIDE_SLUGS } from '../../../lib/guides';
 
 export const getStaticPaths = () => CATEGORY_SLUGS.map((category) => ({ params: { category } }));
 
@@ -34,6 +35,8 @@ const entry = {
     // Every guide is listed; the post's own choices are kept and the rest removed.
     related: Object.keys(HOODS),
     relatedServices: Object.keys(SERVICES),
+    // Any guide: its line is swapped for the post's own guide or removed.
+    guide: GUIDE_SLUGS[0],
     noindex: true,
     draft: false,
   },

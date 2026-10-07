@@ -5,10 +5,15 @@
  * (scripts/pull-uploads.mjs) also writes them into the blog collection, so the blog list, category
  * pages, sitemap and RSS feed include them.
  *
+ * Posts made in the website's own files (src/content/blog) are listed on the upload page too, read
+ * from /blog/built-posts.json. One of them moves into the upload system the first time it is saved
+ * or removed there: from then on the saved version wins and the build leaves the file out.
+ *
  *   node --experimental-strip-types src/lib/uploads.ts   (self-check)
  */
 import MarkdownIt from 'markdown-it';
 import { BLOG_CATEGORIES, readingMinutes, wordCount } from './blog.ts';
+import { GUIDES } from './guides.ts';
 import { longDate } from './format.ts';
 import type { D1 } from './vow.ts';
 import { HOODS, SERVICES, autoLinks } from './post-links.ts';
@@ -38,9 +43,35 @@ export interface Post {
   draft: boolean;
   published: number;
   updated: number;
+  /** Optional search title (30 to 60 characters) and meta description (140 to 168). Empty means they come from the headline and summary. */
+  title?: string;
+  description?: string;
+  /** The pillar guide the post belongs to. Kept for posts that came from the website's own files. */
+  guide?: string;
+  /** Set by the API when the website's own files have a post at this address, so the build leaves that file out. */
+  fromWebsite?: boolean;
 }
 
 export const SHELL = '/blog/upload-shell/';
+
+/** A post built from the website's own files. `locked` is the reason it cannot be edited on the upload page. */
+export type BuiltPost = Post & { locked?: string };
+export const BUILT = '/blog/built-posts.json';
+
+/**
+ * Every published post the last build made from the website's own files (src/pages/blog/built-posts.json.ts).
+ * Empty when it cannot be read, so the upload page still works with its own posts.
+ * ponytail: the whole file is read for each call, fine for hundreds of posts. Keep it in the cache if it gets slow.
+ */
+export async function builtPosts(env: UploadEnv, base: string): Promise<BuiltPost[]> {
+  try {
+    const res = await env.ASSETS!.fetch(new URL(BUILT, base));
+    const posts = res.ok ? ((await res.json()) as { posts?: BuiltPost[] }).posts : [];
+    return Array.isArray(posts) ? posts : [];
+  } catch {
+    return [];
+  }
+}
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS uploads (slug TEXT PRIMARY KEY, live INTEGER NOT NULL, post TEXT NOT NULL, updated INTEGER NOT NULL);
@@ -80,6 +111,10 @@ export function cleanPost(raw: unknown): Post | string {
   if (summary.length < 50) return 'The article needs a short summary of at least 50 characters. Add a meta description or an opening paragraph.';
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) || slug.length > 90) return 'The web address for this post is not valid.';
   if (!(category in BLOG_CATEGORIES)) return 'Please choose a topic for this post.';
+  const title = str(r.title, 200);
+  const description = str(r.description, 1000);
+  if (title && (title.length < 30 || title.length > 60)) return `The Google title must be 30 to 60 characters long. It is ${title.length}. You can also leave it empty.`;
+  if (description && (description.length < 140 || description.length > 168)) return `The Google description must be 140 to 168 characters long. It is ${description.length}. You can also leave it empty.`;
   let markdown = typeof r.markdown === 'string' ? r.markdown.trim() : '';
   if (markdown.length > 200_000) return 'This article is too long to upload.';
   if (wordCount(markdown) < 100) return 'This article is too short. Paste the whole article, not just part of it.';
@@ -111,6 +146,9 @@ export function cleanPost(raw: unknown): Post | string {
     draft: r.draft === true,
     published: 0,
     updated: 0,
+    ...(title ? { title } : {}),
+    ...(description ? { description } : {}),
+    ...(typeof r.guide === 'string' && Object.hasOwn(GUIDES, r.guide) ? { guide: r.guide } : {}),
   };
 }
 
@@ -174,7 +212,8 @@ export function fillShell(shell: string, post: Post): string {
     .replace(/\s*<meta name="robots" content="noindex"\s*\/?>/, '');
   // Byline and the "Keep exploring" links: the post's choices, else what the layout would pick for it.
   if (post.author) html = html.replace(/(<p class="post-meta"[^>]*>\s*<span[^>]*>)By [^<]*/, '$1KCUPLOAD-BYLINE');
-  const auto = autoLinks(`${post.headline} ${clip(post.summary, 160)}`, post.category);
+  const description = post.description || clip(post.summary, 160);
+  const auto = autoLinks(`${post.headline} ${description}`, post.category);
   const keep = (attr: string, ids: string[]) => {
     const items = new Map([...html.matchAll(new RegExp(`<li ${attr}="([a-z-]+)"[^>]*>[\\s\\S]*?</li>`, 'g'))].map((m) => [m[1], m[0]]));
     let first = true;
@@ -191,6 +230,9 @@ export function fillShell(shell: string, post: Post): string {
   keep('data-service', post.relatedServices.length ? post.relatedServices : auto.services);
   html = html.replace(/<section class="post-links"[\s\S]*?<\/section>/, (s) => (s.includes('<li') ? s : ''));
   if (!post.quickAnswer) html = html.replace(/<div class="takeaway"[^>]*>[\s\S]*?<\/div>/, '');
+  // The "Part of the ... Guide" line: the shell carries one guide, swapped for the post's own or removed.
+  const guide = post.guide && Object.hasOwn(GUIDES, post.guide) ? { path: `/${post.guide}/`, label: GUIDES[post.guide as keyof typeof GUIDES].label } : undefined;
+  html = html.replace(/\s*<p class="post-guide"[^>]*>[\s\S]*?<\/p>/, (line) => (guide ? line.replace(/<a href="[^"]*"([^>]*)>[^<]*/, (_m, rest) => `<a href="${guide.path}"${rest}>${esc(guide.label)}`) : ''));
   html = post.faq.length
     ? repeat(/<details class="faq__item"[\s\S]*?<\/details>/, post.faq.length, 'KCUPLOAD-FAQ')(html)
     : html.replace(/<section class="faq"[\s\S]*?<\/section>/, '');
@@ -205,8 +247,8 @@ export function fillShell(shell: string, post: Post): string {
   // Structured data is rebuilt as objects, then held aside so the single pass below skips it.
   const values: Record<string, string> = {
     'KCUPLOAD-HONE': post.headline,
-    'KCUPLOAD-TITLE': clip(post.headline, 60),
-    'KCUPLOAD-DESC': clip(post.summary, 160),
+    'KCUPLOAD-TITLE': post.title || clip(post.headline, 60),
+    'KCUPLOAD-DESC': description,
     'KCUPLOAD-SUB': post.summary,
     'KCUPLOAD-TAKEAWAY': post.quickAnswer || post.summary,
     'KCUPLOAD-MIN': String(readingMinutes(words)),
@@ -231,6 +273,7 @@ export function fillShell(shell: string, post: Post): string {
       if (o['@type'] === 'FAQPage') o.mainEntity = post.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } }));
       if (o['@type'] === 'BlogPosting') {
         o.wordCount = words;
+        if (o.about) o.about = { ...(o.about as object), name: guide ? guide.label.replace(' Guide', '') : `${BLOG_CATEGORIES[post.category as keyof typeof BLOG_CATEGORIES]} in Markham` };
         if (shareUrl) o.image = shareUrl;
         if (post.author) o.author = { '@type': 'Person', name: post.author, worksFor: { '@id': (o.publisher as { '@id': string })['@id'] } };
       }
@@ -331,5 +374,25 @@ if (typeof process !== 'undefined' && !!import.meta.filename && import.meta.file
   assert(headings.map((h) => h.id).join() === 'one,two,two-1', 'heading ids match Astro');
   assert(!/<script|javascript:/.test(html), 'rendered body is safe');
   assert(typeof cleanPost({ ...p, category: 'nope' }) === 'string', 'bad category refused');
+  // Search title, meta description and guide: optional, checked, then used as given.
+  assert(p.title === undefined && p.description === undefined && p.guide === undefined, 'optional fields stay out when empty');
+  assert(/Google title/.test(String(cleanPost({ ...p, title: 'Too short' }))) && /Google title/.test(String(cleanPost({ ...p, title: 'x'.repeat(61) }))), 'search title length checked');
+  assert(/Google description/.test(String(cleanPost({ ...p, description: 'Too short' }))) && /Google description/.test(String(cleanPost({ ...p, description: 'x'.repeat(169) }))), 'meta description length checked');
+  const seoTitle = 'Unionville GO homes: a "buyer" <guide>';
+  const seoDesc = `What buyers ask about homes near Unionville GO & Main Street in Markham ${'and more '.repeat(9)}`.trim();
+  const seo = cleanPost({ ...p, title: `  ${seoTitle} `, description: seoDesc, guide: 'downsizing-markham' }) as Post;
+  assert(seo.title === seoTitle && seo.description === seoDesc && seo.guide === 'downsizing-markham', 'valid search fields kept');
+  assert((cleanPost({ ...p, guide: 'constructor' }) as Post).guide === undefined, 'unknown guide dropped');
+  const shell =
+    '<title>KCUPLOAD-TITLE</title><meta name="description" content="KCUPLOAD-DESC"><h1>KCUPLOAD-HONE</h1>' +
+    '<p class="post-guide" x>Part of the <a href="/new-construction-markham/" x>Markham New Construction Guide</a>, our guide.</p>' +
+    '<script type="application/ld+json">{"@type":"BlogPosting","about":{"@type":"Thing","name":"Markham New Construction"},"publisher":{"@id":"p"}}</script>KCUPLOAD-BODY';
+  const filled = fillShell(shell, { ...seo, published: Date.UTC(2026, 0, 5) });
+  assert(filled.includes('<title>Unionville GO homes: a &quot;buyer&quot; &lt;guide&gt;</title>'), 'search title used and escaped');
+  assert(filled.includes(`content="${seoDesc.replace('&', '&amp;')}"`), 'meta description used and escaped');
+  assert(filled.includes('<a href="/downsizing-markham/" x>Markham Downsizing Guide</a>') && filled.includes('"name":"Markham Downsizing"'), 'guide line and topic follow the post');
+  const plain = fillShell(shell, { ...p, published: Date.UTC(2026, 0, 5) });
+  assert(plain.includes('<title>Living near Unionville GO in Markham</title>') && plain.includes('content="What buyers ask about homes'), 'without them the headline and summary are used');
+  assert(!plain.includes('post-guide') && plain.includes('"name":"Neighbourhoods in Markham"'), 'no guide line without a guide');
   console.log('uploads ok');
 }

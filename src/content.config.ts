@@ -149,6 +149,11 @@ const quickPost = z.object({
   relatedServices: z.array(z.string()).default([]),
   draft: z.boolean().default(false),
   uploadVersion: z.string().optional().describe('Set on posts uploaded at /upload/'),
+  // Only posts uploaded at /upload/ carry these three (scripts/pull-uploads.mjs). The upload API has
+  // checked them already, so they are loose here: a bad value must never stop a build.
+  title: z.string().optional().describe('Search title. Blank means the headline'),
+  description: z.string().optional().describe('Meta description. Blank means the summary'),
+  guide: z.enum(GUIDE_SLUGS).optional().catch(undefined),
   ...author,
 });
 
@@ -179,19 +184,18 @@ const blog = defineCollection({
     )
     .transform((d) => {
       if (!d.quick) return { ...d, showTakeaway: true };
-      const { headline, summary, quickAnswer, ...rest } = d;
+      const { headline, summary, quickAnswer, title, description, ...rest } = d;
       return {
         ...rest,
         showTakeaway: Boolean(quickAnswer?.trim()),
-        title: clip(headline, 60),
-        description: clip(summary, 160),
+        title: title?.trim() || clip(headline, 60),
+        description: description?.trim() || clip(summary, 160),
         ogImage: undefined,
         noindex: false,
         h1: headline,
         subtitle: summary,
         takeaway: quickAnswer?.trim() || summary,
         neighbourhood: undefined,
-        guide: undefined,
       };
     }),
 });

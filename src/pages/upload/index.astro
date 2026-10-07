@@ -1,7 +1,8 @@
 ---
 /**
  * Blog upload, one screen at a time (the browser's Back button moves between them):
- *   My blog posts   every uploaded post with Edit and Remove, plus a big "Upload a new post" button
+ *   My blog posts   every post, uploaded here or already on the website, with Edit and Remove, plus a
+ *                   big "Upload a new post" button
  *   #new            paste the article's HTML, check the details and the preview, publish or save a draft
  *   #edit=<slug>    the same screen for a saved post
  *   #done           "Your post is live", with nothing left on screen to publish twice
@@ -52,6 +53,7 @@ import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
       <h1>My blog posts</h1>
       <a class="btn btn--primary up__big up__new" id="up-write-link" href="#write" hidden>+ Write a new post</a>
       <a class="btn btn--primary up__big up__new" id="up-new-link" href="#new">+ Upload a new post</a>
+      <input class="up__search" id="up-search" type="search" placeholder="Search by title" aria-label="Search my posts by title" hidden />
       <ul class="up__list" id="up-list"></ul>
       <p class="up__signout"><button class="btn btn--ghost btn--sm" id="up-logout" type="button">Sign out</button></p>
     </section>
@@ -96,6 +98,10 @@ import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
             <select id="up-category">
               {Object.entries(BLOG_CATEGORIES).map(([k, v]) => <option value={k}>{v}</option>)}
             </select>
+            <label for="up-seo-title">Google title (optional)</label>
+            <input id="up-seo-title" maxlength="60" placeholder="30 to 60 characters. Leave empty to use the title." />
+            <label for="up-seo-desc">Google description (optional)</label>
+            <input id="up-seo-desc" maxlength="168" placeholder="140 to 168 characters. Leave empty to use the summary." />
             <div class="up__pair">
               <div>
                 <label for="up-author">Written by</label>
@@ -185,7 +191,8 @@ import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
     return '';
   };
 
-  type Article = Pick<Imported, 'summary' | 'quickAnswer' | 'faq' | 'sources' | 'markdown'>;
+  // guide: the guide a post from the website belongs to. It has no box on screen and is kept as it is.
+  type Article = Pick<Imported, 'summary' | 'quickAnswer' | 'faq' | 'sources' | 'markdown'> & { guide?: string };
   let article: Article | null = null;
   /** Set while changing a saved post: it keeps its web address. */
   let editing = '';
@@ -198,6 +205,8 @@ import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
       headline,
       slug: editing || slugFor(headline),
       category: $<HTMLSelectElement>('up-category').value,
+      title: input('up-seo-title').value.trim(),
+      description: input('up-seo-desc').value.trim(),
       author: input('up-author').value.trim(),
       authorTitle: input('up-author').value.trim() ? input('up-role').value.trim() : '',
       related: ticked('related'),
@@ -231,8 +240,12 @@ import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
     ul.innerHTML = '<li class="up__empty">Loading your posts…</li>';
     const { data } = await api('list');
     ul.replaceChildren();
+    // The search box is only worth showing for a long list.
+    input('up-search').value = '';
+    input('up-search').hidden = (data.posts ?? []).length < 10;
     for (const p of data.posts ?? []) {
       const li = document.createElement('li');
+      li.dataset.title = String(p.headline).toLowerCase();
       const text = document.createElement('div');
       text.className = 'up__item';
       const name = p.live
@@ -241,13 +254,20 @@ import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
       const when = new Date(p.updated).toLocaleDateString('en-CA', { dateStyle: 'long' });
       const state = Object.assign(document.createElement('span'), {
         className: `up__state ${p.live ? 'up__state--live' : ''}`,
-        textContent: `${p.live ? 'On the website' : 'Draft, not on the website'} · ${when}`,
+        textContent: `${p.live ? 'Live' : 'Draft, not live'} · ${when}`,
       });
-      text.append(name, state);
+      // Where the post is kept: in the website's own files or saved from this page.
+      const from = Object.assign(document.createElement('span'), {
+        className: 'up__from',
+        textContent: (p.source === 'website' ? 'On the website' : 'Uploaded here') + (p.locked ? `. ${p.locked}` : ''),
+      });
+      text.append(name, state, from);
       const actions = document.createElement('div');
       actions.className = 'up__actions';
+      const editButton = button('Edit', 'btn--ghost', () => (location.hash = `edit=${p.slug}`));
+      editButton.disabled = !!p.locked;
       actions.append(
-        button('Edit', 'btn--ghost', () => (location.hash = `edit=${p.slug}`)),
+        editButton,
         button('Remove', 'btn--danger', async () => {
           const ask = p.live ? `Remove "${p.headline}" from the website?` : `Delete the draft "${p.headline}"?`;
           if (!confirm(ask)) return;
@@ -274,7 +294,10 @@ import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
   /** Fills every box from a post, hides the pasted code and shows the preview. */
   function fill(p: Partial<ReturnType<typeof post>> & Article, name: string) {
     article = { summary: p.summary, quickAnswer: p.quickAnswer, faq: p.faq, sources: p.sources, markdown: p.markdown };
+    article.guide = p.guide;
     input('up-title').value = (p.headline ?? '').slice(0, 90);
+    input('up-seo-title').value = p.title ?? '';
+    input('up-seo-desc').value = p.description ?? '';
     $<HTMLSelectElement>('up-category').value = p.category ?? 'neighbourhoods';
     input('up-author').value = p.author ?? '';
     input('up-role').value = p.authorTitle ?? '';
@@ -526,6 +549,10 @@ import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
     written = true;
     location.hash = 'new';
   });
+  $('up-search').addEventListener('input', (e) => {
+    const find = (e.target as HTMLInputElement).value.trim().toLowerCase();
+    for (const li of $('up-list').children) (li as HTMLElement).hidden = !(li as HTMLElement).dataset.title?.includes(find);
+  });
   $('up-html').addEventListener('input', (e) => load((e.target as HTMLTextAreaElement).value));
   $('up-file').addEventListener('change', async (e) => {
     const file = (e.target as HTMLInputElement).files?.[0];
@@ -699,6 +726,17 @@ import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--text-muted);
+  }
+  .up__from {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .up__search {
+    margin-bottom: var(--sp-4);
+  }
+  .up .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
   .up__actions {
     display: flex;
