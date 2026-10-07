@@ -208,6 +208,7 @@ for (const name of quickFiles) {
     if (!String(item.q ?? '').trim().endsWith('?')) fail(file, `FAQ question "${item.q}" must end with a question mark`);
     if (!String(item.a ?? '').trim()) fail(file, `FAQ question "${item.q}" has no answer`);
   }
+  if (!(data.sources ?? []).length) fail(file, 'add at least one source: the official page the facts in this post were checked against');
   for (const src of data.sources ?? []) {
     if (!String(src.url ?? '').startsWith('https://')) fail(file, `source ${src.url} must be a full https link`);
   }
