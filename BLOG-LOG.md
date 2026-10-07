@@ -66,3 +66,12 @@ One entry per blog run, newest at the bottom. See `BLOG-PLAYBOOK.md`, section 9.
 - Reason: WebFetch to reco.on.ca, ontario.ca, canada.ca, cmhc-schl.gc.ca and markham.ca all returned EGRESS_BLOCKED from the network egress proxy, so no primary source page could be opened this run. WebSearch snippets are not an opened page, so nothing could be cited or verified
 - Claims verified: 0
 - Needs owner attention: the egress proxy allowlist for this environment needs the government and regulator domains in playbook section 4 (reco.on.ca, ontario.ca, canada.ca, cmhc-schl.gc.ca, markham.ca at minimum) before posts can resume
+
+## 2026-10-07, real-estate-commission-ontario
+
+- Topic taken from Wednesday: How real estate commission works in Ontario. The earlier no-post entry for today (selling timeline) was a blocked-sources run on the cloud environment; this run ran locally with working access
+- Primary keyword: real estate commission ontario
+- Words: about 1,650 in the body
+- Sources checked (each re-opened and every quoted sentence matched against the page text): RECO consumer page on signing a contract with a brokerage, RECO Bulletin 2.3 (representation agreements), RECO Bulletin 6.2 (remuneration clause in an agreement of purchase and sale), CRA GST/HST in special cases, CRA GST/HST place of supply (13% for Ontario)
+- Claims verified: 37 quoted sentences matched. Claims removed because they could not be verified: what happens to commission if a deal does not close (no primary source found, now only a checklist question), Competition Bureau material (investigation notice only), statute and regulation section numbers (e-Laws pages would not render, so every legal requirement is attributed to RECO and not to the Act). Worked example ($800,000 at 4% of the first $500,000 plus 3% of the rest, $29,000, HST $3,770, total $32,770) recalculated and labelled as made-up rates
+- Needs owner attention: no statute or regulation text was read, so the post says what RECO says the rules require. The HST line assumes the brokerage is registered and that Ontario's 13% place-of-supply rate applies, and the post says so. Concurrent npm run verify runs from other sessions in this folder collided with this run's build and Tina schema check until they finished; the final verify passed with nothing else running

@@ -89,7 +89,7 @@ page opened during the run.
 ## Wednesday: selling a home in Markham
 
 - [ ] Selling your Markham home: a step by step timeline | selling | selling a house in markham
-- [ ] How real estate commission works in Ontario | selling | real estate commission ontario
+- [x] How real estate commission works in Ontario | selling | real estate commission ontario | real-estate-commission-ontario
 - [ ] Pricing a home in Markham: how comparable sales work | selling | how to price a home markham
 - [ ] Preparing a Markham home for sale: what is worth spending on | selling | prepare house for sale
 - [ ] What a listing agreement commits you to under TRESA | selling | listing agreement ontario
