@@ -44,7 +44,7 @@ export function website() {
   };
 }
 
-/** Sitewide RealEstateAgent. Address is the real registered office, never Markham. */
+/** Sitewide RealEstateAgent. Address is the Markham office in site.json. */
 export function realEstateAgent(areaServed: string[]) {
   const sameAs = Object.values(site.social).filter((u) => typeof u === 'string' && u.length > 0);
 
@@ -60,8 +60,8 @@ export function realEstateAgent(areaServed: string[]) {
     image: absolute('/og-default.png'),
     logo: absolute('/apple-touch-icon.png'),
     priceRange: '$$$',
-    // The building at the office address (OpenStreetMap). The team answers the phone at any hour.
-    geo: { '@type': 'GeoCoordinates', latitude: 43.84515, longitude: -79.40748 },
+    // The house at the office address (OpenStreetMap). The team answers the phone at any hour.
+    geo: { '@type': 'GeoCoordinates', latitude: 43.8296, longitude: -79.3736 },
     openingHoursSpecification: {
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],

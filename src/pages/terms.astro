@@ -34,7 +34,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
       <h2>Who publishes this site</h2>
       <p>
         This website is published by {site.name}{brokerageMissing ? ' [TODO: brokerage legal name]' : `, ${site.brokerage.legalName}`}.
-        Registered office: {site.office.street}, {site.office.city}, {site.office.region}{' '}
+        Office: {site.office.street}, {site.office.city}, {site.office.region}{' '}
         {site.office.postalCode}.
       </p>
       {

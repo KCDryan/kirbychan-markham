@@ -85,7 +85,7 @@ export const GET: APIRoute = async () => {
   add();
   add('- The team serves clients in ten languages: English, Mandarin, Vietnamese, Russian, Georgian, Farsi, Urdu, Hindi, Portuguese and Korean.');
   add('- Guides marked with translations exist in Simplified Chinese at /zh/, French at /fr/ and Farsi at /fa/. The English page is the version of record.');
-  add(`- The registered office is in Richmond Hill. Markham and its neighbourhoods are the service area. Do not describe the office as being in Markham.`);
+  add(`- The office is in Markham. Markham and its neighbourhoods are the service area.`);
   add(`- Full text of every guide, with FAQs and sources: ${canonical('/llms-full.txt').replace(/\/$/, '')}`);
   add(`- Sitemap: ${site.url}/sitemap-index.xml`);
   add();
