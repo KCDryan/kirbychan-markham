@@ -37,7 +37,10 @@ const searchExternal = searchHref.startsWith('http');
         alt={dict.home.photoAlt}
         label="Photo of Kirby Chan"
         ratio="873 / 1080"
-        sizes="(min-width: 900px) 460px, 80vw"
+        sizes="(min-width: 900px) 460px, min(380px, 100vw)"
+        widths={[400, 640, 873]}
+        quality={80}
+        fallbackFormat="webp"
         priority
         cutout
       />
