@@ -31,12 +31,14 @@ const vow = await load('vow');
 /** D1's prepare/bind/first/run/all over node:sqlite. Every statement is counted. */
 const sqlite = new DatabaseSync(':memory:');
 let statements = [];
+/** node:sqlite rejects a spread of values for ?1-style placeholders. D1 accepts them, so bind those by number. */
+const bound = (sql, v) => (/\?\d/.test(sql) ? [Object.fromEntries(v.map((val, i) => [i + 1, val]))] : v);
 const db = {
   prepare: (sql) => ({
     bind: (...v) => ({
-      first: async () => (statements.push(sql), sqlite.prepare(sql).get(...v) ?? null),
-      run: async () => (statements.push(sql), sqlite.prepare(sql).run(...v)),
-      all: async () => (statements.push(sql), { results: sqlite.prepare(sql).all(...v) }),
+      first: async () => (statements.push(sql), sqlite.prepare(sql).get(...bound(sql, v)) ?? null),
+      run: async () => (statements.push(sql), sqlite.prepare(sql).run(...bound(sql, v))),
+      all: async () => (statements.push(sql), { results: sqlite.prepare(sql).all(...bound(sql, v)) }),
     }),
   }),
   batch: async (list) => Promise.all(list.map((s) => s.run())),
@@ -45,6 +47,8 @@ const db = {
 const emails = [];
 /** Answers PropTx. Throwing stands in for a feed that is down. */
 let feed = () => [];
+let feedCalls = 0;
+let feedUrls = [];
 globalThis.fetch = async (url, init = {}) => {
   const u = String(url);
   if (u.startsWith('https://api.resend.com/')) {
@@ -52,7 +56,11 @@ globalThis.fetch = async (url, init = {}) => {
     return Response.json({ id: 'x' });
   }
   if (u.startsWith('https://challenges.cloudflare.com/')) return Response.json({ success: init.body.get('response') === 'human' });
-  if (u.startsWith('https://query.ampre.ca/')) return Response.json({ value: feed(decodeURIComponent(u), init) });
+  if (u.startsWith('https://query.ampre.ca/')) {
+    feedCalls++;
+    feedUrls.push(decodeURIComponent(u));
+    return Response.json({ value: feed(decodeURIComponent(u), init) });
+  }
   throw new Error(`Unexpected fetch ${u}`);
 };
 const edge = new Map();
@@ -82,7 +90,7 @@ ok(aliceCookie.startsWith(`${vow.COOKIE}=`), 'the test account is signed in with
 
 console.log('Listing pages');
 const SHELL = '/homes-for-sale/listing-shell/';
-const SHELL_HTML = `<title>%%LISTING_TITLE%%</title><meta name="description" content="%%LISTING_DESCRIPTION%%"><meta name="robots" content="noindex"><link rel="canonical" href="${ORIGIN}${SHELL}"><h1>%%LISTING_H1%%</h1>%%LISTING_BODY%%<input name="page" value="${SHELL}">`;
+const SHELL_HTML = `<title>%%LISTING_TITLE%%</title><meta name="description" content="%%LISTING_DESCRIPTION%%"><meta name="robots" content="noindex"><link rel="canonical" href="${ORIGIN}${SHELL}"><h1>%%LISTING_H1%%</h1>%%LISTING_BODY%%<div id="enquire">lead form</div><input name="page" value="${SHELL}">`;
 let shellHeaders = { 'content-type': 'text/html', 'x-robots-tag': 'noindex, nofollow', 'content-security-policy': "default-src 'self'" };
 const listingEnv = {
   ...env,
@@ -106,7 +114,7 @@ const ask = async (handler, key, cookie) => {
   const res = await handler({ request: new Request(`${ORIGIN}/listing/${key}/`, { headers: { cookie: cookie ?? '', 'cf-connecting-ip': '203.0.113.9' } }), env: listingEnv, params: { key }, waitUntil: (p) => pending.push(p) });
   await Promise.all(pending);
   pending = [];
-  return { status: res.status, html: await res.text(), cache: res.headers.get('cache-control'), robots: res.headers.get('x-robots-tag'), csp: res.headers.get('content-security-policy'), hsts: res.headers.get('strict-transport-security') };
+  return { status: res.status, html: await res.text(), cache: res.headers.get('cache-control'), robots: res.headers.get('x-robots-tag'), location: res.headers.get('location'), csp: res.headers.get('content-security-policy'), hsts: res.headers.get('strict-transport-security') };
 };
 const view = (key, cookie) => ask(listingModule.onRequestGet, key, cookie);
 const remembered = (key) => sqlite.prepare('SELECT address, community, city, lease FROM listing_pages WHERE key = ?').get(key);
@@ -118,7 +126,11 @@ const active = {
 };
 let row = active;
 const closed = () => [{ ListingKey: row?.ListingKey, MlsStatus: 'Sold', ClosePrice: 1199000, CloseDate: '2026-09-15', InternetEntireListingDisplayYN: true }];
-const liveFeed = (u) => (u.includes('/Media?') ? [] : u.includes("ListingKey eq '") ? (u.includes('MlsStatus') ? closed() : row ? [row] : []) : []);
+const similarRow = {
+  ListingKey: 'N7000088', ListPrice: 990000, UnparsedAddress: '88 Nearby Road, Markham, ON L3R 1A1', City: 'Markham', CityRegion: 'Wismer', BedroomsTotal: 3, BathroomsTotalInteger: 2,
+  PropertySubType: 'Detached', TransactionType: 'For Sale', ListOfficeName: 'NEARBY REALTY', InternetEntireListingDisplayYN: true, InternetAddressDisplayYN: true,
+};
+const liveFeed = (u) => (u.includes('/Media?') ? [] : u.includes("ListingKey eq '") ? (u.includes('MlsStatus') ? closed() : row ? [row] : []) : u.includes('ContractStatus') ? [similarRow] : []);
 feed = liveFeed;
 
 let v = await view('N7000001');
@@ -158,22 +170,48 @@ feed = () => {
 };
 edge.clear();
 v = await view('N7000003');
-ok(v.status === 503 && !v.html.includes('no longer available') && v.cache === 'no-store', 'when the feed does not answer the page says so and never claims the listing is gone');
+ok(v.status === 503 && !v.html.includes('This home has sold') && !v.location && v.cache === 'no-store', 'when the feed does not answer the page says so and never claims the listing is gone');
 feed = liveFeed;
 
 edge.clear();
+row = null;
+feedCalls = 0;
 v = await view('N7000001');
-ok(v.status === 200 && v.html.includes('no longer available') && !/\$\d|Bright|Sold<\/strong>|<img/.test(v.html) && v.cache === 'public, max-age=600', 'a listing that left the feed keeps its page without price, photos, remarks or sold data');
-ok(v.robots === 'noindex' && v.html.includes('<meta name="robots" content="noindex">'), 'an off-market page is not offered to search engines');
-ok(v.html.includes('/sold/') && !v.html.includes('1,199,000'), 'a visitor who is not signed in is pointed to sign in and sees no sold price');
-v = await view('N7000001', aliceCookie);
-ok(v.html.includes('<strong>Sold</strong> for $1,199,000 on 2026-09-15') && v.cache === 'private, no-store' && v.robots === 'noindex', 'a signed-in account sees the sold price on a page that is never cached');
-ok(sqlite.prepare("SELECT COUNT(*) AS n FROM audit WHERE action = 'search' AND detail = 'listing=N7000001'").get().n === 1, 'that sold lookup is in the audit trail');
-ok(!(await view('N7000001')).html.includes('1,199,000') && !(await view('N7000001', `${vow.COOKIE}=${'a'.repeat(64)}`)).html.includes('1,199,000'), 'the sold price never reaches the shared cache or a forged session');
-const ins = sqlite.prepare("INSERT INTO audit (user_id, at, action, detail) VALUES (?, ?, 'search', 'x')");
-for (let i = 0; i < vow.SEARCHES_PER_DAY; i++) ins.run(aliceId, Date.now());
-ok(!(await view('N7000001', aliceCookie)).html.includes('1,199,000'), 'sold lookups on listing pages stop at the daily search limit');
-sqlite.prepare("DELETE FROM audit WHERE action = 'search'").run();
+ok(v.status === 301 && v.location === `${ORIGIN}/unionville-markham/` && !v.location.includes('/homes-for-sale/') && v.html === '' && v.cache === 'public, max-age=600' && feedCalls === 2, 'a gone listing in a published neighbourhood guide redirects there and does not search for similar homes');
+const headGone = await ask(listingModule.onRequestHead, 'N7000001');
+ok(headGone.status === 301 && headGone.html === '' && headGone.location === `${ORIGIN}/unionville-markham/`, 'HEAD of a gone listing redirects without a body');
+v = await view('N7000002');
+ok(v.status === 301 && v.location === `${ORIGIN}/unionville-markham/`, 'a gone rental in that neighbourhood redirects to the same guide');
+row = active;
+feedCalls = 0;
+v = await view('N7000001');
+ok(v.status === 301 && feedCalls === 0, 'a cached 301 is kept until it expires, so the feed is not asked again');
+edge.clear();
+v = await view('N7000001');
+ok(v.status === 200 && v.html.includes('$1,250,000') && v.robots === null && !v.location, 'once that cache expires the same key is a live listing again');
+
+row = null;
+edge.clear();
+sqlite.prepare("INSERT INTO listing_pages (key, address, community, city, lease, first_seen, last_seen) VALUES ('N7000090', '90 Cachet Street', 'Cachet', 'Markham', 0, 1, 1), ('N7000092', '1 Yonge', 'Thornhill', 'Vaughan', 0, 1, 1), ('N7000094', '4 Berczy', 'Berczy', 'Markham', 0, 1, 1), ('N7000095', '5 Lease Lane', 'Cachet', 'Markham', 1, 1, 1)").run();
+feedCalls = 0;
+feedUrls = [];
+v = await view('N7000090');
+const similarSearch = new URL(feedUrls.find((u) => u.includes('ContractStatus') && !u.includes("ListingKey eq '"))).searchParams.get('$filter');
+ok(v.status === 410 && v.robots === 'noindex' && v.html.includes('<meta name="robots" content="noindex">') && v.html.includes('This home has sold.') && v.html.includes('href="/listing/N7000088/"') && v.html.includes('href="/homes-for-sale/"') && v.html.includes('id="enquire"') && v.cache === 'public, max-age=600' && !v.location && feedCalls === 4 && similarSearch.includes("City eq 'Markham'") && similarSearch.includes("TransactionType eq 'For Sale'") && !similarSearch.includes('ListPrice') && !similarSearch.includes("PropertySubType eq") && !similarSearch.includes('CityRegion'), 'a gone listing with no neighbourhood guide answers 410 and links to active Markham homes');
+ok(v.html.includes('90 Cachet Street') && !v.html.includes('$1,250,000') && !v.html.includes('1,199,000') && !v.html.includes('Bright') && !v.html.includes('/sold/') && !v.html.includes('Sold</strong>') && !v.html.includes('RealEstateListing'), 'the 410 page names the home and leaves out its price, remarks, photos and sold data');
+v = await view('N7000090', aliceCookie);
+ok(v.status === 410 && !v.html.includes('1,199,000') && !v.html.includes('/sold/') && v.cache === 'public, max-age=600' && sqlite.prepare("SELECT COUNT(*) AS n FROM audit WHERE action = 'search' AND detail = 'listing=N7000090'").get().n === 0, 'a signed-in visitor gets the same 410 and no VOW sold lookup');
+v = await view('N7000095');
+ok(v.status === 410 && v.html.includes('This home has been leased.') && !v.html.includes('This home has sold.') && !v.location, 'a gone rental with no guide says it has been leased');
+v = await view('N7000092');
+ok(v.status === 410 && !v.location?.includes('thornhill'), 'Thornhill in Vaughan is not sent to the Markham Thornhill guide');
+feedUrls = [];
+v = await view('N7000094');
+const berczySearch = new URL(feedUrls.find((u) => u.includes('ContractStatus') && !u.includes("ListingKey eq '"))).searchParams.get('$filter');
+ok(v.status === 410 && !String(v.location).includes('homes-for-sale') && v.html.includes('Similar homes for sale in Berczy Village') && berczySearch.includes("CityRegion in ('Berczy')"), 'a known community with no published guide is 410, with similar homes in that neighbourhood');
+ok((await view('N7999998')).status === 404, 'a key this site never showed is 404, not 410');
+v = await view('C7000007');
+ok(v.status === 410 && !v.location && v.html.includes('href="/homes-for-sale/"'), 'a gone listing in another city is 410 and points at Markham listings');
 
 console.log('Listings sitemap');
 sqlite.prepare("INSERT INTO listing_pages (key, address, community, city, first_seen, last_seen) VALUES ('N7000006', '6 Old Street', 'Unionville', 'Markham', 1, 1)").run();

@@ -1,4 +1,6 @@
+import { neighbourhoodPath } from './format.ts';
 import { firstTimeRelief, ontarioLtt, torontoMltt } from './ltt.ts';
+import { AREAS, areaOf } from './proptx.ts';
 /**
  * The HTML for one listing page at /listing/<key>/, built by functions/listing/[key].ts and poured
  * into the built shell page. Pure and escaped: every value from the feed goes through esc().
@@ -31,6 +33,25 @@ export type Area = { slug: string; name: string; path: string; intro: string; tr
 export type Market = { period: string; report: string; byType: { type: string; sales: number; average: number; median: number }[] };
 export type Sold = { price: number | null; date: string | null };
 export type Gone = { key: string; address: string | null; community: string | null; city: string | null; lease: boolean };
+
+/**
+ * The neighbourhood guide a gone listing should 301 to, or null when this site has no such guide.
+ *
+ * The community is the TRREB name we stored (PropTx CityRegion). It maps through AREAS, and only for
+ * Markham: other cities reuse some of the same names. The target has to be a guide in the built area
+ * index, at a path like /unionville-markham/. A homes-for-sale category, the listings index or any
+ * other hub is not a target. A path in the index is used only when it is that guide. Anything else
+ * is ignored and the guide's own path is used, so a bad value cannot send people off the site.
+ */
+export function goneRedirect(community: string | null, city: string | null, areas: { [slug: string]: { path?: string } | undefined }): string | null {
+  const name = (city ?? '').replace(/\s+[CEW]\d{2}$/, '').trim();
+  if (name !== 'Markham') return null;
+  const slug = areaOf(community);
+  if (!slug || !AREAS[slug] || !areas[slug]) return null;
+  const published = areas[slug]?.path;
+  if (typeof published === 'string' && published === neighbourhoodPath(slug)) return published;
+  return neighbourhoodPath(slug);
+}
 export type PageInput = {
   origin: string;
   phone?: { label: string; href: string };
@@ -43,7 +64,10 @@ export type PageInput = {
   similar: Listing[];
   /** Where the similar homes were searched: a neighbourhood name or a city. */
   similarIn?: string;
-  /** Only ever set for a signed-in visitor: sold data stays behind sign-in. */
+  /**
+   * Accepted so an older caller can still pass them. A page for a listing that has left the feed
+   * never renders sold prices or a sign-in prompt: that data is VOW-restricted.
+   */
   sold?: Sold;
   signedIn: boolean;
 };
@@ -171,7 +195,7 @@ function sections(l: Listing, place: string, market: Market | undefined): { html
       `<h2>What to check before you apply</h2><ol><li><strong>Ask what the rent includes.</strong> Confirm which utilities you pay${parking ? ` and whether the ${esc(plural(parking, 'parking space'))} on the listing ${parking === 1 ? 'is' : 'are'} part of the rent` : ' and what parking comes with the home'}.</li><li><strong>Confirm the dates.</strong> Ask for the earliest move-in date and the length of the lease.</li><li><strong>Ask what the landlord needs with an application.</strong> Have it ready before the showing.</li><li><strong>See it in person.</strong> ${l.tour ? 'The listing has a virtual tour, but ' : ''}photos do not show noise, light at different hours or the condition of the home.</li></ol>`,
     );
     faq.push({ q: `How do I book a showing for ${place}?`, a: `Use the form on this page or call us. Quote MLS® ${l.key}. We will confirm the listing is still available and arrange a time with the listing brokerage.` });
-    faq.push({ q: `Is ${place} still for rent?`, a: `This page is refreshed from TRREB's MLS® System through the day. If the listing is leased or withdrawn the page says so. Contact us to confirm before you make plans.` });
+    faq.push({ q: `Is ${place} still for rent?`, a: `This page is refreshed from TRREB's MLS® System through the day. If the listing is leased or withdrawn, this address goes to the neighbourhood guide. Where this site has no guide for that community, the page says the home has been leased. Contact us to confirm before you make plans.` });
     return { html: out.join(''), faq };
   }
 
@@ -236,7 +260,7 @@ function sections(l: Listing, place: string, market: Market | undefined): { html
     `<h2>What to check before you make an offer</h2><ol>${first}<li><strong>Get your financing in writing.</strong> A lender looks at the property tax${fee ? ' and the monthly fee' : ''} as well as the price.</li><li><strong>See it in person.</strong> ${l.tour ? 'The listing has a virtual tour, but ' : ''}photos do not show noise, light at different hours or the condition of ${condo ? 'the hallways and elevators' : 'the roof, the basement and the yard'}.</li></ol><p>Our page on <a href="/buyers/">buying a home in Markham</a> sets out the steps in order. This is general information, not legal advice. Confirm the details with a lawyer.</p>`,
   );
   faq.push({ q: `How do I book a showing for ${place}?`, a: `Use the form on this page or call us. Quote MLS® ${l.key}. We will confirm the listing is still available and arrange a time with the listing brokerage.` });
-  faq.push({ q: `Is ${place} still for sale?`, a: `This page is refreshed from TRREB's MLS® System through the day. If the listing sells or is withdrawn the page says so. Contact us to confirm before you make plans.` });
+  faq.push({ q: `Is ${place} still for sale?`, a: `This page is refreshed from TRREB's MLS® System through the day. If the listing sells or is withdrawn, this address goes to the neighbourhood guide. Where this site has no guide for that community, the page says the home has sold. Contact us to confirm before you make plans.` });
   return { html: out.join(''), faq };
 }
 
@@ -254,26 +278,26 @@ export function listingPage(p: PageInput): { title: string; description: string;
   const forWhat = lease ? 'for rent' : 'for sale';
   const similar = p.similar.filter((c) => c.key !== key).slice(0, 6);
   const more = similar.length
-    ? `<section class="lp-more"><h2>${l ? 'Similar' : 'Current'} homes ${forWhat} in ${esc(similarIn)}</h2><ul class="lp-cards" role="list">${similar.map(card).join('')}</ul></section>`
+    ? `<section class="lp-more"><h2>Similar homes ${forWhat} in ${esc(similarIn)}</h2><ul class="lp-cards" role="list">${similar.map(card).join('')}</ul></section>`
     : '';
-  const cta = `<div class="lp-cta"><a class="btn btn--primary" href="#enquire">Ask a question or book a showing</a>${
+  const cta = `<div class="lp-cta"><a class="btn btn--primary" href="#enquire">${l ? 'Ask a question or book a showing' : 'Ask about a similar home'}</a>${
     p.phone ? `<a class="btn btn--ghost" href="${esc(p.phone.href)}">Call ${esc(p.phone.label)}</a>` : ''
   }</div>`;
 
   if (!l) {
-    // Sold information is for a signed-in visitor only. Anyone else is pointed at the sign-in page.
-    const sold = p.sold && (p.sold.price || p.sold.date)
-      ? `<p class="lp-sold"><strong>Sold</strong>${p.sold.price ? ` for ${esc(money(p.sold.price))}` : ''}${p.sold.date ? ` on ${esc(p.sold.date)}` : ''}. Sold information is from TRREB and is shown to signed-in visitors only.</p>`
-      : p.signedIn || lease
-        ? ''
-        : `<p class="lp-signin"><a href="/sold/">Sign in to see sold prices</a> for Markham homes, where TRREB has recorded a sale.</p>`;
+    // No price, photos, remarks or sold data for this listing. Similar cards are other active homes.
+    const status = lease ? 'This home has been leased.' : 'This home has sold.';
+    const listings = `<p><a href="/homes-for-sale/">See homes for sale in Markham</a></p>`;
+    const homes = similar.length
+      ? `${more}<p>More homes are on the <a href="/homes-for-sale/">Markham listings page</a>.</p>`
+      : `<section class="lp-more"><h2>Homes for sale in Markham</h2>${listings}</section>`;
     return {
       live: false,
       crumb: place,
       h1: place,
-      title: clip(`${place} | No Longer Available`, 60),
-      description: fitSentences(`${place}${community ? ` in ${community}` : ''}${cityOf(p.gone?.city) ? `, ${cityOf(p.gone?.city)}` : ''}: this listing is no longer available.`, [`See current homes ${forWhat} in ${similarIn}.`, 'Photos and asking prices from TRREB.'], 160),
-      body: `<p class="lp-status">This listing is no longer available. It has left the active listings on TRREB's MLS® System, so its photos, price and description have been taken down.</p>${sold}${cta}${more}${areaBlock(p.area)}<p class="lp-key">MLS® ${esc(key)}</p>`,
+      title: clip(`${place} | ${lease ? 'Leased' : 'Sold'}`, 60),
+      description: fitSentences(`${place}${community ? ` in ${community}` : ''}${cityOf(p.gone?.city) ? `, ${cityOf(p.gone?.city)}` : ''}: ${status}`, [`See current homes ${forWhat} in ${similarIn}.`], 160),
+      body: `<p class="lp-status">${status}</p><p>It has left the active listings on TRREB's MLS® System, so its photos, price and description have been taken down.</p>${cta}${homes}${areaBlock(p.area)}<p class="lp-key">MLS® ${esc(key)}</p>`,
     };
   }
 
@@ -372,18 +396,33 @@ if (typeof process !== 'undefined' && !!import.meta.filename && import.meta.file
   must(rent.body, ['$2,800 a month', 'for rent', 'before you apply'], 'rental');
   never(rent.body, [/land transfer/i, /down payment/i, 'How the asking price compares', '"offers"'], 'rental');
 
-  const gone = listingPage({ ...base, listing: null, gone: { key: 'N1234567', address: '1 Main St, Markham, ON', community: 'Unionville', city: 'Markham', lease: false } });
-  if (gone.live || !gone.body.includes('no longer available') || !gone.body.includes('/sold/')) throw new Error('gone page');
-  never(gone.body, ['Sold</strong>', /\$\d/], 'an off-market page shows no price');
-  const sold = listingPage({ ...base, signedIn: true, sold: { price: 580000, date: '2026-09-01' }, listing: null, gone: { key: 'N1234567', address: null, community: null, city: null, lease: false } });
-  if (!sold.body.includes('<strong>Sold</strong> for $580,000 on 2026-09-01') || sold.h1 !== 'Home in Markham') throw new Error('sold page');
+  const gone = listingPage({ ...base, listing: null, gone: { key: 'N1234567', address: '1 Main St, Markham, ON', community: 'Cachet', city: 'Markham', lease: false } });
+  must(gone.body, ['This home has sold.', 'photos, price and description have been taken down.', 'href="/homes-for-sale/"', 'Ask about a similar home', 'MLS® N1234567'], 'gone page');
+  never(gone.body, ['no longer available', '/sold/', 'Sold</strong>', /\$\d/, '<img', 'RealEstateListing'], 'an off-market page shows no price, photo or sold data');
+  const goneSimilar = listingPage({ ...base, similarIn: 'Markham', similar: [{ key: 'N7654321', price: 1100000, address: '2 Side St', city: 'Markham', community: 'Wismer', beds: 4, baths: 3, type: 'Detached', brokerage: 'C Realty', photo: 'https://img.test/c.jpg' }], listing: null, gone: { key: 'N1234567', address: '1 Main St, Markham, ON', community: 'Cachet', city: 'Markham', lease: false } });
+  must(goneSimilar.body, ['This home has sold.', 'href="/listing/N7654321/"', 'href="/homes-for-sale/"', 'Similar homes for sale in Markham'], 'gone page links to active homes');
+  never(goneSimilar.body, ['/sold/', 'Sold</strong>', '1 Main St, Markham'], 'the gone listing keeps its own price and remarks off the page');
+  const leased = listingPage({ ...base, listing: null, gone: { key: 'N1234567', address: '1 Main St', community: 'Cachet', city: 'Markham', lease: true } });
+  must(leased.body, ['This home has been leased.', 'href="/homes-for-sale/"'], 'leased wording');
+  never(leased.body, ['This home has sold.', '/sold/'], 'a lease is not called sold');
+  const vowed = listingPage({ ...base, signedIn: true, sold: { price: 580000, date: '2026-09-01' }, listing: null, gone: { key: 'N1234567', address: null, community: null, city: null, lease: false } });
+  must(vowed.body, ['This home has sold.'], 'vow input is ignored');
+  never(vowed.body, ['580,000', 'Sold</strong>', '/sold/'], 'a gone page never shows VOW sold data');
+  if (vowed.h1 !== 'Home in Markham') throw new Error('sold page heading');
   // A hidden address stays hidden and a missing city is never filled in: no tax figures, no city in a sentence.
   const bare = listingPage({ ...base, market, listing: { key: 'N1234567', price: 900000, address: null, city: null, community: null, beds: 8, baths: 3, type: 'Detached', brokerage: 'X' } });
   must(bare.body, ['Home in Markham is an 8 bedroom detached house, listed for sale at $900,000.'], 'article and missing city');
   never(bare.body, [/land transfer/i, 'streetAddress', 'addressLocality', 'How the asking price compares'], 'missing city');
   // House style: no dash characters, no exclamation mark and no comma before "and" or "or" in anything we wrote.
-  for (const page of [house, condo, markhamCondo, rent, gone, bare]) never(text(page.body), [/[\u2013\u2014!]/, /,\s+(and|or)\b/], 'house style');
+  for (const page of [house, condo, markhamCondo, rent, gone, goneSimilar, leased, vowed, bare]) never(text(page.body), [/[\u2013\u2014!]/, /,\s+(and|or)\b/], 'house style');
   if (minDown(400000) !== 20000 || minDown(700000) !== 45000 || minDown(1500000) !== 300000) throw new Error('minDown');
   if (kindOf('Detached', 'Bungalow-Raised').noun !== 'detached house' || kindOf('Semi-Detached ', 'Bungalow').noun !== 'semi-detached bungalow' || kindOf('Vacant Land').condo) throw new Error('kindOf');
+  const guides = { unionville: { path: '/unionville-markham/' }, thornhill: { path: '/thornhill-markham/' }, 'berczy-village': { path: '/homes-for-sale/berczy-village/' } };
+  if (goneRedirect('Unionville', 'Markham', guides) !== '/unionville-markham/') throw new Error('unionville guide');
+  if (goneRedirect('Village Green-South Unionville', 'Markham', guides) !== '/unionville-markham/') throw new Error('south unionville');
+  if (goneRedirect('Royal Orchard', 'Markham', guides) !== '/thornhill-markham/') throw new Error('royal orchard');
+  if (goneRedirect('Berczy', 'Markham', guides) !== '/berczy-village-markham/') throw new Error('a category path is not the guide');
+  if (goneRedirect('Berczy', 'Markham', {}) !== null || goneRedirect('Unionville', 'Markham', {}) !== null) throw new Error('no published guide means 410');
+  if (goneRedirect('Cachet', 'Markham', guides) !== null || goneRedirect('Thornhill', 'Vaughan', guides) !== null || goneRedirect('Moss Park', 'Toronto C08', guides) !== null || goneRedirect('Unionville', null, guides) !== null || goneRedirect(null, 'Markham', guides) !== null) throw new Error('no target means 410');
   console.log('listing-page ok', text(house.body).split(/\s+/).length, 'words in the sample house page');
 }

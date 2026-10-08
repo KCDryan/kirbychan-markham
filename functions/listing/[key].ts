@@ -5,28 +5,35 @@
  * poured into the built shell (/homes-for-sale/listing-shell/) so it carries the site's header,
  * footer, styles and security headers.
  *
- * When a listing leaves the feed its page stays up at the same address and says it is no longer
- * available. The photos, price and description go (IDX rules: a withdrawn listing comes down).
- * A signed-in visitor also sees the sold price where TRREB recorded a sale. Sold data never reaches
- * a visitor who is not signed in, a crawler or the shared cache. Each look at it goes in the VOW
- * audit trail and counts toward the account's daily limit, like a search on /sold/.
+ * When a listing leaves the feed, its address does not stay up as a thin page. If the Markham
+ * community we stored maps to a neighbourhood guide on this site, the address 301s to that guide
+ * so the visit and the link equity land there. It does not 301 to a homes-for-sale category or
+ * any other hub. If no guide matches, the address answers 410 Gone. The 410 page says the home
+ * has sold (or has been leased), links to similar active Markham listings when the feed returns
+ * them, and otherwise links to the Markham listings page. The shell's enquiry form stays on the
+ * page. Photos, price and description of the gone listing are not shown, and neither is anything
+ * from the VOW sold feed.
+ *
+ * The same MLS key can come back if a deal falls through. The feed is read before any redirect
+ * or 410, so an active listing is a normal page again once a cached 301 has expired. The redirect
+ * is cached for ten minutes, the same as a live page. Some browsers keep a 301 for longer than
+ * Cache-Control asks, and those visitors stay on the neighbourhood page until that copy expires.
  *
  * A listing the seller keeps off the internet (InternetEntireListingDisplayYN false) has no page.
- * Anything remembered about it from an earlier day is deleted.
+ * Anything remembered about it from an earlier day is deleted. A key this site never showed is a
+ * 404, not a 410. A feed outage is a 503: it is not turned into a redirect or a 410.
  *
- * Search engines are offered live Markham homes for sale only (site.json "indexListings"). A rental,
- * a home in another city or a listing that has left the market still has its page, for the search
- * and the map, but carries noindex.
+ * Search engines are offered live Markham homes for sale only (site.json "indexListings"). A rental
+ * or a home in another city still has its page, for the search and the map, but carries noindex.
  */
 import site from '../../src/data/site.json';
-import { AREAS, CITIES, PROPTX_BASE, areaOf, cleanKey, closedQuery, coverQuery, homeKinds, listingQuery, mediaQuery, photos, searchQuery } from '../../src/lib/proptx';
-import { listingPage, type Area, type Gone, type Listing, type Market, type Sold } from '../../src/lib/listing-page';
-import { COOKIE, SEARCHES_PER_DAY, audit, countSince, currentUser, ensureSchema, ipTag, keys, type D1, type User } from '../../src/lib/vow';
+import { AREAS, CITIES, areaOf, cleanKey, coverQuery, homeKinds, listingQuery, mediaQuery, photos, searchQuery } from '../../src/lib/proptx';
+import { goneRedirect, listingPage, type Area, type Gone, type Listing, type Market } from '../../src/lib/listing-page';
+import { COOKIE, currentUser, ensureSchema, keys, type D1, type User } from '../../src/lib/vow';
 import { DETAIL, proptx, publicCard } from '../api/listings';
 
 interface Env {
   PROPTX_IDX_TOKEN?: string;
-  PROPTX_VOW_TOKEN?: string;
   VOW_SECRET?: string;
   VOW_DB?: D1;
   ASSETS: { fetch(input: URL | Request): Promise<Response> };
@@ -91,7 +98,8 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
   if (!key || !env.PROPTX_IDX_TOKEN) return notFound(env, request);
   if (url.pathname !== `/listing/${key}/`) return Response.redirect(`${url.origin}/listing/${key}/`, 301);
 
-  // A signed-in visitor may see sold data, so their page is never read from or written to the shared cache.
+  // A signed-in visitor skips the shared cache, so a key that has come back on the market is served
+  // even when other visitors still hold a cached redirect.
   let user: User | null = null;
   const k = env.VOW_DB && (request.headers.get('cookie') ?? '').includes(`${COOKIE}=`) ? keys(env.VOW_SECRET) : null;
   if (k) {
@@ -112,7 +120,6 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
 
   let listing: Listing | null = null;
   let gone: Gone | undefined;
-  let sold: Sold | undefined;
   let similar: Listing[] = [];
   try {
     const [found, media] = await Promise.all([
@@ -156,38 +163,38 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
     }
     // A key this site never showed is not a page.
     if (!gone) return notFound(env, request);
-    if (user && k && env.PROPTX_VOW_TOKEN && !gone.lease) {
-      try {
-        const db = env.VOW_DB;
-        // VOW rules: every look at sold data is logged and an account has a daily limit, so sold prices cannot be scraped page by page.
-        if ((await countSince(db, 'user_id', user.id, ['search'], 864e5)) < SEARCHES_PER_DAY) {
-          await audit(db, user.id, 'search', `listing=${key}`, await ipTag(await k, request));
-          const res = await fetch(`${PROPTX_BASE}/Property?${closedQuery(key)}`, { headers: { authorization: `Bearer ${env.PROPTX_VOW_TOKEN.trim()}`, accept: 'application/json' } });
-          const row = res.ok ? ((await res.json()) as { value: Record<string, unknown>[] }).value[0] : undefined;
-          // A listing the seller kept off the internet stays off, sold or not.
-          if (row && row.MlsStatus === 'Sold' && row.InternetEntireListingDisplayYN !== false) sold = { price: typeof row.ClosePrice === 'number' ? row.ClosePrice : null, date: typeof row.CloseDate === 'string' ? row.CloseDate.slice(0, 10) : null };
-        }
-      } catch {
-        sold = undefined;
-      }
-    }
   }
 
   // The neighbourhood this listing sits in (Markham only: other cities reuse some community names) and what else is listed there.
   const city = cityOf(listing?.city ?? gone?.city) || 'Markham';
   const lease = listing?.lease ?? gone?.lease ?? false;
   const slug = city === 'Markham' ? areaOf(listing?.community ?? gone?.community ?? null) : null;
-  let area: Area | undefined;
+  let areaIndex: Record<string, Omit<Area, 'slug'>> = {};
   let market: Market | undefined;
   try {
     const data = (await (await env.ASSETS.fetch(new URL('/listing-areas.json', request.url))).json()) as { areas: Record<string, Omit<Area, 'slug'>>; market: Market };
-    if (slug && data.areas[slug]) area = { slug, ...data.areas[slug] };
+    areaIndex = data.areas ?? {};
     market = data.market;
   } catch {
-    area = undefined;
+    areaIndex = {};
   }
-  // An unknown city makes the search fall back to Markham, so the heading says Markham too.
-  const searchCity = CITIES.includes(city) ? city : 'Markham';
+  // A published neighbourhood guide is the only redirect. Checked before the similar-homes search,
+  // so a 301 does not call the feed again. A cached 301 hides a relisted key until it expires.
+  if (!listing && gone) {
+    const target = goneRedirect(gone.community, gone.city, areaIndex);
+    if (target) {
+      const redirect = new Response(null, { status: 301, headers: { location: `${url.origin}${target}`, 'cache-control': `public, max-age=${TTL}` } });
+      ctx.waitUntil(cache.put(cacheKey, redirect.clone()));
+      return redirect;
+    }
+  }
+  let area: Area | undefined;
+  if (slug && areaIndex[slug]) area = { slug, ...areaIndex[slug] };
+  // A live listing searches its own city. A gone listing has no guide to send people to, so the
+  // suggestions are active Markham homes: the same neighbourhood when we know it, otherwise the
+  // city. Type and price are not kept once the listing leaves the feed, and this page does not
+  // read the sold feed, so those filters are not added.
+  const searchCity = listing && CITIES.includes(city) ? city : 'Markham';
   try {
     const params = new URLSearchParams({ city: searchCity });
     if (slug && AREAS[slug]) params.set('area', slug);
@@ -212,16 +219,15 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
   const page = listingPage({
     origin: site.url,
     phone: { label: site.contact.phone, href: site.contact.phoneHref },
-    listing, gone, area, market, similar, sold, signedIn,
+    listing, gone, area, market, similar, signedIn,
     similarIn: slug && AREAS[slug] ? AREAS[slug].label : searchCity,
   });
 
   const shell = await env.ASSETS.fetch(new URL(SHELL, request.url));
   if (!shell.ok) return notFound(env, request);
   const attr = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-  // Search engines are offered what the listings sitemap lists: live Markham homes for sale. A listing
-  // that has left the market keeps its address for visitors but is noindex: the page has little on
-  // it and a withdrawn listing should fade from results.
+  // Search engines are offered what the listings sitemap lists: live Markham homes for sale.
+  // A 410 stays noindex. The gone listing's photos, price and description are already absent.
   const index = INDEX && !!listing && city === 'Markham' && !lease;
   let html = (await shell.text())
     .split(`${site.url}${SHELL}`).join(`${site.url}/listing/${key}/`)
@@ -241,10 +247,12 @@ export async function onRequestGet(ctx: Context): Promise<Response> {
   if (!index) headers.set('x-robots-tag', 'noindex');
   for (const [name, value] of Object.entries(SECURITY)) if (!headers.has(name)) headers.set(name, value);
   headers.set('content-type', 'text/html; charset=utf-8');
-  // Sold data is for the signed-in visitor alone.
-  headers.set('cache-control', signedIn ? 'private, no-store' : `public, max-age=${TTL}`);
-  const res = new Response(html, { status: 200, headers });
-  if (!signedIn) ctx.waitUntil(cache.put(cacheKey, res.clone()));
+  // A 410 carries nothing personal, so it can be shared. A live page for a signed-in visitor stays private.
+  headers.set('cache-control', listing && signedIn ? 'private, no-store' : `public, max-age=${TTL}`);
+  // 410 only after the feed confirmed the key is gone and no neighbourhood guide matches.
+  // A feed outage already returned 503. An active listing, including one that has come back, is 200.
+  const res = new Response(html, { status: listing ? 200 : 410, headers });
+  if (!(listing && signedIn)) ctx.waitUntil(cache.put(cacheKey, res.clone()));
   return res;
 }
 
