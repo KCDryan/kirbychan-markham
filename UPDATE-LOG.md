@@ -7,6 +7,31 @@ A record of every automated update run, newest first. Written by the updater fol
 
 <!-- Newest entries go directly below this line. -->
 
+## 2026-10-08
+
+**Market figures:** No change. TRREB has not published a Markham community report newer than Q2 2026. The Q3 2026 address returned a 404.
+**News:** Skipped. Fewer than 2 items dated September 8 to October 8, 2026 qualified. Opened and rejected: City of Markham releases (voter information letters, a staff appointment, a festival and the Highway 404 crossing release dated September 2), York Region newsroom items for September 24 to October 6 (nothing specific to Markham housing or services), Metrolinx news (Rail Safety Week and Woodbine GO construction), YRT news (Thanksgiving holiday service and a customer survey), YRDSB and YCDSB news (no Markham school openings or boundary reviews). The YRT fall service changes took effect September 6, before the window.
+**Fact check:** cathedraltown, cornell, downtown. No wording changed. Confirmed: YRT routes on Major Mackenzie Drive, Cornell Community Centre and Library at 3201 Bur Oak Avenue, Markham Stouffville Hospital as part of Oak Valley Health, York University Markham Campus.
+**Monthly city figures:** No change. September 2026 is still the newest Market Watch on trreb.ca. The October 2026 address returned a 404.
+
+Sources:
+- TRREB Market Watch page: https://trreb.ca/index.php/market-news/market-watch
+- City of Markham news: https://www.markham.ca/news
+- York Region Transit, service schedules: https://www.yrt.ca/en/schedules-and-maps/service-schedules.aspx
+- York Region Transit, service changes and updates: https://www.yrt.ca/en/schedules-and-maps/service-changes-and-updates.aspx
+- City of Markham, community centres and libraries: https://www.markham.ca/sports-recreation-fitness/community-centres-libraries
+- City of Markham, Cornell Community Centre and Library: https://www.markham.ca/sports-recreation-fitness/community-centres-libraries/cornell-community-centre-library
+- Oak Valley Health, our hospitals: https://www.oakvalleyhealth.ca/our-hospitals/
+- York University, Markham Campus: https://www.yorku.ca/markham/
+- York University, Markham Campus contact: https://www.yorku.ca/markham/contact/
+
+Needs owner attention:
+- Not re-verified this run and left unchanged on the three pages: the TRREB price and sales figures (Q1 2026 and August 2026) and the GO commute minutes. The TRREB and GO Transit PDFs downloaded but this Mac has no tool that can read PDF text (poppler is not installed), so the figures could not be checked line by line. Their existing source links were kept on the pages. Installing poppler (`brew install poppler`) would let future runs read these PDFs.
+- Also not verified because no source page would open: the Cathedral of the Transfiguration, the Cornell Bus Terminal, Viva service on Highway 7, the school statements on all three pages and the cinema, restaurants and squares in Downtown Markham. The wording was left as it is.
+- The Cornell page says four times that the hospital sits on the neighbourhood's edge. Oak Valley Health lists Markham Stouffville Hospital at 381 Church Street. No source states its position relative to Cornell, so the wording was left alone.
+- Still open from October 7: the neighbourhood pages quote January to March 2026 figures while the ticker shows Q2 2026 medians.
+- No news roundup has ever been published. yorkregion.com and CBC Toronto block automated reading and the Ontario newsroom and gotransit.com service updates load their content with scripts, which leaves few readable sources.
+
 ## 2026-10-07
 
 **Market figures:** Updated to TRREB Q2 2026 (April to June). 10 of 12 neighbourhoods reported. Milliken Mills (reported as East and West) and Downtown Markham (not a TRREB community) stay null. New report at /market-reports/september-2026/, which carries the September Market Watch tables and the Q2 neighbourhood table, the same shape as the August report. No separate Q2 report was created.
