@@ -60,14 +60,8 @@ export function realEstateAgent(areaServed: string[]) {
     image: absolute('/og-default.png'),
     logo: absolute('/apple-touch-icon.png'),
     priceRange: '$$$',
-    // The house at the office address (OpenStreetMap). The team answers the phone at any hour.
+    // Coordinates of the office address (OpenStreetMap).
     geo: { '@type': 'GeoCoordinates', latitude: 43.8296, longitude: -79.3736 },
-    openingHoursSpecification: {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      opens: '00:00',
-      closes: '23:59',
-    },
     address: {
       '@type': 'PostalAddress',
       streetAddress: site.office.street,

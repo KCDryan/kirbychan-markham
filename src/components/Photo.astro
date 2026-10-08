@@ -18,6 +18,15 @@ interface Props {
   /** Above the fold images load eagerly. Everything else is lazy. */
   priority?: boolean;
   sizes?: string;
+  /** Candidate widths. Wider than the file is clamped to the file. */
+  widths?: number[];
+  /** Encoder quality shared by every format. Omit to use the image service default. */
+  quality?: number;
+  /**
+   * Format of the `<img>` fallback. A PNG source otherwise falls back to PNG,
+   * which keeps a heavy file in the srcset even when AVIF and WebP are offered.
+   */
+  fallbackFormat?: 'avif' | 'webp' | 'png' | 'jpg';
   class?: string;
   /** Transparent cutout: no background panel, no crop. */
   cutout?: boolean;
@@ -30,6 +39,9 @@ const {
   ratio = '4 / 3',
   priority = false,
   sizes = '(min-width: 900px) 440px, 100vw',
+  widths = [400, 640, 880, 1200],
+  quality,
+  fallbackFormat,
   class: cls = '',
   cutout = false,
 } = Astro.props;
@@ -44,8 +56,10 @@ const src = photo(name);
         src={src}
         alt={alt}
         formats={['avif', 'webp']}
-        widths={[400, 640, 880, 1200]}
-        width={Math.min(1200, src.width)}
+        fallbackFormat={fallbackFormat}
+        widths={widths}
+        quality={quality}
+        width={Math.min(Math.max(...widths), src.width)}
         sizes={sizes}
         loading={priority ? 'eager' : 'lazy'}
         fetchpriority={priority ? 'high' : 'auto'}
