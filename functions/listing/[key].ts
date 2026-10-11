@@ -70,7 +70,7 @@ export const LISTING_SCHEMA =
 /** Remembers a listing while it is active, so its page can stay up after it leaves the feed. */
 export const remember = (db: D1, key: string, address: string | null, community: string | null, city: string | null, lease: boolean, now = Date.now()) =>
   db
-    .prepare('INSERT INTO listing_pages (key, address, community, city, lease, first_seen, last_seen) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6) ON CONFLICT(key) DO UPDATE SET address = ?2, community = ?3, city = ?4, lease = ?5, last_seen = ?6')
+    .prepare('INSERT INTO listing_pages (key, address, community, city, lease, first_seen, last_seen) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6) ON CONFLICT(key) DO UPDATE SET address = ?2, community = ?3, city = ?4, lease = ?5, last_seen = ?6 WHERE listing_pages.last_seen < ?6 - 86400000 OR listing_pages.address IS NOT ?2 OR listing_pages.community IS NOT ?3 OR listing_pages.city IS NOT ?4 OR listing_pages.lease IS NOT ?5')
     .bind(key, address, community, city, lease ? 1 : 0, now);
 /**
  * A page of the feed remembered in one statement. D1 allows 100 bound values a statement and a
@@ -80,7 +80,7 @@ export const rememberMany = (db: D1, rows: [key: string, address: string | null,
   db
     .prepare(
       "INSERT INTO listing_pages (key, address, community, city, lease, first_seen, last_seen) SELECT json_extract(value, '$[0]'), json_extract(value, '$[1]'), json_extract(value, '$[2]'), json_extract(value, '$[3]'), 0, ?2, ?2 FROM json_each(?1) WHERE true " +
-        'ON CONFLICT(key) DO UPDATE SET address = excluded.address, community = excluded.community, city = excluded.city, lease = 0, last_seen = excluded.last_seen',
+        'ON CONFLICT(key) DO UPDATE SET address = excluded.address, community = excluded.community, city = excluded.city, lease = 0, last_seen = excluded.last_seen WHERE listing_pages.last_seen < excluded.last_seen - 86400000 OR listing_pages.address IS NOT excluded.address OR listing_pages.community IS NOT excluded.community OR listing_pages.city IS NOT excluded.city OR listing_pages.lease IS NOT 0',
     )
     .bind(JSON.stringify(rows), now);
 /** A seller who takes a listing off the internet takes its page with it. */
