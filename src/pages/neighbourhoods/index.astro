@@ -2,6 +2,12 @@
 import Page from '../../layouts/Page.astro';
 import NeighbourhoodGrid from '../../components/NeighbourhoodGrid.astro';
 import Cta from '../../components/Cta.astro';
+import market from '../../data/market.json';
+import { cad } from '../../lib/format';
+
+const top = market.neighbourhoods
+  .filter((n): n is typeof n & { price: number } => typeof n.price === 'number')
+  .sort((a, b) => b.price - a.price)[0];
 
 const crumbs = [
   { name: 'Home', path: '/' },
@@ -15,7 +21,7 @@ const faq = [
   },
   {
     q: 'Which Markham neighbourhood is the most expensive?',
-    a: 'It depends on the property type. In TRREB figures for January to March 2026, Angus Glen had the highest median across all property types of the twelve neighbourhoods on this site. For detached houses, the historic core of Unionville and the larger lots in Angus Glen and on the Markham side of Thornhill sit near the top. Each guide has the figures.',
+    a: `It depends on the property type. In TRREB figures for ${market.period}, ${top.name} had the highest median across all property types of the neighbourhoods on this site that TRREB reports, at ${cad(top.price)}. Each guide has the figures by property type.`,
   },
   {
     q: 'Which Markham neighbourhood is the most affordable?',

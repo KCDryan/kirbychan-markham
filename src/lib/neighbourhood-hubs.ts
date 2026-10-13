@@ -93,7 +93,7 @@ export const HUBS: Hub[] = [
     faq: [
       { q: 'Which Markham neighbourhoods have the most detached homes?', a: 'Berczy Village, Wismer, Cathedraltown, Box Grove and Angus Glen are mostly detached, with freehold townhomes and semis in all but Angus Glen. Each neighbourhood guide has the TRREB detached price.' },
       { q: 'How do I find out which school serves a Markham address?', a: 'Ask the York Region District School Board or the York Catholic District School Board for the exact address. Boundaries can change, so confirm before you make an offer.' },
-      { q: 'Where is the most affordable house in Markham?', a: 'It depends on the type. Freehold townhouses in Greensborough and Cornell had some of the lower TRREB medians of the neighbourhoods on this site in early 2026. Each guide has the figures by property type.' },
+      { q: 'Where is the most affordable house in Markham?', a: 'It depends on the type. Among the neighbourhoods on this site, the TRREB median for attached and row townhouses from April to June 2026 was lowest in Box Grove at about $880,000, then Cornell at about $892,000 and Greensborough at about $903,000. Each guide has the figures by property type.' },
     ],
   },
   {

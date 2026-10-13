@@ -55,3 +55,10 @@ Needs owner attention:
 - Not re-verified this run and left unchanged: the GO commute minutes on the three pages (the timetable PDF could not be read column by column), the YRT route statements and school catchments. yorkregion.com could not be opened and YRT and YRDSB news pages returned errors, which is part of why there is no news roundup.
 - An uncommitted file, `src/content/blog/real-estate-commission-ontario.mdx`, appeared in the working tree during this run. It was not created by this routine and was left untouched and uncommitted.
 
+
+## 2026-10-13 (done by hand at the owner's request)
+
+**Community figures:** The 12 neighbourhood pages, the 7 English guides and their French, Farsi and Chinese copies, 3 blog posts, 2 video pages, the hub FAQ and 3 hard-coded page sentences were moved from TRREB Q1 2026 to Q2 2026 (April to June). This closes the item left open on 2026-10-07 (neighbourhood pages still quoting January to March 2026).
+**How:** By-type sales and prices were read from the Q2 report's charts (rounded to the thousand by TRREB, so written as "about"). For every community the by-type sales add up to the all-types sales in the summary table. Ranking, "highest" and "pulled down by condos" claims were recomputed from Q2 rather than carried over.
+**Left as is:** `src/content/market-reports/august-2026.mdx` still cites Q1, because it is the August report and Q1 was the latest community report when it was written. `lastReviewed` dates were not changed, since only the figures were re-checked.
+**Not done:** Downtown Markham has no TRREB community figures. Milliken Mills is two communities (East and West) and is shown as two.
