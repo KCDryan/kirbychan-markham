@@ -58,7 +58,7 @@ in the body. This is the cluster that feeds the pillar guide, so it stays the pr
 ## Monday: first time home buyers in Markham
 
 - [x] Home inspections in Markham: what they cover and what they miss | buying | home inspection markham | home-inspection-ontario-buyers
-- [ ] Offer dates and bidding in Ontario: how multiple offers work | buying | multiple offers ontario
+- [x] Offer dates and bidding in Ontario: how multiple offers work | buying | multiple offers ontario | multiple-offers-ontario-how-they-work
 - [ ] York Region schools: how to confirm a school boundary before you buy | buying | yrdsb school boundary
 - [ ] Markham townhouses: freehold or condo, and what each costs | buying | markham townhouse for sale
 - [ ] Buying a home with family members on title in Ontario | buying | joint tenancy tenants in common ontario
@@ -88,7 +88,7 @@ page opened during the run.
 
 ## Wednesday: selling a home in Markham
 
-- [ ] Selling your Markham home: a step by step timeline | selling | selling a house in markham
+- [x] Selling your Markham home: a step by step timeline | selling | selling a house in markham | selling-a-house-in-markham-timeline
 - [x] How real estate commission works in Ontario | selling | real estate commission ontario | real-estate-commission-ontario
 - [ ] Pricing a home in Markham: how comparable sales work | selling | how to price a home markham
 - [ ] Preparing a Markham home for sale: what is worth spending on | selling | prepare house for sale
