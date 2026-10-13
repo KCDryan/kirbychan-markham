@@ -5,9 +5,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 # AI assistants and answer engines are welcome to read and cite this site.
 # Named groups replace the * group for that crawler, so each repeats the
@@ -25,9 +22,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 User-agent: ChatGPT-User
 Allow: /
@@ -36,9 +30,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 User-agent: GPTBot
 Allow: /
@@ -47,9 +38,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 User-agent: ClaudeBot
 Allow: /
@@ -58,9 +46,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 User-agent: Claude-SearchBot
 Allow: /
@@ -69,9 +54,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 User-agent: Claude-User
 Allow: /
@@ -80,9 +62,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 User-agent: PerplexityBot
 Allow: /
@@ -91,9 +70,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 User-agent: Perplexity-User
 Allow: /
@@ -102,9 +78,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 User-agent: Google-Extended
 Allow: /
@@ -113,9 +86,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 User-agent: Applebot-Extended
 Allow: /
@@ -124,9 +94,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 User-agent: Bingbot
 Allow: /
@@ -135,9 +102,6 @@ Disallow: /admin/
 Disallow: /upload/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
-Disallow: /homes-for-sale/?
-Disallow: /homes-for-sale/map/?
-Disallow: /sold/?
 
 Sitemap: https://kirbychanmarkham.com/sitemap-index.xml
 Sitemap: https://kirbychanmarkham.com/sitemap-listings.xml
