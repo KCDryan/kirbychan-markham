@@ -1,39 +1,39 @@
 {
-  "updated": "2026-10-14T11:47:33.054Z",
+  "updated": "2026-10-15T11:46:54.883Z",
   "markham": {
-    "total": 1085,
-    "bungalow": 45,
-    "condo": 328,
-    "townhouse": 231,
-    "house": 482
+    "total": 1074,
+    "bungalow": 46,
+    "condo": 324,
+    "townhouse": 228,
+    "house": 478
   },
   "areas": {
     "berczy-village": {
-      "total": 33,
+      "total": 32,
       "bungalow": 0,
       "condo": 0,
-      "townhouse": 11,
+      "townhouse": 10,
       "house": 21
     },
     "unionville": {
-      "total": 254,
-      "bungalow": 1,
-      "condo": 150,
-      "townhouse": 34,
-      "house": 62
+      "total": 248,
+      "bungalow": 2,
+      "condo": 149,
+      "townhouse": 32,
+      "house": 59
     },
     "thornhill": {
       "total": 190,
       "bungalow": 14,
       "condo": 62,
-      "townhouse": 26,
-      "house": 99
+      "townhouse": 27,
+      "house": 98
     },
     "cornell": {
-      "total": 92,
+      "total": 91,
       "bungalow": 0,
       "condo": 6,
-      "townhouse": 46,
+      "townhouse": 45,
       "house": 40
     },
     "box-grove": {
@@ -44,30 +44,30 @@
       "house": 15
     },
     "markham-village": {
-      "total": 40,
+      "total": 39,
       "bungalow": 5,
       "condo": 0,
-      "townhouse": 7,
+      "townhouse": 6,
       "house": 29
     },
     "milliken-mills": {
-      "total": 42,
+      "total": 43,
       "bungalow": 1,
       "condo": 3,
-      "townhouse": 3,
+      "townhouse": 4,
       "house": 25
     },
     "wismer": {
-      "total": 60,
+      "total": 61,
       "bungalow": 0,
       "condo": 17,
-      "townhouse": 13,
+      "townhouse": 14,
       "house": 29
     },
     "cathedraltown": {
-      "total": 27,
+      "total": 26,
       "bungalow": 0,
-      "condo": 15,
+      "condo": 14,
       "townhouse": 8,
       "house": 4
     },
@@ -81,9 +81,9 @@
     "greensborough": {
       "total": 57,
       "bungalow": 10,
-      "condo": 14,
+      "condo": 13,
       "townhouse": 23,
-      "house": 18
+      "house": 19
     }
   }
 }
