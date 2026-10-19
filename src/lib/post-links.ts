@@ -73,10 +73,10 @@ export function photoPlan(posts: { slug: string; published: number; hood?: strin
   return out;
 }
 
-/** The photo for a post published since the last build: its own neighbourhood unless one of the 5 cards below shows it, else one the `recent` cards do not show. */
+/** The photo for a post published since the last build: its own neighbourhood unless one of the `recent` cards (the 11 below it) shows it, else a photo they do not show. It sits at the top of the first page, where a repeat is most visible. */
 export function freshHood(slug: string, named: string | undefined, headline: string, recent: string[]): string {
   const about = aboutHood(named, headline);
-  if (about && !recent.slice(0, 5).includes(about)) return about;
+  if (about && !recent.includes(about)) return about;
   const ids = Object.keys(HOODS);
   const free = ids.filter((h) => !recent.includes(h));
   const from = free.length ? free : ids;
@@ -123,6 +123,7 @@ if (typeof process !== 'undefined' && !!import.meta.filename && import.meta.file
   assert(aboutHood('cornell', 'Anything') === 'cornell', 'neighbourhood set on the post');
   assert(!['cornell', 'wismer'].includes(freshHood('x', undefined, 'Selling in Markham', ['cornell', 'wismer'])), 'fresh post avoids recent photos');
   assert(freshHood('y', undefined, 'Downsizing in Cornell', ['unionville', 'cornell']) !== 'cornell', 'fresh post about a neighbourhood yields when a close card shows it');
-  assert(freshHood('y', undefined, 'Downsizing in Cornell', ['a', 'b', 'c', 'd', 'e', 'cornell']) === 'cornell', 'fresh post about a neighbourhood keeps its photo when the card showing it is further away');
+  assert(freshHood('y', undefined, 'Downsizing in Cornell', ['a', 'b', 'c', 'd', 'e', 'cornell']) !== 'cornell', 'fresh post yields to any of the cards below it');
+  assert(freshHood('y', undefined, 'Downsizing in Cornell', ['unionville', 'wismer']) === 'cornell', 'fresh post about a neighbourhood keeps its photo when no card below shows it');
   console.log('post-links ok');
 }
