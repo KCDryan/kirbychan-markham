@@ -3,7 +3,8 @@ import type { CollectionEntry } from 'astro:content';
 import Page from '../layouts/Page.astro';
 import BlogCard from '../components/BlogCard.astro';
 import BlogCardMedia from '../components/BlogCardMedia.astro';
-import { HOODS, cardHood } from '../lib/post-links';
+import { HOODS, aboutHood, photoPlan } from '../lib/post-links';
+import { publishedPosts } from '../lib/blog-posts';
 import Cta from '../components/Cta.astro';
 import { BLOG_CATEGORIES, type BlogCategory } from '../lib/blog';
 import { blog } from '../lib/schema';
@@ -25,6 +26,8 @@ interface Props {
   noindex?: boolean;
   withBlogSchema?: boolean;
 }
+// One photo per card, planned over every published post so a photo is not used twice close together.
+const plan = photoPlan((await publishedPosts()).map((p) => ({ slug: p.id.split('/').pop()!, published: p.data.published.valueOf(), hood: aboutHood(p.data.neighbourhood, p.data.h1) })));
 const {
   title,
   description,
@@ -104,7 +107,7 @@ const extraJsonLd = withBlogSchema
                   published={p.data.published}
                   level={2}
                   media
-                  photo={cardHood(p.id.split('/').pop()!, [p.data.neighbourhood, p.data.related[0]], `${p.data.h1} ${p.data.description}`)}
+                  photo={plan.get(p.id.split('/').pop()!)}
                 />
               </li>
             ))}

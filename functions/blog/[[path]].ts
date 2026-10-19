@@ -11,7 +11,7 @@
  * up at the next build.
  */
 import { BLOG_CATEGORIES } from '../../src/lib/blog';
-import { cardHood } from '../../src/lib/post-links';
+import { freshHood } from '../../src/lib/post-links';
 import { SHELL, addToList, ensureUploadSchema, fillShell, getUpload, type Post, type UploadEnv } from '../../src/lib/uploads';
 
 interface Context {
@@ -28,7 +28,14 @@ export async function onRequest({ request, env, next }: Context): Promise<Respon
     try {
       await ensureUploadSchema(env.VOW_DB);
       const { results } = await env.VOW_DB.prepare('SELECT post FROM uploads WHERE live = 1 ORDER BY updated DESC LIMIT 50').bind().all<{ post: string }>();
-      const out = addToList(html, results.map((r) => JSON.parse(r.post) as Post), BLOG_CATEGORIES, (p) => cardHood(p.slug, [p.related?.[0]], `${p.headline} ${p.summary}`));
+      // A new post takes a photo that none of the cards just below it show.
+      const shown = [...html.replace(/<template id="card-media"[\s\S]*?<\/template>/, '').matchAll(/<span class="bcard__media" data-hood="([^"]*)"/g)].map((m) => m[1]);
+      const used: string[] = [];
+      const out = addToList(html, results.map((r) => JSON.parse(r.post) as Post), BLOG_CATEGORIES, (p) => {
+        const hood = freshHood(p.slug, undefined, p.headline, [...used, ...shown].slice(0, 11));
+        used.unshift(hood);
+        return hood;
+      });
       if (out === html) return new Response(html, built);
       const headers = new Headers(built.headers);
       headers.delete('etag');

@@ -43,19 +43,47 @@ export const ROLES = ['Broker', 'Broker of Record', 'Sales Representative', 'REA
 /** Neighbourhoods named in the text, at most `max`. */
 export const hoodsIn = (text: string, max = 12) => Object.keys(HOODS).filter((id) => HOODS[id].words.test(text)).slice(0, max);
 
+/** The one neighbourhood a post is about: the one set on the post, or the only one its headline names. */
+export const aboutHood = (named: string | undefined, headline: string): string | undefined => {
+  if (named && named in HOODS) return named;
+  const found = hoodsIn(headline);
+  return found.length === 1 ? found[0] : undefined;
+};
+
 /**
- * The picture for a post about no one neighbourhood: one of the neighbourhood photos, chosen from the
- * post's address so the same post always gets the same picture and a page of posts gets a mix.
+ * The photo on each blog card. A post that is about one neighbourhood (`hood`) keeps that photo unless
+ * one of the 5 posts before it already shows it. Every other post takes the photo used longest ago, going from the oldest post to the newest, so no photo
+ * repeats within 11 posts and each is used about equally. An older post never changes when a newer
+ * one is added.
  */
-export function anyHood(slug: string): string {
+export function photoPlan(posts: { slug: string; published: number; hood?: string }[]): Map<string, string> {
   const ids = Object.keys(HOODS);
-  let n = 0;
-  for (const c of slug) n = (n * 31 + c.charCodeAt(0)) >>> 0;
-  return ids[n % ids.length];
+  const last = new Map(ids.map((h, i) => [h, i - ids.length]));
+  const out = new Map<string, string>();
+  const seq: string[] = [];
+  [...posts]
+    .sort((a, b) => a.published - b.published || a.slug.localeCompare(b.slug))
+    .forEach((p, i) => {
+      const keep = p.hood && p.hood in HOODS && !seq.slice(-5).includes(p.hood);
+      const h = keep ? p.hood! : ids.reduce((best, c) => (last.get(c)! < last.get(best)! ? c : best));
+      last.set(h, i);
+      seq.push(h);
+      out.set(p.slug, h);
+    });
+  return out;
 }
 
-/** The neighbourhood whose photo leads a post's card: the one it names, or anyHood. Every post gets one. */
-export const cardHood = (slug: string, named: (string | undefined)[], text: string) => named.find((h) => h && h in HOODS) ?? hoodsIn(text, 1)[0] ?? anyHood(slug);
+/** The photo for a post published since the last build: its own neighbourhood, or one the `recent` cards do not show. */
+export function freshHood(slug: string, named: string | undefined, headline: string, recent: string[]): string {
+  const about = aboutHood(named, headline);
+  if (about) return about;
+  const ids = Object.keys(HOODS);
+  const free = ids.filter((h) => !recent.includes(h));
+  const from = free.length ? free : ids;
+  let n = 0;
+  for (const c of slug) n = (n * 31 + c.charCodeAt(0)) >>> 0;
+  return from[n % from.length];
+}
 
 /** Service guides named in the text, at most `max`. */
 export const servicesIn = (text: string, max = 9) => Object.keys(SERVICES).filter((id) => SERVICES[id].words.test(text)).slice(0, max);
@@ -66,4 +94,33 @@ export function autoLinks(topic: string, category: string) {
     hoods: hoodsIn(topic, 2),
     services: [...new Set([...servicesIn(topic), CATEGORY_SERVICE[category]].filter((x): x is string => Boolean(x)))].slice(0, 2),
   };
+}
+
+// Self-check: node --experimental-strip-types src/lib/post-links.ts
+if (typeof process !== 'undefined' && !!import.meta.filename && import.meta.filename === process.argv[1]) {
+  const assert = (ok: boolean, what: string) => {
+    if (!ok) throw new Error(`post-links: ${what}`);
+  };
+  const ids = Object.keys(HOODS);
+  const posts = Array.from({ length: 70 }, (_, i) => ({ slug: `post-${i}`, published: i * 864e5, hood: i % 9 === 4 ? 'unionville' : undefined }));
+  const plan = photoPlan(posts);
+  const seq = posts.map((p) => plan.get(p.slug)!);
+  assert(posts.every((p, i) => !p.hood || seq[i] === p.hood || seq.slice(Math.max(0, i - 5), i).includes(p.hood)), 'a post about a neighbourhood keeps its photo unless a close neighbour shows it');
+  const twins = photoPlan([{ slug: 'a', published: 1, hood: 'cornell' }, { slug: 'b', published: 2, hood: 'cornell' }]);
+  assert(twins.get('a') === 'cornell' && twins.get('b') !== 'cornell', 'two neighbourhood posts side by side do not show the same photo');
+  for (let i = 0; i < seq.length; i++) {
+    if (posts[i].hood) continue;
+    for (let j = Math.max(0, i - 11); j < i; j++) assert(seq[j] !== seq[i], `photo ${seq[i]} repeats within 11 posts at ${i}`);
+  }
+  const unpinned = Array.from({ length: 70 }, (_, i) => ({ slug: `u-${i}`, published: i }));
+  const uc = new Map<string, number>();
+  for (const h of photoPlan(unpinned).values()) uc.set(h, (uc.get(h) ?? 0) + 1);
+  assert(Math.max(...uc.values()) - Math.min(...uc.values()) <= 1 && uc.size === ids.length, 'unpinned posts use every photo about equally');
+  const later = photoPlan([...unpinned, { slug: 'u-new', published: 999 }]);
+  assert(photoPlan(unpinned).get('u-5') === later.get('u-5'), 'adding a newer post leaves older photos alone');
+  assert(aboutHood(undefined, 'Downsizing in Unionville: a guide') === 'unionville', 'headline naming one neighbourhood');
+  assert(aboutHood(undefined, 'Unionville or Markham Village, compared') === undefined, 'headline naming two is about neither');
+  assert(aboutHood('cornell', 'Anything') === 'cornell', 'neighbourhood set on the post');
+  assert(!['cornell', 'wismer'].includes(freshHood('x', undefined, 'Selling in Markham', ['cornell', 'wismer'])), 'fresh post avoids recent photos');
+  console.log('post-links ok');
 }
