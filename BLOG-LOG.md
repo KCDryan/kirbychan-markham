@@ -153,3 +153,33 @@ One entry per blog run, newest at the bottom. See `BLOG-PLAYBOOK.md`, section 9.
 - Follow-up commit the same morning: H1 changed to include the keyword ("Joint tenancy or tenants in common: how Ontario co-buyers take title"), added the refund page's spouse rule (no refund to either spouse if one owned an eligible home while they were spouses) and removed two unsourced frequency words
 - IndexNow: 200 for 3 URLs. The post URL still returned 404 a little over three minutes after the push, while the Cloudflare Pages build was still in progress
 - Needs owner attention: the first commit (e6c812f) went in under the github-actions[bot] noreply email, because the scheduled prompt takes the email from `git log -1` and the latest commit is the daily listing counts bot. This will repeat every run. Change the prompt to use KCDryan@users.noreply.github.com directly
+
+## 2026-10-19, queued selling-a-house-in-ontario-costs, to publish 2026-10-28
+
+- Wednesday, selling. Primary keyword: selling a house in ontario costs (was seller closing costs ontario; slug renamed from seller-closing-costs-ontario in the follow-up pass below). Topic: "What a seller pays at closing in Ontario"
+- Skipped first: pricing and comparable sales, preparing a home for sale and the listing agreement (same reasons as the October 14 entry); best time of year to sell (would need monthly sales totals, which these drafts do not state)
+- Different from the closest posts: markham-downsizing-costs covers a downsizer's sale and purchase together, and real-estate-commission-ontario covers commission only. This one covers what comes off a sale price: commission HST, prepayment penalties (FCAC), the Markham tax certificate fee, the buyer paying land transfer tax, CRA principal residence reporting and the non-resident 10 day notice and 25% holdback
+- Sources opened: RECO seller's checklist and Bulletin 6.2, CRA GST/HST special cases and rate calculator, FCAC reduce your prepayment penalties, ontario.ca land transfer tax, CRA principal residence page, CRA disposing of certain Canadian property, markham.ca tax account changes
+- Removed because no opened page supports them: the late designation penalty amount, who orders the tax certificate, how adjustments are split. The worked example is labelled as illustrative
+
+## 2026-10-19, queued older-homes-markham-what-to-check, to publish 2026-10-30
+
+- Friday, upsizing. Primary keyword: older homes in markham. Topic: "Buying a detached home in Markham: what to check on older houses"
+- Skipped first: bridge financing (still no primary consumer page, as logged October 16)
+- Different from the closest post: home-inspection-ontario-buyers covers what an inspection is. This one covers checks specific to older houses from sources it does not use: ESA on knob and tube and aluminum wiring, Health Canada on asbestos, Markham on pre-1953 lead service lines, the Private Plumbing Protection Rebate amounts and 2027 deadlines, the building permit list, the four heritage districts and Tree By-law 2023-164
+- Sources opened: esasafe.com knob and tube and aluminum wiring pages, Health Canada asbestos and your health, markham.ca tap water quality, basement flooding prevention, building permit process, heritage districts, tree permit application
+
+## 2026-10-19, queued conditions-in-an-offer-ontario, to publish 2026-11-02
+
+- Monday, first time buyers. Primary keyword: conditions in an offer in ontario. Topic: "Conditions in an Ontario offer: financing, inspection and status certificate"
+- Skipped first: York Region school boundaries and Markham townhouses (same reasons as this morning's entry)
+- Different from the closest posts: home-inspection-ontario-buyers, condo-status-certificate-markham and multiple-offers-ontario-how-they-work each cover one piece. This one covers how conditions work as a set: CMHC on changing or cancelling the offer if a condition is not met, FCAC on why a pre-approval is not final approval, RECO on waiving conditions
+- Sources opened: CMHC making an offer and closing the deal (PDF, read as page images), CMHC making an offer to purchase a home, CMHC condominium buyer's guide chapter 4, FCAC getting preapproved, RECO buyer's checklist and home inspections, ontario.ca what to know before buying a home, CAO status certificates
+- Left out: typical condition lengths and what happens to the deposit when a condition fails (no opened page states them). The CMHC offer PDF is dated 2011, so confirm it is still current before publishing
+- Needs owner attention for all three: BLOG-TOPICS.md was not ticked (this session was told not to edit it), so tick these three topics before another writer picks them. `npm run verify` stops at check:blog in this environment because `node_modules/yaml` is missing; run `npm ci` and then `npm run verify`. No new photos were used, so photo-credits.json is unchanged
+
+## 2026-10-19, follow-up pass on the three queued drafts
+
+- Wrote `research/markham-blog-map.md` (target query, required internal links and sources for each draft) and edited each post to it: target query verbatim in title, description, first paragraph, H1 and an H2; titles 60 characters or fewer; descriptions 145 to 155; every required link present and pointing at a built page or a published post
+- Publishing order is now selling costs 2026-10-28, older homes 2026-10-30, conditions 2026-11-02
+- Needs owner attention: tick `BLOG-TOPICS.md` as noted above
