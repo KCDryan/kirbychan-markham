@@ -36,10 +36,11 @@ neighbourhood guides, services, translations, `package.json`, the lockfile or th
 record the failure under "Needs owner attention" in `BLOG-LOG.md`, then commit and push only the log.
 
 **Quick posts do not block a run.** Agents write quick posts in TinaCMS (`src/content/blog/quick/`).
-With `BLOG_RUN=1` the house style step lists a quick post's problems as warnings and still passes,
-because the deploy fixes or holds that post back on its own. Do not fix a quick post and do not stop
-because of one. Copy the warning lines under "Needs owner attention" in `BLOG-LOG.md` and carry on.
-Your own post and every other file are checked as before: an em dash in a full post still fails.
+With `BLOG_RUN=1` the house style and blog check steps list a quick post's problems as warnings and
+still pass, because the deploy fixes or holds that post back on its own. Do not fix a quick post and
+do not stop because of one. Copy the warning lines under "Needs owner attention" in `BLOG-LOG.md` and
+carry on. Your own post and every other file are checked as before: an em dash or a short body in a
+full post still fails.
 
 ## 3. Choosing the topic
 
@@ -107,10 +108,17 @@ even for facts that feel well known, because rules and rates change.
 | Market statistics | trreb.ca (Market Watch and community reports) |
 | Population and census | statcan.gc.ca |
 | Interest rates | bankofcanada.ca |
+| Condo owners' rights, condo disputes | condoauthorityontario.ca |
+| Toronto services, bylaws, property tax | toronto.ca |
+| Retirement homes | rhra.ca |
+| Human rights in housing | ohrc.on.ca |
+| Lawyers and real estate closings | lso.ca |
 
 - News outlets are acceptable only for news events, never for rules or figures a primary source
   publishes.
-- **Never** use another brokerage's, agent's, lender's or content farm's blog as a source for a fact.
+- **Never** use another brokerage's, agent's, lender's, law firm's, property manager's or content
+  farm's site as a source for a fact. They write to sell a service, so cite the government,
+  regulator or board page their claim is based on instead.
 - State the period for every market figure ("January to March 2026") and the effective date for
   every rule or rate where the source gives one.
 - If two sources disagree, use the primary one and say what it says. If you still cannot resolve it,

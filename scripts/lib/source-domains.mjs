@@ -2,7 +2,8 @@
  * Source domains for blog and quick post `sources` lists (BLOG-PLAYBOOK.md section 4).
  *
  *   PRIMARY  the primary sources in the section 4 table. Subdomains count too.
- *   BLOCKED  another brokerage's, agent's, portal's, lender's or content farm's site.
+ *   BLOCKED  another brokerage's, agent's, portal's, lender's, law firm's, property
+ *            manager's or content farm's site.
  *            Citing one is an error.
  *
  * Anything else is a warning: not a primary source, so a person checks it.
@@ -29,6 +30,11 @@ export const PRIMARY = [
   'trreb.ca',
   'statcan.gc.ca',
   'bankofcanada.ca',
+  'condoauthorityontario.ca',
+  'toronto.ca',
+  'rhra.ca',
+  'ohrc.on.ca',
+  'lso.ca',
 ];
 
 export const BLOCKED = [
@@ -40,9 +46,11 @@ export const BLOCKED = [
   'wowa.ca',
   'searchlistingsonline.ca',
   'pegasuslending.com',
+  // A real estate law firm.
   'ownright.com',
   'wealthnorth.ca',
   'justinhavre.com',
+  // A condo property manager.
   'fsresidential.com',
 ];
 

@@ -43,9 +43,14 @@ const faq: TinaField = {
 const LONG_DASH = new RegExp(RULES.filter((r) => r.name === 'em dash' || r.name === 'en dash').map((r) => r.re.source).join('|'));
 const noLongDash = (value: unknown) =>
   typeof value === 'string' && LONG_DASH.test(value) ? 'Use a comma or colon, not a long dash' : undefined;
-const notBlocked = (value: unknown) =>
+// The same limits as scripts/check-blog.mjs.
+const summaryLength = (value: unknown) => {
+  const n = String(value ?? '').trim().length;
+  return n > 0 && (n < 50 || n > 300) ? `${n} characters. Keep the summary between 50 and 300` : undefined;
+};
+const notBlocked =(value: unknown) =>
   typeof value === 'string' && sourceKind(value) === 'blocked'
-    ? "This is another brokerage's, agent's, lender's or listing site's page. Cite the government, regulator, TRREB or transit page it is based on instead."
+    ? "This is another brokerage's, agent's, lender's, law firm's, property manager's or listing site's page. Cite the government, regulator, TRREB or transit page it is based on instead."
     : undefined;
 
 const sources: TinaField = {
@@ -132,7 +137,7 @@ export default defineConfig({
             label: 'Summary',
             description: 'One or two sentences, 50 to 300 characters. Shown under the headline, on the blog page and in Google.',
             required: true,
-            ui: { component: 'textarea', validate: noLongDash },
+            ui: { component: 'textarea', validate: (value) => summaryLength(value) ?? noLongDash(value) },
           },
           {
             type: 'string',

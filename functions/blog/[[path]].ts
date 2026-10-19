@@ -6,6 +6,10 @@
  * caught up with this version of the post (it carries data-upload="<version>"); until then the post
  * is poured into the built blog layout shell (src/lib/uploads.ts).
  *
+ * A page poured into the shell has not passed the build's checks yet: either the build has not run
+ * or the post was held back (scripts/prepare-quick-posts.mjs). So it is sent with noindex, and
+ * search engines index it only once a build passes it and serves the built page.
+ *
  * The blog list at /blog/ gets uploaded posts the last build does not have yet, added at the top, so
  * a post is on the list as soon as it is published. Category pages, the sitemap and the feed catch
  * up at the next build.
@@ -62,7 +66,7 @@ export async function onRequest({ request, env, next }: Context): Promise<Respon
   const shell = await env.ASSETS!.fetch(new URL(`${SHELL}${upload.post.category}/`, request.url));
   if (!shell.ok) return built.ok ? next() : shell;
   const headers = new Headers(shell.headers);
-  headers.delete('x-robots-tag');
+  headers.set('x-robots-tag', 'noindex');
   headers.set('cache-control', 'public, max-age=0, must-revalidate');
   let html: string;
   try {

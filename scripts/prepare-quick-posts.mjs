@@ -15,7 +15,11 @@
  *
  * Posts uploaded at /upload/ arrive here as .md files (scripts/pull-uploads.mjs). They are live
  * already, exactly as written, so they are never rewritten: one that fails a check is only held
- * back from the blog list, sitemap and feed. Its own page stays up.
+ * back from the blog list, sitemap and feed. Its own page stays up, sent with noindex until a build
+ * passes it (functions/blog/[[path]].ts).
+ *
+ * The checks run without BLOG_RUN, so a quick post problem that scripts/check-style.mjs and
+ * scripts/check-blog.mjs only warn about in a blog run still holds that post back here.
  *
  * Full blog posts are not touched. Their problems still fail the build.
  */
