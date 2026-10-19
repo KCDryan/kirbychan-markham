@@ -1,40 +1,40 @@
 {
-  "updated": "2026-10-18T14:36:51.664Z",
+  "updated": "2026-10-19T17:30:00.959Z",
   "markham": {
-    "total": 1084,
-    "bungalow": 48,
-    "condo": 317,
-    "townhouse": 226,
-    "house": 495
+    "total": 1081,
+    "bungalow": 49,
+    "condo": 318,
+    "townhouse": 220,
+    "house": 497
   },
   "areas": {
     "berczy-village": {
-      "total": 31,
+      "total": 30,
       "bungalow": 0,
       "condo": 0,
       "townhouse": 9,
-      "house": 21
+      "house": 20
     },
     "unionville": {
-      "total": 248,
+      "total": 250,
       "bungalow": 3,
       "condo": 145,
-      "townhouse": 32,
-      "house": 63
+      "townhouse": 31,
+      "house": 66
     },
     "thornhill": {
-      "total": 186,
+      "total": 190,
       "bungalow": 14,
-      "condo": 59,
+      "condo": 60,
       "townhouse": 27,
-      "house": 97
+      "house": 100
     },
     "cornell": {
-      "total": 91,
+      "total": 87,
       "bungalow": 0,
       "condo": 6,
-      "townhouse": 47,
-      "house": 38
+      "townhouse": 44,
+      "house": 37
     },
     "box-grove": {
       "total": 18,
@@ -44,11 +44,11 @@
       "house": 16
     },
     "markham-village": {
-      "total": 43,
-      "bungalow": 5,
+      "total": 44,
+      "bungalow": 6,
       "condo": 0,
       "townhouse": 6,
-      "house": 32
+      "house": 33
     },
     "milliken-mills": {
       "total": 44,
@@ -58,25 +58,25 @@
       "house": 26
     },
     "cathedraltown": {
-      "total": 26,
+      "total": 25,
       "bungalow": 0,
       "condo": 14,
-      "townhouse": 8,
+      "townhouse": 7,
       "house": 4
     },
     "angus-glen": {
-      "total": 30,
+      "total": 29,
       "bungalow": 2,
       "condo": 2,
-      "townhouse": 13,
+      "townhouse": 12,
       "house": 13
     },
     "greensborough": {
-      "total": 59,
+      "total": 57,
       "bungalow": 10,
-      "condo": 13,
+      "condo": 12,
       "townhouse": 25,
-      "house": 19
+      "house": 18
     },
     "wismer": {
       "total": 61,
