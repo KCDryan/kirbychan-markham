@@ -31,6 +31,13 @@ const categoryName = BLOG_CATEGORIES[d.category];
 const categoryPath = `/blog/category/${d.category}/`;
 const guide = d.guide ? { path: `/${d.guide}/`, label: GUIDES[d.guide].label } : undefined;
 
+// Posts that open with their own "The short answer" section do not need the quick answer box too.
+const firstH2 = headings.find((h) => h.depth === 2);
+const showTakeaway = d.showTakeaway && firstH2?.text.trim().toLowerCase() !== 'the short answer';
+
+// The mid-page promo follows the post's category; downsizing keeps the downsizing guide promo.
+const promoVariant = d.category === 'downsizing' ? 'downsizing' : d.category === 'buying' ? 'buying' : d.category === 'selling' ? 'selling' : 'general';
+
 // Posts that do not list their own links (agents' quick posts, mostly) get them from the headline,
 // description and category, so every post links on to a guide, a neighbourhood and a tool.
 const topic = `${d.h1} ${d.description}`;
@@ -143,7 +150,7 @@ const jsonLd = [
       <div class="post-shell">
         <div class="post-main">
           {
-            d.showTakeaway && (
+            showTakeaway && (
               <div class="takeaway">
                 <h2>The quick answer</h2>
                 <p>{d.takeaway}</p>
@@ -163,7 +170,7 @@ const jsonLd = [
             <slot />
           </div>
 
-          <DownsizingPromo />
+          <DownsizingPromo variant={promoVariant} />
 
           <FaqAccordion faq={d.faq} />
 
