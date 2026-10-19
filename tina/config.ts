@@ -1,5 +1,7 @@
 import { defineConfig, type TinaField } from 'tinacms';
 import { ImportHtmlField } from './import-html';
+import { RULES } from '../scripts/lib/house-style.mjs';
+import { sourceKind } from '../scripts/lib/source-domains.mjs';
 
 /**
  * TinaCMS for agents: Quick posts only. Full blog posts, guides and
@@ -36,6 +38,16 @@ const faq: TinaField = {
   ],
 };
 
+// Flagged when the agent saves, with the same rules scripts/check-tina-post.mjs applies
+// after the commit (scripts/lib/house-style.mjs and scripts/lib/source-domains.mjs).
+const LONG_DASH = new RegExp(RULES.filter((r) => r.name === 'em dash' || r.name === 'en dash').map((r) => r.re.source).join('|'));
+const noLongDash = (value: unknown) =>
+  typeof value === 'string' && LONG_DASH.test(value) ? 'Use a comma or colon, not a long dash' : undefined;
+const notBlocked = (value: unknown) =>
+  typeof value === 'string' && sourceKind(value) === 'blocked'
+    ? "This is another brokerage's, agent's, lender's or listing site's page. Cite the government, regulator, TRREB or transit page it is based on instead."
+    : undefined;
+
 const sources: TinaField = {
   type: 'object',
   name: 'sources',
@@ -43,8 +55,8 @@ const sources: TinaField = {
   list: true,
   ui: { itemProps: (item) => ({ label: item?.name }) },
   fields: [
-    { type: 'string', name: 'name', label: 'Name', required: true },
-    { type: 'string', name: 'url', label: 'URL', required: true },
+    { type: 'string', name: 'name', label: 'Name', required: true, ui: { validate: noLongDash } },
+    { type: 'string', name: 'url', label: 'URL', required: true, ui: { validate: notBlocked } },
   ],
 };
 
@@ -112,6 +124,7 @@ export default defineConfig({
             description: 'The title of your post, 10 to 90 characters. It also becomes the web address.',
             isTitle: true,
             required: true,
+            ui: { validate: noLongDash },
           },
           {
             type: 'string',
@@ -119,7 +132,7 @@ export default defineConfig({
             label: 'Summary',
             description: 'One or two sentences, 50 to 300 characters. Shown under the headline, on the blog page and in Google.',
             required: true,
-            ui: { component: 'textarea' },
+            ui: { component: 'textarea', validate: noLongDash },
           },
           {
             type: 'string',
@@ -147,7 +160,7 @@ export default defineConfig({
             name: 'quickAnswer',
             label: 'Quick answer box (optional)',
             description: 'Two to four sentences that answer the question in the headline. Shown in a box at the top of the post.',
-            ui: { component: 'textarea' },
+            ui: { component: 'textarea', validate: noLongDash },
           },
           { ...faq, label: 'FAQ (optional)', description: 'Three to six questions readers ask, each ending with a question mark.' } as TinaField,
           { ...sources, label: 'Sources (optional)', description: 'Where your figures and rules come from. Full https links.' } as TinaField,

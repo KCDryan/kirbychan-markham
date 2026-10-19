@@ -21,6 +21,7 @@
  */
 import { execFileSync } from 'node:child_process';
 import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { RULES } from './lib/house-style.mjs';
 
 const QUICK = 'src/content/blog/quick';
 const apply = process.argv.includes('--apply');
@@ -43,6 +44,9 @@ const SPELLING = [
   [/\bcolor(s?)\b/g, 'colour$1'],
 ];
 
+/** A house style rule's pattern, shared with scripts/check-style.mjs. */
+const rule = (name) => RULES.find((r) => r.name === name).re;
+
 /** Fix prose, but leave URLs alone: link targets, bare links and source urls. */
 function tidy(text, count) {
   // Park URLs so a dash or comma inside a link is never changed.
@@ -52,8 +56,8 @@ function tidy(text, count) {
     return `@@URL${kept.length - 1}@@`;
   });
   const tally = (re) => (guarded.match(re) ?? []).length;
-  count.dashes += tally(/[–—]/g);
-  count.commas += tally(/,\s+(and|or)\b/g);
+  count.dashes += tally(rule('em dash')) + tally(rule('en dash'));
+  count.commas += tally(rule('comma before and/or'));
   for (const [re] of SPELLING) count.spelling += tally(re);
   let out = guarded
     .replace(/(\d)\s*[–—]\s*(\d)/g, '$1 to $2')
@@ -66,7 +70,9 @@ function tidy(text, count) {
 /** Problems reported by a check script, grouped by quick post file name. */
 function problemsFor(script) {
   try {
-    execFileSync('node', [script], { stdio: 'pipe' });
+    // Without BLOG_RUN, so check-style.mjs still fails on a quick post and it is held back.
+    const { BLOG_RUN, ...env } = process.env;
+    execFileSync('node', [script], { stdio: 'pipe', env });
     return { byFile: new Map(), other: [] };
   } catch (e) {
     const out = `${e.stdout ?? ''}${e.stderr ?? ''}`;

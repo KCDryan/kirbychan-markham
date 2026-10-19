@@ -49,6 +49,16 @@ Nothing in this section has been guessed. Every one renders as a visible placeho
 | 16 | Done | Price tables now show TRREB Q1 2026 medians by property type |
 | 17 | Done | 4 GO stations, 41 minutes from Unionville GO, 8 library branches |
 | 18 | Done | August 2026 report published |
+| 18a | Quick post cites blocked sources: zolo.ca (2 links) and greatertorontohomepros.com. The post's agent or Kirby: swap in primary sources per BLOG-PLAYBOOK §4 | `src/content/blog/quick/cornell-markham-real-estate-what-makes-it-different.mdx` |
+| 18b | Quick post cites blocked sources: zolo.ca (2 links). The post's agent or Kirby: swap in primary sources per BLOG-PLAYBOOK §4 | `src/content/blog/quick/difference-between-markham-and-thornhill-explained.mdx` |
+| 18c | Quick post cites blocked sources: ownright.com, pegasuslending.com and searchlistingsonline.ca. The post's agent or Kirby: swap in primary sources per BLOG-PLAYBOOK §4 | `src/content/blog/quick/first-time-home-buyer-unionville-a-practical-guide.mdx` |
+| 18d | Quick post cites blocked sources: fsresidential.com, wealthnorth.ca and justinhavre.com. The post's agent or Kirby: swap in primary sources per BLOG-PLAYBOOK §4 | `src/content/blog/quick/freehold-townhouse-markham-condo-fees-what-buyers-miss.mdx` |
+| 18e | Quick post cites blocked sources: wahi.com, kaizenrealestate.ca and zolo.ca. The post's agent or Kirby: swap in primary sources per BLOG-PLAYBOOK §4 | `src/content/blog/quick/greensborough-markham-homes-for-sale-a-buyers-guide.mdx` |
+| 18f | Quick post cites blocked sources: wowa.ca and zolo.ca (2 links). The post's agent or Kirby: swap in primary sources per BLOG-PLAYBOOK §4 | `src/content/blog/quick/markham-home-value-what-your-home-is-really.mdx` |
+| 18g | Quick post cites a HoodQ agent profile page (hoodq.com/jaydotca/...). The post's agent or Kirby: swap in primary sources per BLOG-PLAYBOOK §4 | `src/content/blog/quick/wismer-vs-berczy-markham-which-neighbourhood-fits.mdx` |
+
+`npm run check:tina-post -- <file>` lists a post's blocked sources (errors) and any other source
+that is not primary (warnings). The editor now refuses a blocked source URL when a post is saved.
 
 ---
 

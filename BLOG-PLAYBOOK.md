@@ -16,7 +16,7 @@ figure on a real estate brokerage website can mislead a buyer and breaches RECO 
 4. Research it from primary sources (section 4).
 5. Write one post as `src/content/blog/<slug>.mdx` (sections 5 to 7).
 6. Fact check it claim by claim (section 8).
-7. Run `npm run verify`. It must pass. Fix and re-run until it does.
+7. Run `BLOG_RUN=1 npm run verify`. It must pass. Fix and re-run until it does.
 8. Mark the topic done in `BLOG-TOPICS.md` and append an entry to `BLOG-LOG.md` (section 9).
 9. Commit and push (section 10).
 
@@ -34,6 +34,12 @@ One post per run. Never more.
 neighbourhood guides, services, translations, `package.json`, the lockfile or this playbook. If
 `npm run verify` fails because of a file you did not create, do not fix it: stop, publish nothing and
 record the failure under "Needs owner attention" in `BLOG-LOG.md`, then commit and push only the log.
+
+**Quick posts do not block a run.** Agents write quick posts in TinaCMS (`src/content/blog/quick/`).
+With `BLOG_RUN=1` the house style step lists a quick post's problems as warnings and still passes,
+because the deploy fixes or holds that post back on its own. Do not fix a quick post and do not stop
+because of one. Copy the warning lines under "Needs owner attention" in `BLOG-LOG.md` and carry on.
+Your own post and every other file are checked as before: an em dash in a full post still fails.
 
 ## 3. Choosing the topic
 
@@ -252,7 +258,7 @@ git add src/content/blog/<slug>.mdx BLOG-TOPICS.md BLOG-LOG.md
 git status --short   # must list only those three files
 git commit -m "Blog: <post h1>"
 git pull --rebase origin main
-npm run verify       # again, if the rebase brought in changes
+BLOG_RUN=1 npm run verify   # again, if the rebase brought in changes
 git push origin main
 ```
 
