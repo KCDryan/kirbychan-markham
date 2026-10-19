@@ -131,3 +131,15 @@ One entry per blog run, newest at the bottom. See `BLOG-PLAYBOOK.md`, section 9.
 - Claims verified: 31. Worked figures recalculated: land transfer tax on $1,380,000 ($24,075), minimum down payments at $1,380,000, $1,499,000 and $1,500,000 ($113,000, $124,900, $300,000), CMHC premium at 91.8% loan to value ($50,680), the price gaps ($463,010 on medians, $556,180 on averages) and the worked example table. The equity example ($920,000 sale, $450,000 mortgage, $45,000 costs) is labelled as made up
 - Claims removed because they could not be verified on a page opened this run: that Markham has no municipal land transfer tax (true per the existing LTT post, but no page opened today says so), that move-up buyers generally cannot get the first-time refund, a description of how the MLS HPI works, and the 25 year amortization limit for other insured buyers
 - Needs owner attention: the FCAC down payment page still contains a sentence saying insurance is unavailable at $1 million or more, which contradicts its own table and the Department of Finance $1.5 million cap. The post follows the Department of Finance and the FCAC table. September figures are one month and small samples (30 townhouse sales), and the post says so
+
+## 2026-10-19, joint-tenancy-tenants-in-common-ontario
+
+- Monday, first time buyers. `npm run verify` passed on clean main before writing
+- Skipped first (left unticked): "York Region schools: how to confirm a school boundary" (same intent as the quick posts york-region-school-boundary-map-finding-your-childs and wismer-commons-school-boundary-what-buyers, both from the last ten days); "Markham townhouses: freehold or condo" (covered by the quick post freehold-townhouse-markham-condo-fees-what-buyers-miss and by townhouse-to-detached-markham-costs)
+- Topic taken: Buying a home with family members on title in Ontario
+- Primary keyword: joint tenancy tenants in common ontario
+- Words: about 1,450 in the body
+- Sources opened this run: Conveyancing and Law of Property Act s. 13 and Partition Act ss. 2 and 3 (e-Laws, read in the in-app browser because WebFetch gets an empty JavaScript shell), ontario.ca land registration bulletin 2000-6 (survivorship application and the Family Law Act s. 26(1) severance statement), ontario.ca first-time homebuyer land transfer tax refund page (proportional refund and parent and child example), ontario.ca estate administration tax page (jointly owned assets excluded). Every claim was matched against raw page text pulled with curl, not against fetch summaries
+- Claims verified: 18. Removed because no opened page supports them: HBP and FHSA limits for co-buyers (CRA pages opened did not address buying with others), what happens to a tenant in common's share at death, severance in general, that the lawyer decides the title wording or registers the transfer on closing day, and a line that many buyers sign co-ownership agreements
+- verify: passed after one fix (the draft linked /services/first-time-buyers/, which does not exist; changed to /first-time-home-buyers-markham/)
+- Needs owner attention: none

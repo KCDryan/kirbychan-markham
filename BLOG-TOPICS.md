@@ -61,7 +61,7 @@ in the body. This is the cluster that feeds the pillar guide, so it stays the pr
 - [x] Offer dates and bidding in Ontario: how multiple offers work | buying | multiple offers ontario | multiple-offers-ontario-how-they-work
 - [ ] York Region schools: how to confirm a school boundary before you buy | buying | yrdsb school boundary
 - [ ] Markham townhouses: freehold or condo, and what each costs | buying | markham townhouse for sale
-- [ ] Buying a home with family members on title in Ontario | buying | joint tenancy tenants in common ontario
+- [x] Buying a home with family members on title in Ontario | buying | joint tenancy tenants in common ontario | joint-tenancy-tenants-in-common-ontario
 - [x] How much deposit a Markham buyer needs and when it is due | buying | deposit on a house ontario | deposit-on-a-house-ontario
 - [ ] Conditions in an Ontario offer: financing, inspection and status certificate | buying | conditions in an offer ontario
 - [ ] What a buyer representation agreement commits you to under TRESA | buying | buyer representation agreement ontario
