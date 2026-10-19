@@ -73,10 +73,10 @@ export function photoPlan(posts: { slug: string; published: number; hood?: strin
   return out;
 }
 
-/** The photo for a post published since the last build: its own neighbourhood, or one the `recent` cards do not show. */
+/** The photo for a post published since the last build: its own neighbourhood unless one of the 5 cards below shows it, else one the `recent` cards do not show. */
 export function freshHood(slug: string, named: string | undefined, headline: string, recent: string[]): string {
   const about = aboutHood(named, headline);
-  if (about) return about;
+  if (about && !recent.slice(0, 5).includes(about)) return about;
   const ids = Object.keys(HOODS);
   const free = ids.filter((h) => !recent.includes(h));
   const from = free.length ? free : ids;
@@ -122,5 +122,7 @@ if (typeof process !== 'undefined' && !!import.meta.filename && import.meta.file
   assert(aboutHood(undefined, 'Unionville or Markham Village, compared') === undefined, 'headline naming two is about neither');
   assert(aboutHood('cornell', 'Anything') === 'cornell', 'neighbourhood set on the post');
   assert(!['cornell', 'wismer'].includes(freshHood('x', undefined, 'Selling in Markham', ['cornell', 'wismer'])), 'fresh post avoids recent photos');
+  assert(freshHood('y', undefined, 'Downsizing in Cornell', ['unionville', 'cornell']) !== 'cornell', 'fresh post about a neighbourhood yields when a close card shows it');
+  assert(freshHood('y', undefined, 'Downsizing in Cornell', ['a', 'b', 'c', 'd', 'e', 'cornell']) === 'cornell', 'fresh post about a neighbourhood keeps its photo when the card showing it is further away');
   console.log('post-links ok');
 }
