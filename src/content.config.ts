@@ -116,6 +116,8 @@ const author = {
 const fullPost = z.object({
   quick: z.literal(false),
   ...seo,
+  ogImage: z.string().optional().describe('File name of the post photo in src/assets/photos/blog/. Blank uses the neighbourhood photo'),
+  imageAlt: z.string().optional().describe('Alt text for the post photo'),
   h1: z.string().min(20).max(90),
   subtitle: z.string().min(40).max(200),
   category: z.enum(CATEGORY_SLUGS),
@@ -191,6 +193,7 @@ const blog = defineCollection({
         title: title?.trim() || clip(headline, 60),
         description: description?.trim() || clip(summary, 160),
         ogImage: undefined,
+        imageAlt: undefined,
         noindex: false,
         h1: headline,
         subtitle: summary,

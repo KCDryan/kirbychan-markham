@@ -27,7 +27,8 @@ interface Props {
   withBlogSchema?: boolean;
 }
 // One photo per card, planned over every published post so a photo is not used twice close together.
-const plan = photoPlan((await publishedPosts()).map((p) => ({ slug: p.id.split('/').pop()!, published: p.data.published.valueOf(), hood: aboutHood(p.data.neighbourhood, p.data.h1) })));
+// Posts with their own photo (ogImage) are left out, so they take no turn.
+const plan = photoPlan((await publishedPosts()).filter((p) => !p.data.ogImage).map((p) => ({ slug: p.id.split('/').pop()!, published: p.data.published.valueOf(), hood: aboutHood(p.data.neighbourhood, p.data.h1) })));
 const {
   title,
   description,
@@ -108,6 +109,8 @@ const extraJsonLd = withBlogSchema
                   level={2}
                   media
                   photo={plan.get(p.id.split('/').pop()!)}
+                  image={p.data.ogImage}
+                  imageAlt={p.data.imageAlt}
                 />
               </li>
             ))}

@@ -13,7 +13,7 @@ import Cta from '../components/Cta.astro';
 import site from '../data/site.json';
 import { longDate, neighbourhoodPath } from '../lib/format';
 import { BLOG_CATEGORIES } from '../lib/blog';
-import { neighbourhoodPhoto } from '../lib/photos';
+import { blogPhotoKey, neighbourhoodPhoto, photo } from '../lib/photos';
 import { GUIDES, servicePath } from '../lib/guides';
 import { blogPosting, breadcrumbList, faqPage } from '../lib/schema';
 import { autoLinks } from '../lib/post-links';
@@ -79,11 +79,13 @@ const crumbs = [
   { name: d.h1, path },
 ];
 
-// Share image: the neighbourhood photo when the post is about one.
+// Share image: the post's own photo, else the neighbourhood photo when the post is about one.
 const photoHood = d.neighbourhood ?? (linkedHoods.length === 1 ? linkedHoods[0].id : undefined);
 const hoodPhoto = photoHood ? neighbourhoodPhoto(photoHood) : undefined;
-const ogImage = hoodPhoto
-  ? (await getImage({ src: hoodPhoto, width: 1200, height: 630, format: 'jpg', fit: 'cover' })).src
+const ownPhotoKey = blogPhotoKey(d.ogImage);
+const sharePhoto = ownPhotoKey ? photo(ownPhotoKey) : hoodPhoto;
+const ogImage = sharePhoto
+  ? (await getImage({ src: sharePhoto, width: 1200, height: 630, format: 'jpg', fit: 'cover' })).src
   : undefined;
 
 const jsonLd = [

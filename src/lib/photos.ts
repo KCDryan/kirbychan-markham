@@ -37,6 +37,18 @@ export function neighbourhoodPhoto(slug: string): ImageMetadata | undefined {
 }
 
 /**
+ * The key of a blog post's own photo. A post's `ogImage` is the file name of a photo in
+ * src/assets/photos/blog/, for example "selling-a-house-in-ontario-costs.jpg". A name with no file
+ * stops the build, so a typo cannot quietly fall back to a neighbourhood photo.
+ */
+export function blogPhotoKey(file: string | undefined): string | undefined {
+  if (!file) return undefined;
+  const key = `blog/${file.replace(/\.[^.]+$/, '')}`;
+  if (!photo(key)) throw new Error(`ogImage "${file}" is not a file in src/assets/photos/blog/`);
+  return key;
+}
+
+/**
  * What a neighbourhood photo shows, from src/data/photo-credits.json. Used as
  * alt text: the card's link already names the place, so the alt describes the
  * picture instead of repeating the name.

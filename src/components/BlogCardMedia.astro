@@ -1,25 +1,33 @@
 ---
 /**
- * The picture that leads a blog card: the photo of the neighbourhood the post is about, or a colour
- * band naming the topic when it is about none. functions/blog/[[path]].ts copies these blocks (from
- * the hidden set on the blog page) onto posts published since the last build.
+ * The picture that leads a blog card: the post's own photo, else the photo of the neighbourhood the
+ * post is about, or a colour band naming the topic when it is about none. functions/blog/[[path]].ts
+ * copies the neighbourhood and band blocks (from the hidden set on the blog page) onto posts
+ * published since the last build. A card with its own photo carries no data-hood, so it is not
+ * counted as a neighbourhood photo there.
  */
 import { BLOG_CATEGORIES, type BlogCategory } from '../lib/blog';
 import Photo from './Photo.astro';
-import { neighbourhoodPhoto, photoAlt } from '../lib/photos';
+import { blogPhotoKey, neighbourhoodPhoto, photoAlt } from '../lib/photos';
 
 interface Props {
   /** Neighbourhood slug. */
   photo?: string;
+  /** The post's own photo: its ogImage, a file in src/assets/photos/blog/. */
+  image?: string;
+  imageAlt?: string;
   category: BlogCategory;
 }
-const { photo, category } = Astro.props;
+const { photo, image, imageAlt, category } = Astro.props;
+const own = blogPhotoKey(image);
 const has = Boolean(photo && neighbourhoodPhoto(photo));
 ---
 
-<span class="bcard__media" data-hood={has ? photo : 'none'}>
+<span class="bcard__media" data-hood={own ? undefined : has ? photo : 'none'}>
   {
-    has ? (
+    own ? (
+      <Photo name={own} alt={imageAlt ?? ''} label="" ratio="16 / 9" sizes="(min-width: 1000px) 380px, (min-width: 660px) 46vw, 92vw" />
+    ) : has ? (
       <Photo name={`neighbourhoods/${photo}`} alt={photoAlt(photo!) ?? ''} label="" ratio="16 / 9" sizes="(min-width: 1000px) 380px, (min-width: 660px) 46vw, 92vw" />
     ) : (
       <span class="bcard__band" aria-hidden="true">{BLOG_CATEGORIES[category]}</span>

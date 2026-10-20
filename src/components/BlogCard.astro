@@ -14,13 +14,16 @@ interface Props {
   /** Lead with a picture: this neighbourhood's photo, or a colour band when there is none. */
   media?: boolean;
   photo?: string;
+  /** The post's own photo (its ogImage), used instead of the neighbourhood photo. */
+  image?: string;
+  imageAlt?: string;
 }
-const { slug, title, subtitle, category, published, level = 3, media = false, photo } = Astro.props;
+const { slug, title, subtitle, category, published, level = 3, media = false, photo, image, imageAlt } = Astro.props;
 const Tag = `h${level}` as 'h2' | 'h3';
 ---
 
 <a class="bcard" href={`/blog/${slug}/`}>
-  {media && <BlogCardMedia photo={photo} category={category} />}
+  {media && <BlogCardMedia photo={photo} image={image} imageAlt={imageAlt} category={category} />}
   <span class="bcard__meta">
     <span class="bcard__cat">{BLOG_CATEGORIES[category]}</span>
     <span aria-hidden="true">&middot;</span>
