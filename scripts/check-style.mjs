@@ -11,6 +11,7 @@
  */
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join, relative } from 'node:path';
+import { tidy } from './lib/quick-tidy.mjs';
 
 const ROOTS = ['src/content', 'src/data', 'src/pages', 'src/components', 'src/layouts', 'src/views', 'src/i18n'];
 const EXT = /\.(mdx|md|astro|json)$/;
@@ -77,8 +78,13 @@ function prose(file, text) {
 const files = (await Promise.all(ROOTS.map((r) => walk(r)))).flat();
 const problems = [];
 
+// Agents' quick posts (.mdx) get the mechanical fixes at deploy
+// (scripts/prepare-quick-posts.mjs), so check them as they will be deployed.
+const deployFixed = (file) => /^src\/content\/blog\/quick\/(?!_)[^/]+\.mdx$/.test(relative('.', file).split('\\').join('/'));
+
 for (const file of files) {
-  const text = prose(file, await readFile(file, 'utf8'));
+  const raw = await readFile(file, 'utf8');
+  const text = prose(file, deployFixed(file) ? tidy(raw, { dashes: 0, commas: 0, spelling: 0 }) : raw);
   const lines = text.split('\n');
   lines.forEach((line, i) => {
     for (const rule of RULES) {
