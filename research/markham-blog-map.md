@@ -52,3 +52,41 @@ Read before using it:
 ## Next step
 
 Before each publish date, re-open the dated sources (FCAC, CAO, Markham fees and rebate deadlines), then run `npm run verify`. All three topics need autocomplete evidence added to `KEYWORDS.md` when someone next runs the method there.
+
+## Three more topics, drafted 2026-10-21
+
+Written to bring the draft queue to six. Autocomplete was re-run on 2026-10-21 with the method in `KEYWORDS.md` and the suggestions are noted under each topic. No volumes. Two candidate topics were dropped because existing pages already own the intent: bridge financing (`/upsizing-markham/` and `/blog/sell-first-or-buy-first-downsizing-markham/`) and listing agreements (`/blog/real-estate-commission-ontario/` covers what the agreement must say, holdover and termination). Each draft has the placeholder date 2026-10-21. Set the real publish date when it is scheduled.
+
+### 4. Seller disclosure
+- **Used:** drafted 2026-10-21 as `seller-disclosure-ontario` (draft).
+- **Target query:** seller disclosure in ontario. Autocomplete for "seller disclosure ontario" returns "seller disclosure form ontario" and "seller disclosure requirements". "spis ontario" and "latent defect ontario" (with "latent defect disclosure ontario") also complete.
+- **Must link:** `/sellers/`, `/home-valuation/`, `/blog/home-inspection-ontario-buyers/`, `/blog/condo-status-certificate-markham/`, `/blog/selling-a-house-in-markham-timeline/`
+- **Extras:** `/blog/selling-a-parents-house-markham/`, `/contact/`
+- **Sources:** RECO Bulletins 7.3 (material facts), 7.4 (seller's legal obligation to disclose) and 7.5 (stigmas), RECO property information statements page, O. Reg. 567/05 ss. 1 and 22.1 to 22.3, ontario.ca what to know before buying a home. RECO says the seller's own duty comes from case law, so the post quotes RECO's summary and sends readers to a lawyer.
+
+### 5. Selling with a tenant in place
+- **Used:** drafted 2026-10-21 as `selling-tenanted-property-ontario` (draft).
+- **Target query:** selling a tenanted property in ontario. Autocomplete for "selling tenanted property ontario" returns "selling a tenanted property ontario" and "can i sell my rental property with tenants in it ontario".
+- **Must link:** `/sellers/`, `/home-valuation/`, `/investment-property-markham/`, `/services/investors/`, `/blog/selling-a-house-in-markham-timeline/`
+- **Extras:** `/blog/principal-residence-exemption-downsizing/`, `/contact/`
+- **Sources:** Residential Tenancies Act, 2006 (ss. 18, 27, 37, 39, 49, 49.1, 55.1, 57, 72, 106, current consolidation from September 21, 2026), LTB Interpretation Guideline 12, N12 instructions, LTB brochure on ending a tenancy, ontario.ca renting in Ontario, CRA Guide T4036. The 120 day no-compensation rule from September 21, 2026 applies to own-use notices only: the LTB brochure's purchaser table contradicts the statute, so the post follows the statute and the N12 form.
+
+### 6. Foreign buyers
+- **Used:** drafted 2026-10-21 as `ontario-non-resident-speculation-tax` (draft).
+- **Target query:** ontario non-resident speculation tax. Autocomplete for "non resident speculation tax ontario" returns "ontario non resident speculation tax nrst", "ontario non resident speculation tax exemption" and "non resident speculation tax act ontario".
+- **Must link:** `/buyers/`, `/relocating-to-markham/`, `/services/relocation/`, `/blog/land-transfer-tax-markham/`, `/land-transfer-tax-calculator-markham/`, `/blog/closing-day-ontario-markham/`
+- **Extras:** `/contact/`
+- **Sources:** ontario.ca NRST main, exemptions, rebates and refunds and transitional provisions pages, ontario.ca calculating land transfer tax, CMHC page on the Prohibition on the Purchase of Residential Property by Non-Canadians Act.
+- **Re-check before publishing:** the federal ban was announced as extended to January 1, 2027. No primary source found on 2026-10-21 confirmed a further extension. Update that paragraph once the federal position is known. The main ontario.ca NRST page still carries outdated federal dates, so do not cite it for the ban.
+
+## A fourth topic, drafted 2026-10-21
+
+Added the same day to bring the draft queue to seven. It is the `BLOG-TOPICS.md` idea "Capital gains on an inherited home in Ontario". Autocomplete was re-run on 2026-10-21 with the method in `KEYWORDS.md`. No volumes. Two other candidates were dropped because existing pages already own the intent: MPAC appeals (`/blog/markham-property-tax/` covers the Request for Reconsideration) and the condo cooling-off period (the quick post on buying pre-construction covers it). The draft has the placeholder date 2026-10-21. Set the real publish date when it is scheduled.
+
+### 7. Capital gains on an inherited home
+- **Used:** drafted 2026-10-21 as `capital-gains-inherited-property-ontario` (draft).
+- **Target query:** capital gains on inherited property in ontario. Autocomplete for "capital gains on inherited property ontario" returns "capital gains on inherited house ontario", "capital gains tax on inherited property ontario", "do you pay capital gains on inherited property ontario" and "who pays capital gains on inherited property canada ontario". "inherited property capital gains canada" also completes.
+- **Must link:** `/selling-an-estate-home-markham/` (`/services/estate-sales/` 301s to it, so link the guide directly), `/sellers/`, `/home-valuation/`, `/blog/principal-residence-exemption-downsizing/`, `/blog/selling-house-in-probate-ontario/`, `/blog/estate-administration-tax-ontario/`
+- **Extras:** `/blog/selling-a-parents-house-markham/`, `/contact/`
+- **Sources:** CRA capital gains page for someone who died (deemed disposition, spousal rollover, T1255, recapture), CRA principal residence page, Guide T4037 Capital Gains 2025 (inclusion rate 50% for 2025, inherited cost, outlays and expenses), Income Tax Folio S1-F3-C2 (ordinarily inhabited, personal trust categories after 2016), T3 Trust Guide (Schedule 1, trust inclusion rate), CRA clearance certificate page.
+- **Re-check before publishing:** the inclusion rate for the year of death. T4037 for 2025 gives 50% and the proposed increase was dropped in 2025, but no CRA page opened on 2026-10-21 stated the 2026 rate. The estate guide deliberately says little about capital gains; this post is where that detail lives, so the guide could link to it once it is published.
