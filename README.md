@@ -31,6 +31,7 @@ The dev server prints a local URL. Other commands:
 | `npm run check` | `astro check`, types and content schemas |
 | `npm run check:links` | Scan `dist/` for broken internal links |
 | `npm run verify` | check, then build, then link check. Run this before you commit |
+| `BLOG_RUN=1 npm run verify` | The same, but a problem in a quick post is a warning. Used by the scheduled blog and update runs |
 
 To test the lead form endpoint locally you need Wrangler, because `/api/lead` is a Cloudflare
 Pages Function rather than part of the Astro build:
@@ -107,7 +108,7 @@ index at `/blog/`, category pages at `/blog/category/<category>/` and an RSS fee
 
 A scheduled Claude routine publishes one new post every Monday, Wednesday and Friday. It takes the
 next topic from `BLOG-TOPICS.md`, researches it from primary sources, fact checks it, passes
-`npm run verify`, records the run in `BLOG-LOG.md` and pushes to `main`. Add or reorder topics in
+`BLOG_RUN=1 npm run verify`, records the run in `BLOG-LOG.md` and pushes to `main`. Add or reorder topics in
 `BLOG-TOPICS.md` to steer it.
 
 ### A market report
@@ -203,7 +204,8 @@ Guardrails built into the repo, not just the instructions:
 
 - Every news item and every cited fact must carry a full https source URL. The schema rejects
   anything without one and the build fails.
-- `npm run verify` (style, types, build, links) must pass before the agent may push.
+- `BLOG_RUN=1 npm run verify` (style, types, build, links) must pass before the agent may push. A
+  quick post problem is only a warning there, because the deploy holds that post back on its own.
 - The agent may only touch the content files listed in the playbook. Brokerage details, business
   statistics, testimonials, services, photos and all code are off limits.
 - Every run writes an entry to `UPDATE-LOG.md` with its sources and anything that needs your

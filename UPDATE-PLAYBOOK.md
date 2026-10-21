@@ -249,11 +249,17 @@ Run from the repository root:
 
 ```bash
 npm ci
-npm run verify
+BLOG_RUN=1 npm run verify
 ```
 
 `verify` runs the house style check, `astro check`, the production build and the internal link
 checker. **All four must pass.**
+
+**Quick posts do not block a run.** Agents write quick posts in TinaCMS (`src/content/blog/quick/`).
+With `BLOG_RUN=1` the house style and blog check steps list a quick post's problems as warnings and
+still pass, because the deploy fixes or holds that post back on its own. Do not fix a quick post and
+do not stop because of one. Copy the warning lines under "Needs owner attention" in `UPDATE-LOG.md`
+and carry on. Every other file is checked as before.
 
 Until the first news roundup exists the build prints `The collection "news" does not exist or is
 empty`. That line is expected and harmless. It is not a failure and needs no fix.
@@ -263,10 +269,10 @@ If something fails:
 1. Read the error. It names the file.
 2. Fix your change. Common causes: an unquoted YAML value, a description of the wrong length, a
    comma before "and", a neighbourhood slug that does not exist, a source URL missing `https://`.
-3. Run `npm run verify` again.
+3. Run `BLOG_RUN=1 npm run verify` again.
 4. If after reasonable effort a particular change still fails, discard just that change with
    `git checkout -- <file>` or delete the new file, note it in the log and continue.
-5. **Never push a commit that fails `npm run verify`.** A failed build on `main` takes the live site
+5. **Never push a commit that fails `BLOG_RUN=1 npm run verify`.** A failed build on `main` takes the live site
    down. Pushing nothing is always better than pushing a broken build.
 
 Also run `git diff --stat` and confirm that every changed file is on the allowed list in section 2.
@@ -308,11 +314,11 @@ git add -A
 git status
 git commit -m "Markham update YYYY-MM-DD" -m "<one line per task, same as the log entry>"
 git pull --rebase origin main
-npm run verify
+BLOG_RUN=1 npm run verify
 git push origin main
 ```
 
-Run `npm run verify` again after the rebase if the pull brought in any new commits. If the push is
+Run `BLOG_RUN=1 npm run verify` again after the rebase if the pull brought in any new commits. If the push is
 rejected, pull and verify again. Do not force push. Ever.
 
 ---

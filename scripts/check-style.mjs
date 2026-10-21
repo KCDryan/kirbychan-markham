@@ -8,31 +8,18 @@
  *
  * Runs in CI and in `npm run verify`, and the automated updater must pass it
  * before it is allowed to push. Usage: node scripts/check-style.mjs
+ * The rules live in scripts/lib/house-style.mjs.
+ *
+ * With BLOG_RUN=1 (the scheduled blog run) a problem in an agent's quick post is
+ * reported but does not fail the check: the deploy fixes or holds that post back
+ * (scripts/prepare-quick-posts.mjs). Problems anywhere else still fail.
  */
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join, relative } from 'node:path';
+import { styleProblems } from './lib/house-style.mjs';
 
 const ROOTS = ['src/content', 'src/data', 'src/pages', 'src/components', 'src/layouts', 'src/views', 'src/i18n'];
 const EXT = /\.(mdx|md|astro|json)$/;
-
-const RULES = [
-  { name: 'em dash', re: /—/g },
-  { name: 'en dash', re: /–/g },
-  { name: 'comma before and/or', re: /,\s+(and|or)\b/g },
-  {
-    name: 'machine-sounding contrast phrase',
-    re: /\b(not just|isn't just|is not just|not only|not simply|more than just|isn't about|is not about|it's not about)\b/gi,
-    // A preference for the team's researched posts. Agents' quick posts are
-    // their own writing and are not held back for it.
-    skip: (file) => file.includes('content/blog/quick/'),
-  },
-  {
-    name: 'American spelling',
-    // Whole words only, so CSS keywords such as "color:" or "center" in style
-    // blocks are not affected: those are stripped before checking.
-    re: /\b(neighborhoods?|favorites?|behaviors?|honors?|labors?|organizations?|realized?|analyzed?|centers?|colors?)\b/gi,
-  },
-];
 
 async function walk(dir) {
   const out = [];
@@ -51,46 +38,23 @@ async function walk(dir) {
   return out;
 }
 
-/** Remove code and style so only human-facing text is checked. */
-function prose(file, text) {
-  let t = text;
-  // Style blocks: CSS uses "color" and "center" legitimately.
-  t = t.replace(/<style[\s\S]*?<\/style>/g, (m) => '\n'.repeat(m.split('\n').length - 1));
-  // Frontmatter code fences in .astro files are TypeScript, not prose.
-  if (file.endsWith('.astro')) {
-    t = t.replace(/^---[\s\S]*?\n---/, (m) => '\n'.repeat(m.split('\n').length - 1));
-  }
-  // YAML comments in MDX templates.
-  t = t.replace(/^\s*#.*$/gm, '');
-  // Markup attributes such as class:list={[...]} or name="theme-color" are code.
-  // Prose inside attributes (alt text, labels) is short and reviewed by hand.
-  if (file.endsWith('.astro')) {
-    t = t.replace(/\b[\w:-]+=("[^"]*"|\{[^}]*\})/g, '');
-  } else {
-    t = t.replace(/\b(class|className|style)=("[^"]*"|\{[^}]*\})/g, '');
-  }
-  // A web address is not prose: its spelling belongs to the site it points at.
-  t = t.replace(/https?:\/\/[^\s"'<>)\]]+/g, '');
-  return t;
-}
-
 const files = (await Promise.all(ROOTS.map((r) => walk(r)))).flat();
+const blogRun = process.env.BLOG_RUN === '1';
 const problems = [];
+const warnings = [];
 
 for (const file of files) {
-  const text = prose(file, await readFile(file, 'utf8'));
-  const lines = text.split('\n');
-  lines.forEach((line, i) => {
-    for (const rule of RULES) {
-      if (rule.skip?.(file.split('\\').join('/'))) continue;
-      rule.re.lastIndex = 0;
-      if (rule.re.test(line)) {
-        problems.push(`${relative('.', file)}:${i + 1}  ${rule.name}  ->  ${line.trim().slice(0, 110)}`);
-      }
-    }
-  });
+  const quick = file.split('\\').join('/').includes('content/blog/quick/');
+  for (const p of styleProblems(file, await readFile(file, 'utf8'))) {
+    (blogRun && quick ? warnings : problems).push(`${relative('.', file)}:${p.line}  ${p.rule}  ->  ${p.text}`);
+  }
 }
 
+if (warnings.length > 0) {
+  console.warn(`House style: ${warnings.length} problem(s) in quick posts, reported only because BLOG_RUN=1:\n`);
+  for (const w of warnings) console.warn('  ' + w);
+  console.warn('');
+}
 if (problems.length > 0) {
   console.error(`House style check failed with ${problems.length} problem(s):\n`);
   for (const p of problems) console.error('  ' + p);

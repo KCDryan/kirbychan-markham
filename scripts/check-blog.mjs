@@ -16,6 +16,11 @@
  *   - contains a placeholder such as TODO, TBD, lorem or [insert
  *   - shares more than 15% of its wording with another post
  *
+ * Quick posts in src/content/blog/quick/ have lighter rules. With BLOG_RUN=1 (the
+ * scheduled blog run) a quick post problem is reported but does not fail the check,
+ * the same as in scripts/check-style.mjs: the deploy holds that post back
+ * (scripts/prepare-quick-posts.mjs). Problems in full posts still fail.
+ *
  * Usage: node scripts/check-blog.mjs
  */
 import { readdir, readFile } from 'node:fs/promises';
@@ -23,8 +28,11 @@ import { join } from 'node:path';
 import { parse } from 'yaml';
 
 const BLOG = 'src/content/blog';
+const blogRun = process.env.BLOG_RUN === '1';
 const problems = [];
-const fail = (file, message) => problems.push(`  ${file}: ${message}`);
+const warnings = [];
+const fail = (file, message) =>
+  (blogRun && file.startsWith(`${BLOG}/quick/`) ? warnings : problems).push(`  ${file}: ${message}`);
 
 function split(text) {
   const m = text.replace(/\r\n/g, '\n').match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
@@ -244,6 +252,11 @@ for (let i = 0; i < all.length; i++) {
   }
 }
 
+if (warnings.length > 0) {
+  console.warn(`Blog check: ${warnings.length} problem(s) in quick posts, reported only because BLOG_RUN=1:`);
+  console.warn(warnings.join('\n'));
+  console.warn('');
+}
 if (problems.length > 0) {
   console.error(`Blog check failed with ${problems.length} problem(s):`);
   console.error(problems.join('\n'));

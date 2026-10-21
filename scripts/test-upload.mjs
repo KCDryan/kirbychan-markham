@@ -164,9 +164,12 @@ ok((await up('publish', { post: edited, replace: true }, { cookie })).status ===
 console.log('Blog pages');
 const view = async (slug) => {
   const res = await blog({ request: new Request(`${ORIGIN}/blog/${slug}/`), env, next: async () => new Response(`<article>the built page of ${slug}</article>`, { headers: { 'content-type': 'text/html' } }) });
-  return { status: res.status, html: await res.text() };
+  return { status: res.status, robots: res.headers.get('x-robots-tag'), html: await res.text() };
 };
-ok((await view('built-full')).html.includes('<h1>A built post, now edited on the upload page</h1>'), 'a saved built post shows its saved version at once');
+const savedView = await view('built-full');
+ok(savedView.html.includes('<h1>A built post, now edited on the upload page</h1>'), 'a saved built post shows its saved version at once');
+ok(savedView.robots === 'noindex', 'a post the build has not passed yet (held back or not built) is not indexed');
+ok((await view('built-locked')).robots === null, 'a built post is indexed as usual');
 ok((await view('built-two')).status === 404, 'a removed built post answers not found');
 ok((await view('built-locked')).html.includes('the built page of built-locked'), 'every other post stays the built page');
 

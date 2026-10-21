@@ -16,7 +16,7 @@ figure on a real estate brokerage website can mislead a buyer and breaches RECO 
 4. Research it from primary sources (section 4).
 5. Write one post as `src/content/blog/<slug>.mdx` (sections 5 to 7).
 6. Fact check it claim by claim (section 8).
-7. Run `npm run verify`. It must pass. Fix and re-run until it does.
+7. Run `BLOG_RUN=1 npm run verify`. It must pass. Fix and re-run until it does.
 8. Mark the topic done in `BLOG-TOPICS.md` and append an entry to `BLOG-LOG.md` (section 9).
 9. Commit and push (section 10).
 
@@ -34,6 +34,13 @@ One post per run. Never more.
 neighbourhood guides, services, translations, `package.json`, the lockfile or this playbook. If
 `npm run verify` fails because of a file you did not create, do not fix it: stop, publish nothing and
 record the failure under "Needs owner attention" in `BLOG-LOG.md`, then commit and push only the log.
+
+**Quick posts do not block a run.** Agents write quick posts in TinaCMS (`src/content/blog/quick/`).
+With `BLOG_RUN=1` the house style and blog check steps list a quick post's problems as warnings and
+still pass, because the deploy fixes or holds that post back on its own. Do not fix a quick post and
+do not stop because of one. Copy the warning lines under "Needs owner attention" in `BLOG-LOG.md` and
+carry on. Your own post and every other file are checked as before: an em dash or a short body in a
+full post still fails.
 
 ## 3. Choosing the topic
 
@@ -101,10 +108,17 @@ even for facts that feel well known, because rules and rates change.
 | Market statistics | trreb.ca (Market Watch and community reports) |
 | Population and census | statcan.gc.ca |
 | Interest rates | bankofcanada.ca |
+| Condo owners' rights, condo disputes | condoauthorityontario.ca |
+| Toronto services, bylaws, property tax | toronto.ca |
+| Retirement homes | rhra.ca |
+| Human rights in housing | ohrc.on.ca |
+| Lawyers and real estate closings | lso.ca |
 
 - News outlets are acceptable only for news events, never for rules or figures a primary source
   publishes.
-- **Never** use another brokerage's, agent's, lender's or content farm's blog as a source for a fact.
+- **Never** use another brokerage's, agent's, lender's, law firm's, property manager's or content
+  farm's site as a source for a fact. They write to sell a service, so cite the government,
+  regulator or board page their claim is based on instead.
 - State the period for every market figure ("January to March 2026") and the effective date for
   every rule or rate where the source gives one.
 - If two sources disagree, use the primary one and say what it says. If you still cannot resolve it,
@@ -252,7 +266,7 @@ git add src/content/blog/<slug>.mdx BLOG-TOPICS.md BLOG-LOG.md
 git status --short   # must list only those three files
 git commit -m "Blog: <post h1>"
 git pull --rebase origin main
-npm run verify       # again, if the rebase brought in changes
+BLOG_RUN=1 npm run verify   # again, if the rebase brought in changes
 git push origin main
 ```
 
