@@ -183,3 +183,15 @@ One entry per blog run, newest at the bottom. See `BLOG-PLAYBOOK.md`, section 9.
 - Wrote `research/markham-blog-map.md` (target query, required internal links and sources for each draft) and edited each post to it: target query verbatim in title, description, first paragraph, H1 and an H2; titles 60 characters or fewer; descriptions 145 to 155; every required link present and pointing at a built page or a published post
 - Publishing order is now selling costs 2026-10-28, older homes 2026-10-30, conditions 2026-11-02
 - Needs owner attention: tick `BLOG-TOPICS.md` as noted above
+
+## 2026-10-21, not published selling-a-house-in-ontario-costs
+
+- Wednesday run (Grokbot). Earliest draft was selling-a-house-in-ontario-costs (queued for 2026-10-28). Its photo hold is cleared: 0139200 replaced the 72ad8b6 photo
+- Pre-publish checks passed: every dated figure re-read on its source today (13% Ontario HST, FCAC penalty rule, Markham tax certificate fee $146.00 as of January 1, 2026, CRA 10 day notice, $25 a day penalty with $100 minimum and $2,500 maximum, 25% or 50% holdback, Schedule 3 and T2091(IND)); target query in title, description, first paragraph, H1 and an H2; title 53 and description 148 characters; all five required links present; FAQ and sources filled; own photo, alt text and credit present and not used on the Toronto or North York sites
+- Not published: `npm run verify` fails at check:style on a file this run did not touch, `src/content/blog/quick/neighborhood-built-from-relocated-buildings-what-to-know.mdx` (TinaCMS commit dbe169c, 2026-10-20), with 9 American spellings ("neighborhood"). The draft edit was reverted and nothing was pushed
+
+### Needs owner attention
+
+- Fix the American spellings in that quick post (in TinaCMS or the file), or have Claude make `npm run verify` apply the same quick post fixes the Cloudflare build applies. Until then every scheduled publish stops at the same step
+
+- 2026-10-21, selling-a-house-in-ontario-costs, published (delayed from 8am by verify failure on quick post, fixed in 21fb446)
