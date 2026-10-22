@@ -7,6 +7,32 @@ A record of every automated update run, newest first. Written by the updater fol
 
 <!-- Newest entries go directly below this line. -->
 
+## 2026-10-22
+
+**Market figures:** No change. The TRREB community reports page still lists Q2 2026 as the newest Markham report.
+**News:** Skipped. Fewer than 2 items dated September 22 to October 22, 2026 qualified. Opened and rejected: City of Markham releases (online voting, voter letters, a staff appointment, a festival), York Region newsroom and the September 24 council highlights (nothing specific to Markham), the YRT November 1 service changes page (no publication date shown), YRT service advisories (no municipality named), Metrolinx news, the Stouffville line Elgin Mills crossing notice (dated September 9, before the window) and the YRDSB new and replacement schools page (no date shown).
+**Fact check:** greensborough, markham-village, milliken-mills. No wording changed. Confirmed: Markham District High School (YRDSB, 89 Church Street), Milliken Mills High School (YRDSB, 7522 Kennedy Road), Milliken GO at 39 Redlea Avenue in Scarborough and Mount Joy, Markham, Unionville and Milliken as Stouffville line stations.
+**Monthly city figures:** No change. September 2026 is still the newest Market Watch on trreb.ca.
+
+Sources:
+- TRREB Market Watch page: https://trreb.ca/index.php/market-news/market-watch
+- TRREB community reports page: https://trreb.ca/market-data/community-reports/
+- City of Markham news: https://www.markham.ca/news
+- York Region newsroom: https://www.york.ca/newsroom
+- York Region Transit, service changes and updates: https://www.yrt.ca/en/schedules-and-maps/service-changes-and-updates.aspx
+- Metrolinx news: https://www.metrolinx.com/en/news
+- GO Transit Stouffville line timetable, Table 71: https://assets.metrolinx.com/image/upload/v1787962004/Documents/GO/full-schedules/FS05092025/Table71.pdf
+- YRDSB school profile, Markham District High School: https://www2.yrdsb.ca/school-profiles/markham-dhs
+- YRDSB school profile, Milliken Mills High School: https://www2.yrdsb.ca/school-profiles/milliken-mills-hs
+- GO Transit, Milliken GO station details: https://www.gotransit.com/en/find-a-station/mk/station-details
+
+Needs owner attention:
+- PDFs can now be read on this Mac (Python pypdf is installed), so poppler is no longer needed. The Table 71 timetable text still came out jumbled, so the 57, 52 and 35 minute commute figures on the three pages were not re-checked. The Table 71 file linked on the pages is the one effective September 2025; worth confirming it is still the current Stouffville timetable.
+- Markham Village says the Markham Fairgrounds sit on the north edge of the neighbourhood. The fair's own site gives 10801 McCowan Road at Elgin Mills, which is well north of the old village. Left unchanged because the neighbourhood boundary is not defined; please check the wording.
+- Not verified and left as is: YRT and Viva route statements on all three pages, TTC connections at Steeles, the Greensborough plazas and Mount Joy GO being inside Greensborough.
+- The YRT page lists November 1 changes to Route 102D Markham Road and Route 129A, and YRDSB lists a proposed Markham Centre elementary school for September 2028 with a boundary review starting fall 2026. Neither page shows a date, so neither was published. A future roundup could use them if dated sources appear.
+- Still no news roundup has ever been published.
+
 ## 2026-10-08
 
 **Market figures:** No change. TRREB has not published a Markham community report newer than Q2 2026. The Q3 2026 address returned a 404.
