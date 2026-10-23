@@ -195,3 +195,14 @@ One entry per blog run, newest at the bottom. See `BLOG-PLAYBOOK.md`, section 9.
 - Fix the American spellings in that quick post (in TinaCMS or the file), or have Claude make `npm run verify` apply the same quick post fixes the Cloudflare build applies. Until then every scheduled publish stops at the same step
 
 - 2026-10-21, selling-a-house-in-ontario-costs, published (delayed from 8am by verify failure on quick post, fixed in 21fb446)
+
+## 2026-10-23, multigenerational-home-markham
+
+- Friday, upsizing. Primary keyword: multigenerational home markham. Topic: "Multigenerational homes in Markham: what buyers ask for"
+- Skipped first: bridge financing (again no primary consumer page on canada.ca, cmhc-schl.gc.ca or fsrao.ca); older homes is already written and queued for 2026-10-30, so it is left unticked until it goes live; school catchments (two quick posts from the last ten days already cover York Region and Wismer boundaries)
+- Different from the closest posts: legal-basement-suite-vs-finished-basement covers suite registration and stay-or-sell-aging-in-place names the MHRTC. This one is the purchase angle: full MHRTC eligibility (qualifying individual and relation, one claim per lifetime, unit must be newly created, purchase price not listed as an expense), CMHC Refinance terms for adding a suite (since January 15, 2025, 90% LTV, under $2,000,000, up to 4 units, 30 years, no rentals under 90 days) and Markham's three units per lot rule
+- Words: about 1,400 body
+- Sources checked: CRA MHRTC overview, who can claim and expenses pages; CMHC Refinance page; Department of Finance October 2024 secondary suites release; markham.ca registration of basement apartments and second suites
+- Claims verified: 26, each against raw page text this run. Left out because no opened page confirmed them: Markham garden suite and coach house rules, Ontario ARU rules (ontario.ca returned 403), any property tax reduction for family-occupied units, the Canada Secondary Suite Loan Program
+- Draft written by a Sonnet subagent and fact checked by the main run. Links fixed before publishing: Cornell quick post (draft), older homes post (future dated) and /services/upsizing/ (does not exist, used /upsizing-markham/)
+- Needs owner attention: none
