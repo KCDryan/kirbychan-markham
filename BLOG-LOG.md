@@ -206,3 +206,18 @@ One entry per blog run, newest at the bottom. See `BLOG-PLAYBOOK.md`, section 9.
 - Claims verified: 26, each against raw page text this run. Left out because no opened page confirmed them: Markham garden suite and coach house rules, Ontario ARU rules (ontario.ca returned 403), any property tax reduction for family-occupied units, the Canada Secondary Suite Loan Program
 - Draft written by a Sonnet subagent and fact checked by the main run. Links fixed before publishing: Cornell quick post (draft), older homes post (future dated) and /services/upsizing/ (does not exist, used /upsizing-markham/)
 - Needs owner attention: none
+
+## 2026-10-23, queued markham-waste-collection-calendar (draft, dated 2026-10-07)
+
+- Replaces the TinaCMS quick draft `greensborough-markham-homes-for-sale-a-buyers-guide` (draft, 2026-10-07), removed as a clear duplicate of the live quick post `greensborough-markham-homes-for-sale-why-the-train` (2026-10-13): same primary keyword "greensborough markham homes for sale", same Mount Joy GO and Wismer/Berczy comparison angle and the same FAQ questions
+- Primary keyword: markham waste collection calendar (BLOG-TOPICS.md, Saturday list). Category moving-to-markham. Kept as a draft with the replaced draft's date
+- First choice was "rouge national urban park markham", dropped because parks.canada.ca could not be reached from this environment, so nothing could be verified
+- Different from the closest posts: retiring-in-markham mentions the windrow programme and assisted collection only. Nothing live covers collection frequency, set out rules, the 2026 blue box move to Circular Materials and Miller Waste, yard material dates, depots, road classes or winter parking
+- Sources opened this run (raw page text via curl): markham.ca collection schedules, curbside collection, clear bag garbage, green bin, blue box, yard material, furniture and bulky items, apartments and condos, recycling depots, household hazardous waste, electronics and batteries, winter road services, who owns this road
+- Photo: "Markham Suburbs in Winter" by Daniel Hu, CC BY 3.0, Wikimedia Commons, credited in photo-credits.json
+- Words: about 1,550 body
+- Needs owner attention: the collection schedules page says yard material runs April to December, while the yard material page gives April 7 to October 30, 2026. The post uses the dated 2026 page. Re-check every date before publishing and set the real publish date
+
+### Queue review, 2026-10-23
+
+Other queued drafts checked against live posts: living-in-unionville-markham-a-neighbourhood-guide (quick), cornell-markham-real-estate-what-makes-it-different (quick), older-homes-markham-what-to-check, conditions-in-an-offer-ontario, seller-disclosure-ontario, ontario-non-resident-speculation-tax, selling-tenanted-property-ontario and capital-gains-inherited-property-ontario. Also neighborhood-built-from-relocated-buildings-what-to-know (quick), set to draft upstream in d974182. None shares a target keyword with a live post, so none was replaced. Partial overlaps to watch: the Unionville draft sits close to the /unionville-markham/ guide and four live Unionville quick posts; the Cornell draft overlaps the /cornell-markham/ guide and the live downsizing-in-cornell quick post; NRST gets one sentence in land-transfer-tax-markham; inherited homes get one line in principal-residence-exemption-downsizing

@@ -240,5 +240,15 @@
     "author": "Kirby Chan & Co. Real Estate Team",
     "license": "All rights reserved",
     "own": true
+  },
+  {
+    "slug": "markham-waste-collection-calendar",
+    "file": "blog/markham-waste-collection-calendar",
+    "shows": "Snow falling on the back gardens, fences and brick houses of a residential street in Markham, seen from a wooden deck.",
+    "author": "Daniel Hu",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Markham_Suburbs_in_Winter_-_panoramio.jpg",
+    "title": "Markham Suburbs in Winter - panoramio.jpg"
   }
 ]

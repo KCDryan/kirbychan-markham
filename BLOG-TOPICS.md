@@ -146,4 +146,4 @@ data, neighbourhoods, condos, investing, city services. Pick from this list or a
 - [ ] Living in Downtown Markham: condos and transit | neighbourhoods | downtown markham condos
 - [x] Water and wastewater bills in Markham | costs-and-taxes | markham water bill | markham-water-bill
 - [ ] Reserve funds and special assessments in Markham condos | condos | special assessment ontario condo
-- [ ] Snow clearing, leaf collection and the Markham service calendar | moving-to-markham | markham waste collection calendar
+- [x] Snow clearing, leaf collection and the Markham service calendar | moving-to-markham | markham waste collection calendar | markham-waste-collection-calendar (draft)
