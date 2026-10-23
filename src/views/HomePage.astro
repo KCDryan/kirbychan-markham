@@ -15,6 +15,7 @@ import TranslationNotice from '../components/TranslationNotice.astro';
 import Cta from '../components/Cta.astro';
 import GuideFeature from '../components/GuideFeature.astro';
 import LeadForm from '../components/LeadForm.astro';
+import { publishedPosts } from '../lib/blog-posts';
 import { langFromPath, localePath, t } from '../i18n';
 
 const lang = langFromPath(Astro.url.pathname);
@@ -25,9 +26,7 @@ const videos = (await getCollection('videos', ({ data }) => !data.draft && data.
   .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
   .slice(0, 3);
 
-const articles = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
-  .slice(0, 3);
+const articles = (await publishedPosts()).slice(0, 3);
 ---
 
 <Base title={dict.meta.home.title} description={dict.meta.home.description}>

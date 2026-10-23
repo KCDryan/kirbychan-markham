@@ -297,8 +297,8 @@ export function fillShell(shell: string, post: Post): string {
 }
 
 /**
- * The built blog list with uploaded posts it does not have yet added at the top, newest first, so a
- * post shows on /blog/ the moment it is published. The first built card is the pattern: its markup
+ * The built blog list with uploaded posts it does not have yet merged in by date, newest first (ties
+ * break on the slug, as at build), so a post shows on /blog/ the moment it is published. The first built card is the pattern: its markup
  * and style hooks are kept and only the address, topic, date, title and summary change. A post older
  * than the oldest card on the page is left out: it belongs on a later page of the list. Returns the
  * page unchanged if there is nothing to add or no card to copy.
@@ -310,14 +310,32 @@ export function addToList(html: string, posts: Post[], categories: Record<string
     const hood = block.match(/^<span class="bcard__media" data-hood="([^"]*)"/)?.[1];
     if (hood !== undefined) media.set(hood, block.trim());
   }
-  const card = html.match(/<li[^>]*>\s*<a class="bcard" href="[^"]*"[\s\S]*?<\/a>\s*<\/li>/)?.[0];
-  const oldest = Math.min(...[...html.matchAll(/<a class="bcard"[^>]*>[\s\S]*?<time datetime="([^"]*)"/g)].map((m) => Date.parse(m[1])));
+  const built = [...html.matchAll(/<li[^>]*>\s*<a class="bcard" href="\/blog\/([^"/]*)\/"[\s\S]*?<time datetime="([^"]*)"[\s\S]*?<\/a>\s*<\/li>/g)].map((m) => ({ at: m.index!, end: m.index! + m[0].length, slug: m[1], published: Date.parse(m[2]) }));
+  const oldest = Math.min(...built.map((b) => b.published));
+  const newer = (a: { slug: string; published: number }, b: { slug: string; published: number }) => b.published - a.published || a.slug.localeCompare(b.slug);
+  const now = Date.now();
   const fresh = posts
-    .filter((p) => !p.draft && p.published > oldest && !html.includes(`href="/blog/${p.slug}/"`))
-    .sort((a, b) => b.published - a.published);
-  if (!card || !fresh.length) return html;
+    .filter((p) => !p.draft && p.published <= now && p.published > oldest && !html.includes(`href="/blog/${p.slug}/"`))
+    .sort(newer);
+  if (!built.length || !fresh.length) return html;
+  const card = html.slice(built[0].at, built[0].end);
   const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-  const made = fresh.map((p) => {
+  const made = fresh.map((p) => ({ p, html: fill(p) }));
+  // Each new card goes just before the first built card that sorts after it.
+  let out = '';
+  let from = 0;
+  let next = 0;
+  for (const b of built) {
+    out += html.slice(from, b.at);
+    while (next < made.length && newer(made[next].p, b) < 0) out += made[next++].html;
+    from = b.at;
+  }
+  const last = built[built.length - 1].end;
+  out += html.slice(from, last);
+  while (next < made.length) out += made[next++].html;
+  return out + html.slice(last);
+
+  function fill(p: Post) {
     const when = new Date(p.published);
     const day = new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Toronto' }).format(when);
     const band = (media.get('none') ?? '').replace(/(<span class="bcard__band"[^>]*>)[^<]*/, (_, open) => open + esc(categories[p.category] ?? ''));
@@ -329,8 +347,7 @@ export function addToList(html: string, posts: Post[], categories: Record<string
       .replace(/<time datetime="[^"]*"([^>]*)>[^<]*/, (_, rest) => `<time datetime="${when.toISOString()}"${rest}>${day}`)
       .replace(/(<h[23] class="bcard__title"[^>]*>)[^<]*/, (_, open) => open + esc(p.headline))
       .replace(/(<span class="bcard__sub"[^>]*>)[^<]*/, (_, open) => open + esc(p.summary));
-  });
-  return html.replace(card, () => made.join('') + card);
+  }
 }
 
 /** Asks Cloudflare for a fresh build, so the blog list, sitemap and feed catch up within minutes. */
@@ -351,6 +368,11 @@ if (typeof process !== 'undefined' && !!import.meta.filename && import.meta.file
     assert(out.indexOf('/blog/two/') < out.indexOf('/blog/one/') && out.indexOf('/blog/one/') < out.indexOf('/blog/old/'), 'newest first, above built');
     assert(out.split('class="bcard"').length === 4 && !out.includes('hidden') && !out.includes('page-two'), 'built, draft and older posts not added');
     assert(out.includes('>A &amp; &lt;B&gt;<') && out.includes('>Sum $1<') && out.includes('>Condos<') && out.includes('October 5, 2026'), 'card filled and escaped');
+    const two = list.replace('<li x>', '<li x> <a class="bcard" href="/blog/new/" y> <span class="bcard__cat" y>Buying</span> <time datetime="2026-10-10T00:00:00.000Z" y>October 10, 2026</time> <h2 class="bcard__title" y="true">New</h2> <span class="bcard__sub" y>New summary</span> </a>  </li><li x>');
+    const merged = addToList(two, [post('mid', Date.UTC(2026, 5, 1)), post('tie-b', Date.UTC(2026, 9, 10)), post('a-tie', Date.UTC(2026, 9, 10)), post('later', Date.now() + 864e5)], { condos: 'Condos' });
+    const order = [...merged.matchAll(/href="\/blog\/([^/]*)\/"/g)].map((m) => m[1]).join();
+    assert(order === 'a-tie,new,tie-b,mid,old', `merged by date with ties on the slug, got ${order}`);
+    assert(!merged.includes('/blog/later/'), 'future post not added');
     assert(addToList('<p>none</p>', [post('one', Date.now())], {}) === '<p>none</p>', 'no card to copy');
     const pics = list.replace('<a class="bcard" href="/blog/old/" y> ', '<a class="bcard" href="/blog/old/" y> <span class="bcard__media" data-hood="unionville" z><img src="unionville.webp"></span> <span class="bcard__meta" y></span> ') +
       '<template id="card-media"><span class="bcard__media" data-hood="cornell" z><img src="cornell.webp"></span> <span class="bcard__media" data-hood="none" z><span class="bcard__band" z>Buying</span></span></template>';

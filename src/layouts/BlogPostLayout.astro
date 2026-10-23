@@ -13,6 +13,7 @@ import Cta from '../components/Cta.astro';
 import site from '../data/site.json';
 import { longDate, neighbourhoodPath } from '../lib/format';
 import { BLOG_CATEGORIES } from '../lib/blog';
+import { publishedPosts } from '../lib/blog-posts';
 import { blogPhotoKey, neighbourhoodPhoto, photo } from '../lib/photos';
 import { GUIDES, servicePath } from '../lib/guides';
 import { blogPosting, breadcrumbList, faqPage } from '../lib/schema';
@@ -64,9 +65,7 @@ const linkedServices = serviceIds
 const linkedTools = (TOOLS[d.category] ?? []).filter((t) => t.href !== Astro.url.pathname);
 
 // Related posts: same category first, then the newest of the rest.
-const others = (await getCollection('blog', ({ data }) => !data.draft))
-  .filter((p) => p.id !== entry.id)
-  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
+const others = (await publishedPosts()).filter((p) => p.id !== entry.id);
 const morePosts = [
   ...others.filter((p) => p.data.category === d.category),
   ...others.filter((p) => p.data.category !== d.category),

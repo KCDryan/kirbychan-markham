@@ -1,9 +1,10 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { CATEGORY_SLUGS, type BlogCategory } from './blog';
 
-/** Published posts, newest first. Ties break on the slug so order is stable. */
+/** Published posts, newest first. Drafts and future-dated posts are left out. Ties break on the slug so order is stable. */
 export async function publishedPosts(): Promise<CollectionEntry<'blog'>[]> {
-  return (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  const now = Date.now();
+  return (await getCollection('blog', ({ data }) => !data.draft && data.published.valueOf() <= now)).sort(
     (a, b) => b.data.published.valueOf() - a.data.published.valueOf() || a.id.localeCompare(b.id)
   );
 }
