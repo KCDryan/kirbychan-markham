@@ -64,7 +64,7 @@ in the body. This is the cluster that feeds the pillar guide, so it stays the pr
 - [x] Buying a home with family members on title in Ontario | buying | joint tenancy tenants in common ontario | joint-tenancy-tenants-in-common-ontario
 - [x] How much deposit a Markham buyer needs and when it is due | buying | deposit on a house ontario | deposit-on-a-house-ontario
 - [ ] Conditions in an Ontario offer: financing, inspection and status certificate | buying | conditions in an offer ontario
-- [ ] What a buyer representation agreement commits you to under TRESA | buying | buyer representation agreement ontario
+- [x] What a buyer representation agreement commits you to under TRESA | buying | buyer representation agreement ontario | buyer-representation-agreement-ontario
 - [ ] Home insurance basics for a Markham home | buying | home insurance ontario
 - [ ] The 10 day cooling-off period for new condos in Ontario | condos | condo cooling off period ontario
 
