@@ -37,6 +37,7 @@
   },
   "marketSource": "TRREB",
   "ga4": "G-HPFLBDZHG5",
+  "crmScript": "https://crm.kirbify.com/s/ks_xzmfds398HJKn7N650poaJ-Q/site.js",
   "leadsEmail": "info@kirbychanmarkham.com",
   "requireOneCutPro": true,
   "oneCutOnly": true,

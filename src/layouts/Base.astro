@@ -122,6 +122,9 @@ const graphs = [agent, isHome && website(), ...jsonLd].filter(Boolean);
       ))
     }
 
+    {/* Kirby CRM: sends enquiry form details to the CRM and shows its chat window. Not on the upload page, which has the staff sign in. */}
+    {site.crmScript && !Astro.url.pathname.startsWith('/upload') && <script is:inline async src={site.crmScript} />}
+
     {/* Google Analytics 4. Off until a measurement ID is set in src/data/site.json. */}
     {
       site.ga4 && (
