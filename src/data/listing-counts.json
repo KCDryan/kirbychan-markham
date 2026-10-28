@@ -1,54 +1,54 @@
 {
-  "updated": "2026-10-27T16:42:35.644Z",
+  "updated": "2026-10-28T17:11:07.693Z",
   "markham": {
-    "total": 1070,
-    "bungalow": 45,
-    "condo": 306,
-    "townhouse": 220,
-    "house": 496
+    "total": 1062,
+    "bungalow": 46,
+    "condo": 304,
+    "townhouse": 221,
+    "house": 491
   },
   "areas": {
     "berczy-village": {
-      "total": 34,
-      "bungalow": 0,
+      "total": 36,
+      "bungalow": 1,
       "condo": 0,
-      "townhouse": 12,
-      "house": 21
+      "townhouse": 13,
+      "house": 22
     },
     "unionville": {
-      "total": 243,
+      "total": 239,
       "bungalow": 4,
-      "condo": 137,
-      "townhouse": 28,
-      "house": 70
+      "condo": 134,
+      "townhouse": 27,
+      "house": 71
     },
     "thornhill": {
-      "total": 191,
-      "bungalow": 13,
+      "total": 190,
+      "bungalow": 14,
       "condo": 64,
       "townhouse": 26,
       "house": 97
     },
     "cornell": {
-      "total": 85,
+      "total": 83,
       "bungalow": 0,
       "condo": 6,
-      "townhouse": 44,
-      "house": 35
+      "townhouse": 45,
+      "house": 32
     },
     "markham-village": {
-      "total": 43,
+      "total": 45,
       "bungalow": 4,
       "condo": 0,
       "townhouse": 7,
-      "house": 31
+      "house": 33
     },
     "milliken-mills": {
-      "total": 46,
+      "total": 45,
       "bungalow": 1,
       "condo": 3,
       "townhouse": 5,
-      "house": 27
+      "house": 26
     },
     "box-grove": {
       "total": 15,
@@ -58,11 +58,11 @@
       "house": 13
     },
     "cathedraltown": {
-      "total": 24,
+      "total": 23,
       "bungalow": 0,
       "condo": 13,
       "townhouse": 6,
-      "house": 5
+      "house": 4
     },
     "angus-glen": {
       "total": 29,
@@ -73,17 +73,17 @@
     },
     "greensborough": {
       "total": 45,
-      "bungalow": 8,
-      "condo": 10,
-      "townhouse": 20,
+      "bungalow": 7,
+      "condo": 11,
+      "townhouse": 19,
       "house": 13
     },
     "wismer": {
       "total": 60,
       "bungalow": 0,
       "condo": 14,
-      "townhouse": 16,
-      "house": 30
+      "townhouse": 17,
+      "house": 29
     }
   }
 }
