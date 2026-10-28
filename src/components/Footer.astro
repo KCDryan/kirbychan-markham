@@ -181,6 +181,7 @@ const brokerageMissing = isTodo(site.brokerage.legalName);
         <p>&copy; {year} {site.name}</p>
         <ul>
           {legalLinks.map((l) => <li><a href={l.href} hreflang={lang === 'en' ? undefined : 'en-CA'}>{l.label}{lang !== 'en' && ` (${dict.ui.footer.inEnglish})`}</a></li>)}
+          <li><a href="https://kirbify.com" target="_blank" rel="noopener">Made by Kirbify</a></li>
         </ul>
       </div>
     </div>
