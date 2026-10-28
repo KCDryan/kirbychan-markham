@@ -27,10 +27,21 @@ const path = `/services/${entry.id}/`;
 
 // Everything on the site that names this service, so the page links down to its
 // own cluster instead of only sideways to the other services.
-const posts = (await publishedPosts()).filter((p) => p.data.relatedServices.includes(entry.id)).slice(0, 6);
+// Pages made at /uploadservice/ also list the posts they chose, then posts whose title or description
+// uses one of their search phrases, then the neighbourhoods they chose. Other pages have none of these.
+const all = await publishedPosts();
+const phrase = (t: string) => t.toLowerCase().replace(/[\u2018\u2019]/g, "'");
+const named = (p: (typeof all)[number]) => d.keywords.some((k) => phrase(`${p.data.h1} ${p.data.title} ${p.data.description}`).includes(phrase(k)));
+const posts = [
+  ...d.relatedPosts.map((id) => all.find((p) => p.id === id)).filter((p): p is (typeof all)[number] => Boolean(p)),
+  ...all.filter(named),
+  ...all.filter((p) => p.data.relatedServices.includes(entry.id)),
+]
+  .filter((p, i, list) => list.indexOf(p) === i)
+  .slice(0, 6);
 const hoods = await getCollection(
   'neighbourhoods',
-  (h) => !h.data.draft && h.data.relatedServices.includes(entry.id)
+  (h) => !h.data.draft && (h.data.relatedServices.includes(entry.id) || d.relatedHoods.includes(h.id))
 );
 
 

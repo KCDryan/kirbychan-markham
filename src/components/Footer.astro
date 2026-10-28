@@ -28,9 +28,13 @@ const legalLinks = [
 const hoods = (await getCollection('neighbourhoods', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order
 );
-const services = (await getCollection('services', ({ data }) => !data.draft)).sort(
+// Pages made at /uploadservice/ are English only, so translated pages leave them out.
+const allServices = (await getCollection('services', ({ data }) => !data.draft && (lang === 'en' || !data.uploadVersion))).sort(
   (a, b) => a.data.order - b.data.order
 );
+// The footer shows the built-in services and at most the 4 newest made at /uploadservice/, so it never grows without limit.
+const madeHere = allServices.filter((s) => s.data.uploadVersion);
+const services = allServices.filter((s) => !s.data.uploadVersion || madeHere.slice(-4).includes(s));
 
 const socials = (
   [

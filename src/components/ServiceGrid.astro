@@ -26,7 +26,8 @@ interface Card {
   href: string;
 }
 
-const collection = (await getCollection('services', ({ data }) => !data.draft)).sort(
+// Pages made at /uploadservice/ are English only, so they are left out of translated grids.
+const collection = (await getCollection('services', ({ data }) => !data.draft && (lang === 'en' || !data.uploadVersion))).sort(
   (a, b) => a.data.order - b.data.order
 );
 

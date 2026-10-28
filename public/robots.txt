@@ -3,6 +3,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 
@@ -20,6 +21,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 
@@ -28,6 +30,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 
@@ -36,6 +39,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 
@@ -44,6 +48,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 
@@ -52,6 +57,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 
@@ -60,6 +66,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 
@@ -68,6 +75,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 
@@ -76,6 +84,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 
@@ -84,6 +93,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 
@@ -92,6 +102,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 
@@ -100,6 +111,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /upload/
+Disallow: /uploadservice/
 Disallow: /blog/upload-shell/
 Disallow: /cdn-cgi/
 

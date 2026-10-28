@@ -88,12 +88,19 @@ export function freshHood(slug: string, named: string | undefined, headline: str
 /** Service guides named in the text, at most `max`. */
 export const servicesIn = (text: string, max = 9) => Object.keys(SERVICES).filter((id) => SERVICES[id].words.test(text)).slice(0, max);
 
-/** What the blog layout links when a post chooses nothing itself: two of each, from the headline and description. */
-export function autoLinks(topic: string, category: string) {
-  return {
-    hoods: hoodsIn(topic, 2),
-    services: [...new Set([...servicesIn(topic), CATEGORY_SERVICE[category]].filter((x): x is string => Boolean(x)))].slice(0, 2),
-  };
+/** Lower case with curly apostrophes made straight, so search phrases match however a title was typed. */
+const plain = (s: string) => s.toLowerCase().replace(/[\u2018\u2019]/g, "'");
+
+/**
+ * What the blog layout links when a post chooses nothing itself: two of each, from the headline and
+ * description. `keyed` are service pages with search phrases (made at /uploadservice/): the first one
+ * whose phrase is in the topic is added as one more service. Without it the answer is as before.
+ */
+export function autoLinks(topic: string, category: string, keyed: { id: string; keywords: string[] }[] = []) {
+  const services = [...new Set([...servicesIn(topic), CATEGORY_SERVICE[category]].filter((x): x is string => Boolean(x)))].slice(0, 2);
+  const about = plain(topic);
+  const extra = keyed.find((s) => !services.includes(s.id) && s.keywords.some((k) => k.trim() && about.includes(plain(k.trim()))));
+  return { hoods: hoodsIn(topic, 2), services: extra ? [...services, extra.id] : services };
 }
 
 // Self-check: node --experimental-strip-types src/lib/post-links.ts
@@ -125,5 +132,10 @@ if (typeof process !== 'undefined' && !!import.meta.filename && import.meta.file
   assert(freshHood('y', undefined, 'Downsizing in Cornell', ['unionville', 'cornell']) !== 'cornell', 'fresh post about a neighbourhood yields when a close card shows it');
   assert(freshHood('y', undefined, 'Downsizing in Cornell', ['a', 'b', 'c', 'd', 'e', 'cornell']) !== 'cornell', 'fresh post yields to any of the cards below it');
   assert(freshHood('y', undefined, 'Downsizing in Cornell', ['unionville', 'wismer']) === 'cornell', 'fresh post about a neighbourhood keeps its photo when no card below shows it');
+  const keyed = [{ id: 'poa', keywords: ['power of attorney'] }, { id: 'other', keywords: ['power of attorney'] }];
+  assert(JSON.stringify(autoLinks('Can a Power of Attorney sell a house?', 'selling')) === JSON.stringify({ hoods: [], services: ['downsizing'] }), 'no search phrases, no change');
+  assert(autoLinks('Can a Power of Attorney sell a house?', 'selling', keyed).services.join() === 'downsizing,poa', 'one matching service page is added');
+  assert(autoLinks('Condo fees in Markham', 'condos', keyed).services.join() === 'downsizing', 'nothing added without a match');
+  assert(autoLinks('Selling a parent\u2019s house', 'selling', [{ id: 'p', keywords: ["selling a parent's house"] }]).services.includes('p'), 'curly apostrophes match');
   console.log('post-links ok');
 }

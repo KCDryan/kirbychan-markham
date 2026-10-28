@@ -54,7 +54,8 @@ if (!existsSync(DIST)) {
 }
 
 // The empty post pages that uploads are poured into link to category pages that may not exist yet.
-const files = (await walk(DIST)).filter((f) => !f.includes(`${DIST}/blog/upload-shell/`.replace(/\/\//g, '/')));
+// The service page chat at /uploadservice/ is a staff tool, not a content page.
+const files = (await walk(DIST)).filter((f) => !f.includes(`${DIST}/blog/upload-shell/`.replace(/\/\//g, '/')) && !f.includes(`${DIST}/uploadservice/`.replace(/\/\//g, '/')));
 const broken = [];
 const external = new Set();
 let checked = 0;

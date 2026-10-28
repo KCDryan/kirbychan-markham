@@ -48,6 +48,11 @@
 /blog/upload-shell/*
   X-Robots-Tag: noindex, nofollow
 
+# The service page chat and the site facts it reads (/uploadservice/site.json). Never indexed.
+/uploadservice/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+
 # The list of built posts the upload page reads. Public text only, never indexed.
 /blog/built-posts.json
   X-Robots-Tag: noindex, nofollow

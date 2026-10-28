@@ -51,13 +51,16 @@ const TOOLS: Partial<Record<string, { href: string; label: string; note: string 
 })();
 
 const allHoods = await getCollection('neighbourhoods', ({ data }) => !data.draft);
-const auto = autoLinks(topic, d.category);
+const allServices = await getCollection('services', ({ data }) => !data.draft);
+// Service pages made at /uploadservice/ carry search phrases: a post that chose no services and
+// names one of them in its title or description links to that page as well (one at most).
+const keyed = allServices.filter((s) => s.data.keywords.length > 0).map((s) => ({ id: s.id, keywords: s.data.keywords }));
+const auto = autoLinks(topic, d.category, keyed);
 const hoodIds = d.related.length ? d.related : auto.hoods;
 const linkedHoods = hoodIds
   .map((slug) => allHoods.find((h) => h.id === slug))
   .filter((h): h is CollectionEntry<'neighbourhoods'> => Boolean(h));
 
-const allServices = await getCollection('services', ({ data }) => !data.draft);
 const serviceIds = d.relatedServices.length ? d.relatedServices : auto.services;
 const linkedServices = serviceIds
   .map((slug) => allServices.find((s) => s.id === slug))

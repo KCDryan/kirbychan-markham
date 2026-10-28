@@ -15,6 +15,10 @@ import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
 
 <Base title="Upload a blog post" description="Upload a blog post to the Kirby Chan & Co. Markham website." noindex>
   <div class="up wrap">
+    <nav class="up__switch" aria-label="Upload pages">
+      <a href="/upload/" aria-current="page">Blog posts</a>
+      <a href="/uploadservice/">Service pages</a>
+    </nav>
     <p class="up__status" id="up-status" role="status" aria-live="polite"></p>
 
     <section id="v-loading"><p class="up__lead">Loading…</p></section>
@@ -929,5 +933,22 @@ import { HOODS, ROLES, SERVICES } from '../../lib/post-links';
   }
   .up__list li.up__empty {
     display: block;
+  }
+  .up__switch {
+    display: flex;
+    gap: var(--sp-2);
+    margin-top: var(--sp-4);
+  }
+  .up__switch a {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--rule);
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .up__switch a[aria-current='page'] {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
   }
 </style>

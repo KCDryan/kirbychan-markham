@@ -35,9 +35,14 @@ const nearby = d.nearby
   .filter((h): h is CollectionEntry<'neighbourhoods'> => Boolean(h));
 
 const allServices = await getCollection('services', ({ data }) => !data.draft);
-const services = d.relatedServices
+const chosen = d.relatedServices
   .map((slug) => allServices.find((s) => s.id === slug))
   .filter((s): s is CollectionEntry<'services'> => Boolean(s));
+// Service pages made at /uploadservice/ that name this neighbourhood join the list, two at most.
+const services = [
+  ...chosen,
+  ...allServices.filter((s) => s.data.relatedHoods.includes(entry.id) && !chosen.includes(s)).sort((a, b) => a.data.order - b.data.order),
+].slice(0, chosen.length + 2);
 
 const videos = (await getCollection('videos', ({ data }) => !data.draft))
   .filter((v) => v.data.neighbourhood === entry.id)

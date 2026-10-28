@@ -84,6 +84,13 @@ const services = defineCollection({
     steps: z.array(z.object({ title: z.string(), body: z.string() })).min(3),
     faq,
     draft: z.boolean().default(false),
+    // Service pages made at /uploadservice/ (scripts/pull-uploads.mjs) carry these. Search phrases
+    // that link matching blog posts to the page, the pages it chose to relate to and its version.
+    keywords: z.array(z.string()).default([]),
+    relatedPosts: z.array(z.string()).default([]),
+    relatedHoods: z.array(z.string()).default([]),
+    relatedServices: z.array(z.string()).default([]),
+    uploadVersion: z.string().optional().describe('Set on service pages made at /uploadservice/'),
   }),
 });
 

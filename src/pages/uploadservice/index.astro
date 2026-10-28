@@ -1,0 +1,559 @@
+---
+/**
+ * Service pages, written with the AI. The owner types what the page should be about, reads the
+ * preview, keeps chatting to change it, then saves a draft or publishes. Published pages go live with
+ * the next site build (scripts/pull-uploads.mjs). Same sign in as /upload/. The API is
+ * functions/api/uploadservice/[action].ts. Never indexed and never linked from the public site.
+ */
+import Base from '../../layouts/Base.astro';
+---
+
+<Base title="Service pages" description="Write service pages for the Kirby Chan & Co. Markham website." noindex>
+  <div class="sv wrap">
+    <nav class="sv__switch" aria-label="Upload pages">
+      <a href="/upload/">Blog posts</a>
+      <a href="/uploadservice/" aria-current="page">Service pages</a>
+    </nav>
+    <p class="sv__status" id="sv-status" role="status" aria-live="polite"></p>
+
+    <section id="v-loading"><p class="sv__lead">Loading…</p></section>
+
+    <section id="v-setup" hidden>
+      <h1>Service pages</h1>
+      <p class="sv__lead">Uploads are not switched on yet. The website owner needs to set the upload password in Cloudflare.</p>
+    </section>
+
+    <section id="v-login" hidden>
+      <h1>Service pages</h1>
+      <form id="sv-login" class="sv__box">
+        <label for="sv-password">Password</label>
+        <input id="sv-password" type="password" autocomplete="current-password" required />
+        <button class="btn btn--primary sv__big" type="submit">Sign in</button>
+      </form>
+    </section>
+
+    <section id="v-main" hidden>
+      <h1>Service pages</h1>
+      <p class="sv__lead">Tell the AI what the page should be about. Read the preview, ask for changes, then publish.</p>
+      <p class="sv__note sv__note--bad" id="sv-noai" hidden>
+        The AI writer is not switched on yet. The website owner needs to add the ANTHROPIC_API_KEY secret in Cloudflare. You can still open, unpublish and remove pages below.
+      </p>
+
+      <div class="sv__work">
+        <div class="sv__box sv__chat">
+          <h2>Chat</h2>
+          <ol class="sv__msgs" id="sv-msgs" aria-live="polite" aria-label="Conversation"></ol>
+          <form id="sv-chat">
+            <label for="sv-input">Your message</label>
+            <textarea id="sv-input" rows="5" maxlength="4000" placeholder="For example: A page about selling a home under power of attorney in Markham. Link our probate and power of attorney posts."></textarea>
+            <p class="sv__hint">Press Enter to send. Shift and Enter starts a new line.</p>
+            <button class="btn btn--primary sv__big" id="sv-send" type="submit">Send</button>
+          </form>
+        </div>
+
+        <div class="sv__box sv__side">
+          <h2>Preview</h2>
+          <p class="sv__hint" id="sv-empty">The page appears here after your first message.</p>
+          <ul class="sv__problems" id="sv-problems" aria-label="Must be fixed before publishing"></ul>
+          <ul class="sv__warnings" id="sv-warnings" aria-label="Worth a look"></ul>
+          <iframe id="sv-preview" title="Preview of the service page" sandbox="" hidden></iframe>
+          <div class="sv__actions">
+            <button class="btn btn--primary sv__big" id="sv-publish" type="button" disabled>Publish</button>
+            <button class="btn btn--ghost" id="sv-save" type="button" disabled>Save draft</button>
+            <button class="btn btn--ghost" id="sv-reset" type="button">Start over</button>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="sv__listhead">My service pages</h2>
+      <ul class="sv__list" id="sv-list"></ul>
+      <p class="sv__signout"><button class="btn btn--ghost btn--sm" id="sv-logout" type="button">Sign out</button></p>
+    </section>
+  </div>
+</Base>
+
+<script>
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const status = $('sv-status');
+  const say = (text: string, bad = false) => {
+    status.textContent = text;
+    status.classList.toggle('sv__status--bad', bad);
+  };
+  const VIEWS = ['v-loading', 'v-setup', 'v-login', 'v-main'];
+  const show = (view: string) => VIEWS.forEach((v) => ($(v).hidden = v !== view));
+  const api = async (path: string, body?: unknown) => {
+    const res = await fetch(path, body === undefined ? {} : { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    if (res.status === 401 && !path.endsWith('/login')) show('v-login');
+    return { status: res.status, data: (await res.json().catch(() => ({}))) as Record<string, any> };
+  };
+  const el = (tag: string, cls: string, text = '') => Object.assign(document.createElement(tag), { className: cls, textContent: text });
+
+  // What the owner has typed (sent each time, oldest dropped past 8,000 characters) and the current draft.
+  type Page = Record<string, any> & { slug: string; name: string };
+  let messages: string[] = [];
+  let draft: Page | null = null;
+  let problems: string[] = [];
+  /** The address of a saved page opened with Edit: saving again replaces it without asking. */
+  let editing = '';
+  let aiReady = false;
+  let busy = false;
+
+  // The conversation is kept on this computer, so a reload does not lose it.
+  const KEY = 'kc-service-chat';
+  const remember = () => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ messages, draft, editing }));
+    } catch {}
+  };
+
+  const addMsg = (text: string, who: 'me' | 'ai' | 'bad') => {
+    const li = el('li', `sv__msg sv__msg--${who}`, text);
+    $('sv-msgs').append(li);
+    li.scrollIntoView({ block: 'nearest' });
+  };
+  const list = (id: string, items: string[]) => $(id).replaceChildren(...items.map((t) => el('li', '', t)));
+  const buttons = () => {
+    $<HTMLButtonElement>('sv-send').disabled = busy || !aiReady;
+    $<HTMLButtonElement>('sv-save').disabled = busy || !draft;
+    $<HTMLButtonElement>('sv-publish').disabled = busy || !draft || problems.length > 0;
+  };
+
+  async function preview() {
+    if (!draft) {
+      $('sv-preview').hidden = true;
+      $('sv-empty').hidden = false;
+      list('sv-problems', []);
+      list('sv-warnings', []);
+      problems = [];
+      return buttons();
+    }
+    const { data } = await api('/api/uploadservice/preview', { page: draft });
+    if (data.error) return say(data.error, true);
+    problems = data.problems ?? [];
+    list('sv-problems', problems);
+    list('sv-warnings', data.warnings ?? []);
+    $<HTMLIFrameElement>('sv-preview').srcdoc = data.html;
+    $('sv-preview').hidden = false;
+    $('sv-empty').hidden = true;
+    buttons();
+  }
+
+  async function send(text: string) {
+    if (busy || !text.trim()) return;
+    busy = true;
+    buttons();
+    say('');
+    messages.push(text.trim());
+    while (messages.join('').length > 8000 && messages.length > 1) messages.shift();
+    addMsg(text.trim(), 'me');
+    $<HTMLTextAreaElement>('sv-input').value = '';
+    remember();
+    let page: Page | null = null;
+    let error = '';
+    let result: Record<string, any> = {};
+    try {
+      const res = await fetch('/api/uploadservice/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ messages, draft }) });
+      if (res.status === 401) show('v-login');
+      if (!res.ok || !res.body) error = ((await res.json().catch(() => ({}))) as { error?: string }).error || 'The page could not be written. Please try again.';
+      else {
+        const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+        let buffer = '';
+        for (;;) {
+          const { value, done } = await reader.read();
+          buffer += value ?? '';
+          const lines = buffer.split('\n');
+          buffer = done ? '' : lines.pop()!;
+          for (const line of lines) {
+            let event: Record<string, any> = {};
+            try {
+              event = JSON.parse(line);
+            } catch {}
+            if (typeof event.status === 'string') addMsg(event.status, 'ai');
+            if (event.error) error = String(event.error);
+            if (event.done) {
+              page = event.page;
+              result = event;
+            }
+          }
+          if (done) break;
+        }
+      }
+    } catch {
+      error = 'The connection dropped. Please send your message again.';
+    }
+    busy = false;
+    if (error || !page) {
+      // The message was not used, so it is not kept: the owner can send it again.
+      messages.pop();
+      addMsg(error || 'The page did not finish. Please send your message again.', 'bad');
+      remember();
+      return buttons();
+    }
+    draft = page;
+    const left = (result.problems ?? []).length;
+    addMsg(left ? `Here is the page. ${left} thing${left === 1 ? '' : 's'} still need${left === 1 ? 's' : ''} fixing before it can be published: see the list above the preview.` : 'Here is the page. Read the preview, then publish or ask for changes.', 'ai');
+    remember();
+    await preview();
+  }
+
+  async function save(publish: boolean) {
+    if (!draft || busy) return;
+    if (publish && !confirm(`Publish "${draft.name}" on the website at /services/${draft.slug}/?`)) return;
+    busy = true;
+    buttons();
+    say(publish ? 'Publishing…' : 'Saving the draft…');
+    const path = `/api/uploadservice/${publish ? 'publish' : 'save'}`;
+    let { status: code, data } = await api(path, { page: draft, replace: editing === draft.slug });
+    if (code === 409 && data.error === 'exists') {
+      const ask = data.live ? `A live page already uses /services/${draft.slug}/. Replace it with this one?` : `You have a draft at /services/${draft.slug}/. Replace it with this one?`;
+      if (confirm(ask)) ({ status: code, data } = await api(path, { page: draft, replace: true }));
+      else data = { error: 'Nothing was changed. Ask the AI for a different web address and try again.' };
+    }
+    busy = false;
+    if (data.error) {
+      if (data.problems) list('sv-problems', data.problems);
+      say(data.error, true);
+      return buttons();
+    }
+    draft = data.page;
+    editing = draft!.slug;
+    remember();
+    say(data.message);
+    buttons();
+    pages();
+  }
+
+  function reset() {
+    messages = [];
+    draft = null;
+    editing = '';
+    $('sv-msgs').replaceChildren();
+    remember();
+    preview();
+  }
+
+  const button = (text: string, cls: string, onclick: () => void) => {
+    const b = Object.assign(document.createElement('button'), { type: 'button', className: `btn ${cls}`, textContent: text });
+    b.onclick = onclick;
+    return b;
+  };
+  async function pages() {
+    const ul = $('sv-list');
+    const { data } = await api('/api/uploadservice/list');
+    ul.replaceChildren();
+    for (const p of data.pages ?? []) {
+      const li = document.createElement('li');
+      const text = el('div', 'sv__item');
+      const name = p.live ? Object.assign(document.createElement('a'), { href: p.url, target: '_blank', rel: 'noopener', textContent: p.name }) : el('strong', '', p.name);
+      const when = new Date(p.updated).toLocaleDateString('en-CA', { dateStyle: 'long' });
+      text.append(name, el('span', `sv__state ${p.live ? 'sv__state--live' : ''}`, `${p.live ? 'Published' : 'Draft, not live'} · ${when}`));
+      const actions = el('div', 'sv__itemactions');
+      actions.append(
+        button('Edit', 'btn--ghost', async () => {
+          if (draft && !confirm('Open this page in the chat? The page you are working on now is replaced.')) return;
+          const { data: got } = await api('/api/uploadservice/get', { slug: p.slug });
+          if (got.error) return say(got.error, true);
+          reset();
+          draft = got.page;
+          editing = p.slug;
+          addMsg(`Opened "${p.name}". Tell the AI what to change.`, 'ai');
+          remember();
+          await preview();
+          $('sv-input').focus();
+        })
+      );
+      if (p.live)
+        actions.append(
+          button('Unpublish', 'btn--ghost', async () => {
+            if (!confirm(`Take "${p.name}" off the website? It stays here as a draft.`)) return;
+            const { data: done } = await api('/api/uploadservice/unpublish', { slug: p.slug });
+            say(done.error ?? done.message, !!done.error);
+            pages();
+          })
+        );
+      actions.append(
+        button('Remove', 'btn--danger', async () => {
+          if (!confirm(p.live ? `Remove "${p.name}" from the website and from this list?` : `Delete the draft "${p.name}"?`)) return;
+          const { data: done } = await api('/api/uploadservice/remove', { slug: p.slug });
+          say(done.error ?? done.message, !!done.error);
+          pages();
+        })
+      );
+      li.append(text, actions);
+      ul.append(li);
+    }
+    if (!ul.children.length) ul.append(el('li', 'sv__empty', 'No service pages yet.'));
+  }
+
+  async function start() {
+    const { data } = await api('/api/uploadservice/me');
+    if (!data.ready) return show('v-setup');
+    if (!data.signedIn) return show('v-login');
+    aiReady = !!data.aiReady;
+    $('sv-noai').hidden = aiReady;
+    show('v-main');
+    try {
+      const kept = JSON.parse(localStorage.getItem(KEY) ?? '{}');
+      messages = Array.isArray(kept.messages) ? kept.messages : [];
+      draft = kept.draft ?? null;
+      editing = typeof kept.editing === 'string' ? kept.editing : '';
+      messages.forEach((m) => addMsg(m, 'me'));
+    } catch {}
+    buttons();
+    preview();
+    pages();
+  }
+
+  $('sv-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    say('Signing in…');
+    const { data } = await api('/api/upload/login', { password: $<HTMLInputElement>('sv-password').value });
+    if (data.error) return say(data.error, true);
+    $<HTMLInputElement>('sv-password').value = '';
+    say('');
+    start();
+  });
+  $('sv-chat').addEventListener('submit', (e) => {
+    e.preventDefault();
+    send($<HTMLTextAreaElement>('sv-input').value);
+  });
+  $('sv-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+      e.preventDefault();
+      send($<HTMLTextAreaElement>('sv-input').value);
+    }
+  });
+  $('sv-publish').addEventListener('click', () => save(true));
+  $('sv-save').addEventListener('click', () => save(false));
+  $('sv-reset').addEventListener('click', () => {
+    if (draft && !confirm('Start over? The page on screen is cleared. Saved pages are not changed.')) return;
+    reset();
+    say('');
+  });
+  $('sv-logout').addEventListener('click', async () => {
+    await api('/api/upload/logout', {});
+    show('v-login');
+  });
+  start();
+</script>
+
+<style is:global>
+  .sv [hidden] {
+    display: none;
+  }
+  .sv {
+    max-width: 1200px;
+    padding-block: var(--sp-6) var(--sp-8);
+    font-size: 1.1rem;
+  }
+  .sv h1 {
+    margin-bottom: var(--sp-4);
+  }
+  .sv h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--sp-3);
+  }
+  .sv__switch {
+    display: flex;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-4);
+  }
+  .sv__switch a {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--rule);
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .sv__switch a[aria-current='page'] {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+  }
+  .sv__lead {
+    font-size: 1.2rem;
+  }
+  .sv__box {
+    display: grid;
+    gap: var(--sp-3);
+    align-content: start;
+    padding: var(--sp-5);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    min-width: 0;
+  }
+  .sv__work {
+    display: grid;
+    gap: var(--sp-5);
+    margin-top: var(--sp-5);
+  }
+  @media (min-width: 1000px) {
+    .sv__work {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    }
+  }
+  .sv label {
+    font-weight: 700;
+  }
+  .sv input,
+  .sv textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font: inherit;
+    border: 2px solid var(--rule);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+  .sv input:focus,
+  .sv textarea:focus {
+    outline: 3px solid var(--brand);
+    outline-offset: 1px;
+  }
+  #sv-chat {
+    display: grid;
+    gap: var(--sp-2);
+  }
+  .sv__big {
+    min-height: 56px;
+    font-size: 1.1rem;
+  }
+  .sv .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .sv__hint {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+  .sv__status {
+    padding: var(--sp-4) var(--sp-5);
+    border-radius: var(--radius);
+    background: var(--mist);
+    font-weight: 700;
+  }
+  .sv__status:empty {
+    display: none;
+  }
+  .sv__status--bad,
+  .sv__note--bad {
+    background: #fdecea;
+    color: #8a1c12;
+  }
+  .sv__note {
+    padding: var(--sp-4) var(--sp-5);
+    border-radius: var(--radius);
+    font-weight: 700;
+  }
+  .sv__msgs {
+    display: grid;
+    gap: var(--sp-2);
+    max-height: 50vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sv__msg {
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--radius);
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+  .sv__msg--me {
+    background: var(--brand);
+    color: #fff;
+    margin-left: 2rem;
+  }
+  .sv__msg--ai {
+    background: var(--mist);
+  }
+  .sv__msg--bad {
+    background: #fdecea;
+    color: #8a1c12;
+  }
+  .sv__problems,
+  .sv__warnings {
+    margin: 0;
+    padding-left: 1.2em;
+  }
+  .sv__problems:empty,
+  .sv__warnings:empty {
+    display: none;
+  }
+  .sv__problems {
+    color: #8a1c12;
+    font-weight: 700;
+  }
+  .sv__warnings {
+    color: var(--text-muted);
+  }
+  #sv-preview {
+    width: 100%;
+    height: 70vh;
+    border: 2px solid var(--rule);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+  .sv__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+  .sv__listhead {
+    margin-top: var(--sp-7);
+  }
+  .sv__list {
+    display: grid;
+    gap: var(--sp-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sv__list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    padding: var(--sp-5);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+  .sv__list li.sv__empty {
+    display: block;
+    color: var(--text-muted);
+  }
+  .sv__item {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .sv__item a,
+  .sv__item strong {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .sv__state {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+  .sv__state--live {
+    color: var(--brand);
+  }
+  .sv__itemactions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+  .sv .btn--danger {
+    background: #fff;
+    color: #8a1c12;
+    border-color: #e8b4ae;
+  }
+  .sv__signout {
+    margin-top: var(--sp-6);
+  }
+</style>

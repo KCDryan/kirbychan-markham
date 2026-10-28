@@ -38,6 +38,7 @@
  */
 import { randomHex, same, sameOrigin, sha256 } from '../../../src/lib/vow';
 import site from '../../../src/data/site.json';
+import { COOKIE, sessionToken, signedIn } from '../../../src/lib/upload-auth';
 import { SHELL, builtPosts, cleanPost, ensureUploadSchema, fillShell, getUpload, rebuild, type Post, type UploadEnv } from '../../../src/lib/uploads';
 
 interface Context {
@@ -47,7 +48,6 @@ interface Context {
   waitUntil(p: Promise<unknown>): void;
 }
 
-const COOKIE = '__Host-kc_upload';
 const SESSION_HOURS = 12;
 const HOUR = 36e5;
 
@@ -106,13 +106,6 @@ export async function unsealKey(password: string, sealed: string): Promise<strin
   } catch {
     return '';
   }
-}
-
-async function signedIn(env: UploadEnv, request: Request): Promise<boolean> {
-  const token = request.headers.get('cookie')?.match(/(?:^|;\s*)__Host-kc_upload=([0-9a-f]{64})/)?.[1];
-  if (!token) return false;
-  const row = await env.VOW_DB!.prepare('SELECT expires FROM upload_sessions WHERE hash = ?').bind(await sha256(token)).first<{ expires: number }>();
-  return !!row && row.expires > Date.now();
 }
 
 async function page(env: UploadEnv, request: Request, post: Post): Promise<string | null> {
@@ -184,7 +177,7 @@ export async function onRequest({ request, env, params, waitUntil }: Context): P
   }
 
   if (action === 'logout' && request.method === 'POST') {
-    const token = request.headers.get('cookie')?.match(/__Host-kc_upload=([0-9a-f]{64})/)?.[1] ?? '';
+    const token = sessionToken(request);
     await db.prepare('DELETE FROM upload_sessions WHERE hash = ?').bind(await sha256(token)).run();
     return json({ ok: true }, 200, `${COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`);
   }

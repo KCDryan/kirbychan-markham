@@ -79,8 +79,8 @@ export default defineConfig({
       customSitemaps: [`${SITE}/sitemap-listings.xml`],
       filter: (page) => {
         if (page.includes('/contact/thank-you/')) return false;
-        // The blog upload page and the empty post pages it fills are noindex.
-        if (/\/upload\/$|\/blog\/upload-shell\//.test(page)) return false;
+        // The blog upload page, the empty post pages it fills and the service page chat are noindex.
+        if (/\/upload\/$|\/uploadservice\/|\/blog\/upload-shell\//.test(page)) return false;
         // The old single-listing address only forwards to /listing/<key>/ and is noindex. So is the
         // empty shell the listing pages are poured into.
         if (page.includes('/homes-for-sale/listing/') || page.includes('/homes-for-sale/listing-shell/')) return false;
