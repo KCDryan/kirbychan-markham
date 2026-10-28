@@ -232,3 +232,15 @@ Other queued drafts checked against live posts: living-in-unionville-markham-a-n
 - Claims verified: 40, each matched to an exact sentence in raw page text by the main run. Left out because no page said it: any legal right for a buyer to cancel early (RECO only says the agreement should state termination terms), any fee amount or rate
 - Draft written by a Sonnet subagent and fact checked by the main run. Fixes before publishing: added the missing RECO Information Guide source, cut from 9 to 8 H2 sections, reworded one table cell that was inference
 - Needs owner attention: none
+
+## 2026-10-28, best-time-to-sell-house-markham
+
+- Wednesday, selling. Primary keyword: best time to sell house ontario (used as "best time to sell a house in Markham"). Topic: "The best time of year to sell a home in Markham"
+- Skipped first, in topic order: pricing with comparable sales (the live quick post markham-home-value-what-your-home-is-really already has a comparative market analysis section for the same searcher); preparing a home for sale (no primary source says what is worth spending on, and step 3 of selling-a-house-in-markham-timeline covers preparation); listing agreement under TRESA (would be a near copy of buyer-representation-agreement-ontario from two days ago with the audience swapped, and real-estate-commission-ontario already covers listing agreement contents and holdover)
+- Also ticked "What a seller pays at closing in Ontario" with slug selling-a-house-in-ontario-costs, published October 21
+- Different from the closest posts: nothing on the site covers seasonality. The market reports and /markham-house-prices/ show one month; this post sets out Markham sales, new listings, days on market, sale to list ratio and months of inventory for every month from January 2025 to September 2026
+- Words: about 1,320 body, 7 H2 sections, 2 tables
+- Sources checked: 21 TRREB Market Watch PDFs (mw2501 to mw2609), each downloaded this run (HTTP 200) and the City of Markham all home types row read from the summary table. Each row was checked by dollar volume divided by sales equalling the average price, and September 2026 matches src/data/trreb-monthly.json and the September 2026 market report
+- Claims verified: every table cell (105) and every prose figure against the extracted rows. Removed: a statement that the counts are not seasonally adjusted (no opened page says so). No price trend or prediction claims
+- Draft written by a Sonnet subagent and fact checked by the main run
+- Needs owner attention: none

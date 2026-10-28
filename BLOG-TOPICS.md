@@ -93,8 +93,8 @@ page opened during the run.
 - [ ] Pricing a home in Markham: how comparable sales work | selling | how to price a home markham
 - [ ] Preparing a Markham home for sale: what is worth spending on | selling | prepare house for sale
 - [ ] What a listing agreement commits you to under TRESA | selling | listing agreement ontario
-- [ ] The best time of year to sell a home in Markham | selling | best time to sell house ontario
-- [ ] What a seller pays at closing in Ontario | costs-and-taxes | seller closing costs ontario
+- [x] The best time of year to sell a home in Markham | selling | best time to sell house ontario | best-time-to-sell-house-markham
+- [x] What a seller pays at closing in Ontario | costs-and-taxes | seller closing costs ontario | selling-a-house-in-ontario-costs
 - [ ] Building permits in Markham for renovations, and what an open permit does to a sale | selling | markham building permit
 - [ ] Seller property disclosure in Ontario: what you must say | selling | seller disclosure ontario
 - [ ] Open offers versus offer dates: how Markham sellers choose | selling | offer date strategy ontario
