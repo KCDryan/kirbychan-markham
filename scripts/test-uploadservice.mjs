@@ -62,7 +62,9 @@ globalThis.fetch = async (url, init = {}) => {
   if (u.startsWith('https://api.anthropic.com/v1/messages')) {
     const headers = new Headers(init.headers);
     requests.push({ url: u, body: JSON.parse(init.body), beta: headers.get('anthropic-beta') ?? '', key: (headers.get('authorization') ?? headers.get('x-api-key') ?? '').replace(/^Bearer /, '') });
-    const { page, stop = 'end_turn' } = answers.shift() ?? { page: samplePage() };
+    const next = answers.shift() ?? { page: samplePage() };
+    if (next.status) return new Response(JSON.stringify({ type: 'error', error: { type: 'invalid_request_error', message: 'combination not supported' } }), { status: next.status, headers: { 'content-type': 'application/json', 'request-id': 'req_test123' } });
+    const { page, stop = 'end_turn' } = next;
     const text = JSON.stringify(page);
     return sse([
       ['message_start', { type: 'message_start', message: { id: 'msg_test', type: 'message', role: 'assistant', model: 'claude-sonnet-5-5', content: [], stop_reason: null, stop_sequence: null, usage: { input_tokens: 10, output_tokens: 1 } } }],
@@ -158,10 +160,18 @@ const refused = await sv('chat', { messages: ['x'] }, { cookie });
 ok(/would not write/.test(refused.lines.find((l) => l.error)?.error ?? ''), 'a refusal is a plain message');
 answers.push({ page: {}, stop: 'max_tokens' });
 ok(/too long/.test((await sv('chat', { messages: ['x'] }, { cookie })).lines.find((l) => l.error)?.error ?? ''), 'a cut off answer is a plain message');
+const logged = [];
+const realError = console.error;
+console.error = (...a) => logged.push(a);
+answers.push({ status: 400 });
+const code400 = await sv('chat', { messages: ['x'] }, { cookie });
+console.error = realError;
+ok(/code 400/.test(code400.lines.find((l) => l.error)?.error ?? ''), 'a 400 from the AI service has its own plain message');
+ok(JSON.stringify(logged).includes('invalid_request_error') && JSON.stringify(logged).includes('req_test123') && !JSON.stringify(logged).includes(KEY) && !JSON.stringify(logged).includes('You write service pages'), 'the failure is logged with its type and request id but never the key or the prompt');
 
 console.log('Rate limit');
 const calls = sqlite.prepare('SELECT COUNT(*) AS n FROM service_calls').get().n;
-ok(calls === 5, 'each chat counts once, repair round included');
+ok(calls === 6, 'each chat counts once, repair round included');
 for (let i = calls; i < 20; i++) sqlite.prepare('INSERT INTO service_calls (at) VALUES (?)').run(Date.now());
 const before = requests.length;
 ok((await sv('chat', { messages: ['one more'] }, { cookie })).status === 429 && requests.length === before, 'the 21st chat in an hour is refused before the AI is called');
@@ -208,12 +218,12 @@ const list = (await sv('list', undefined, { cookie })).body.pages;
 ok(list.length === 1 && list[0].live && list[0].url.endsWith('/services/power-of-attorney-home-sale/'), 'the list shows the live page');
 ok((await sv('get', { slug: page.slug }, { cookie })).body.page.h1 === page.h1, 'a page opens for editing');
 let exported = (await sv('export')).body;
-ok(exported.pages.length === 1 && exported.pages[0].slug === page.slug && typeof exported.pages[0].updated === 'number' && exported.down.length === 0, 'export has the live page');
+ok(exported.pages.length === 1 && exported.pages[0].slug === page.slug && typeof exported.pages[0].updated === 'number' && !('down' in exported), 'export has the live page and nothing else');
 await sv('save', { page: { ...page, slug: 'a-private-draft' } }, { cookie });
 ok((await sv('export')).body.pages.length === 1, 'a draft is never exported as live');
 ok((await sv('unpublish', { slug: page.slug }, { cookie })).status === 200 && row(page.slug).live === 0, 'unpublish keeps it as a draft');
 exported = (await sv('export')).body;
-ok(exported.pages.length === 0 && exported.down.includes(page.slug), 'export names it as taken down');
+ok(exported.pages.length === 0 && !JSON.stringify(exported).includes(page.slug) && !JSON.stringify(exported).includes('a-private-draft'), 'a page taken down, and a draft, are not in the export at all');
 ok((await sv('remove', { slug: 'a-private-draft' }, { cookie })).status === 200 && !(await sv('list', undefined, { cookie })).body.pages.some((x) => x.slug === 'a-private-draft'), 'remove takes it out of the list');
 ok((await sv('get', { slug: 'a-private-draft' }, { cookie })).status === 404, 'and it no longer opens');
 ok((await call(upload, 'upload', 'logout', {}, { cookie })).status === 200 && (await sv('list', undefined, { cookie })).status === 401, 'signing out of the blog page signs out here too');

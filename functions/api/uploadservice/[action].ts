@@ -12,7 +12,7 @@
  * /api/uploadservice/get        POST  { slug }
  * /api/uploadservice/unpublish  POST  { slug }  off the website, kept as a draft (live = 0)
  * /api/uploadservice/remove     POST  { slug }  off the website and out of the list (live = -1)
- * /api/uploadservice/export     GET   public: live pages and the addresses taken down, read by
+ * /api/uploadservice/export     GET   public: the live pages only, read by
  *                                     scripts/pull-uploads.mjs at build
  *
  * Secrets: ANTHROPIC_API_KEY (the chat is off without it), SERVICE_AI_MODEL (optional, default
@@ -63,7 +63,7 @@ export async function onRequest({ request, env, params, waitUntil }: Context): P
 
   if (action === 'export' && request.method === 'GET') {
     const { results } = await db.prepare('SELECT slug, live, page, updated FROM service_uploads ORDER BY updated').bind().all<{ slug: string; live: number; page: string; updated: number }>();
-    return json({ pages: results.filter((r) => r.live === 1).map((r) => ({ ...JSON.parse(r.page), updated: r.updated })), down: results.filter((r) => r.live !== 1).map((r) => r.slug) });
+    return json({ pages: results.filter((r) => r.live === 1).map((r) => ({ ...JSON.parse(r.page), updated: r.updated })) });
   }
 
   if (request.method === 'POST') {
@@ -120,9 +120,13 @@ export async function onRequest({ request, env, params, waitUntil }: Context): P
       } catch (e) {
         // Never the key or the prompt: only a plain message chosen by the HTTP status.
         const status = e instanceof Anthropic.APIError ? e.status : undefined;
+        // For the Cloudflare log, so a failure can be traced. Status, type, message and request id only: never the key or the prompt.
+        if (e instanceof Anthropic.APIError) console.error('service chat: Anthropic API error', { status: e.status, type: (e.error as { error?: { type?: string } } | undefined)?.error?.type, message: String(e.message).slice(0, 300), requestId: e.requestID });
+        else if (!(e instanceof PlainError)) console.error('service chat: failed', { name: (e as Error)?.name, message: String((e as Error)?.message ?? e).slice(0, 300) });
         const message =
           e instanceof PlainError ? e.message
           : status === 401 ? 'The AI key was not accepted. The website owner needs to check ANTHROPIC_API_KEY in Cloudflare.'
+          : status === 400 ? 'The AI service refused the request (code 400). Please send this message to Claude so it can be fixed.'
           : status === 429 || status === 529 ? 'The AI service is busy right now. Please try again in a minute.'
           : 'The page could not be written just now. Please try again.';
         await send({ error: message });
