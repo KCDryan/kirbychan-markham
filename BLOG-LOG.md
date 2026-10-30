@@ -244,3 +244,15 @@ Other queued drafts checked against live posts: living-in-unionville-markham-a-n
 - Claims verified: every table cell (105) and every prose figure against the extracted rows. Removed: a statement that the counts are not seasonally adjusted (no opened page says so). No price trend or prediction claims
 - Draft written by a Sonnet subagent and fact checked by the main run
 - Needs owner attention: none
+
+## 2026-10-30, older-homes-markham-what-to-check
+
+- Friday, upsizing. Primary keyword: older homes in markham. Topic: "Buying a detached home in Markham: what to check on older houses". This is the draft queued October 19 for today, re-verified in full this run and published by removing `draft: true`, the same way as selling-a-house-in-ontario-costs on October 21
+- Skipped first: bridge financing (no primary consumer page, as logged October 16 and October 23, and `research/markham-blog-map.md` records that /upsizing-markham/ and sell-first-or-buy-first-downsizing-markham already own the intent)
+- Different from the last ten days of posts: none covers knob and tube or aluminum wiring, asbestos, vermiculite, lead service lines, the plumbing rebate or the tree by-law. The live Unionville heritage quick post is linked rather than repeated. Today's TinaCMS quick post (jobs in Markham) carries a UTC date of October 30 but was committed the evening of October 29 Toronto time, so it did not count as today's post
+- Words: about 1,630 including tables, 8 H2 sections, 9 internal links
+- Sources checked this run: esasafe.com knob and tube and aluminum wiring, markham.ca tap water quality, basement flooding, building permit process, heritage districts and tree permit application (all HTTP 200, raw page text via curl); Health Canada asbestos and your health (curl timed out, read in the in-app browser). Commons file data for the photo confirms Main Street Unionville
+- Claims verified: every claim in the body, takeaway, FAQ and tables, about 60, each matched to the source text. Rebate amounts, the April 30 and July 31, 2027 deadlines and the $20.50 tree fee are unchanged since October 19
+- Reworded because no opened page said it: ESA described as the Ontario body overseeing electrical safety, "one of the costliest surprises in any house", "older houses have usually been renovated", "most larger private trees". Added from the sources: Markham encouraging owners to replace lead lines, Health Canada's advice not to disturb vermiculite or use the attic for storage, a link to the Unionville heritage post
+- Commit identity: used the KCDryan noreply address, because `git log -1` currently returns the TinaCMS bot
+- Needs owner attention: the post's photo is the Arch Tree House, a house on Main Street Unionville. Playbook section 5 bans photos of private homes. It was kept because commit 0a68cff chose it on purpose and photo files are off limits to this run; please confirm or swap it

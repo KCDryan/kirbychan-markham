@@ -120,7 +120,7 @@ page opened during the run.
 - [ ] Bridge financing explained for move-up buyers | buying | bridge financing ontario
 - [x] Porting a mortgage in Canada when you move up | buying | porting a mortgage canada | porting-mortgage-canada-when-you-move-up
 - [x] From townhouse to detached in Markham: what the step up costs | buying | townhouse to detached markham | townhouse-to-detached-markham-costs
-- [ ] Buying a detached home in Markham: what to check on older houses | buying | older homes markham
+- [x] Buying a detached home in Markham: what to check on older houses | buying | older homes markham | older-homes-markham-what-to-check
 - [ ] Upsizing for a growing family: how school catchments change the search | buying | markham family homes schools
 - [x] Multigenerational homes in Markham: what buyers ask for | buying | multigenerational home markham | multigenerational-home-markham
 - [ ] Angus Glen homes: what buyers should know | neighbourhoods | angus glen markham homes
