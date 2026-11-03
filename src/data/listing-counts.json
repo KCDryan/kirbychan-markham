@@ -1,11 +1,11 @@
 {
-  "updated": "2026-11-02T20:48:22.521Z",
+  "updated": "2026-11-03T18:27:54.389Z",
   "markham": {
-    "total": 1029,
-    "bungalow": 44,
+    "total": 1031,
+    "bungalow": 45,
     "condo": 292,
     "townhouse": 217,
-    "house": 474
+    "house": 477
   },
   "areas": {
     "berczy-village": {
@@ -18,23 +18,23 @@
     "unionville": {
       "total": 234,
       "bungalow": 3,
-      "condo": 130,
-      "townhouse": 26,
-      "house": 71
+      "condo": 128,
+      "townhouse": 27,
+      "house": 72
     },
     "thornhill": {
-      "total": 176,
+      "total": 179,
       "bungalow": 15,
-      "condo": 60,
-      "townhouse": 23,
-      "house": 89
+      "condo": 61,
+      "townhouse": 24,
+      "house": 90
     },
     "cornell": {
-      "total": 80,
+      "total": 81,
       "bungalow": 0,
       "condo": 5,
       "townhouse": 45,
-      "house": 30
+      "house": 31
     },
     "markham-village": {
       "total": 46,
@@ -44,18 +44,18 @@
       "house": 34
     },
     "milliken-mills": {
-      "total": 44,
+      "total": 42,
       "bungalow": 1,
       "condo": 2,
       "townhouse": 5,
-      "house": 26
+      "house": 25
     },
     "box-grove": {
-      "total": 16,
+      "total": 15,
       "bungalow": 1,
       "condo": 1,
       "townhouse": 1,
-      "house": 14
+      "house": 13
     },
     "cathedraltown": {
       "total": 22,
@@ -68,22 +68,22 @@
       "total": 27,
       "bungalow": 2,
       "condo": 1,
-      "townhouse": 11,
-      "house": 13
+      "townhouse": 10,
+      "house": 14
     },
     "greensborough": {
-      "total": 46,
-      "bungalow": 7,
-      "condo": 11,
+      "total": 48,
+      "bungalow": 8,
+      "condo": 12,
       "townhouse": 20,
-      "house": 13
+      "house": 14
     },
     "wismer": {
-      "total": 60,
+      "total": 59,
       "bungalow": 0,
       "condo": 14,
       "townhouse": 18,
-      "house": 28
+      "house": 27
     }
   }
 }
