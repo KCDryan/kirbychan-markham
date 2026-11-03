@@ -4,7 +4,8 @@
  *
  * For an uploaded post: taken down means 404. Otherwise the built page is used once a build has
  * caught up with this version of the post (it carries data-upload="<version>"); until then the post
- * is poured into the built blog layout shell (src/lib/uploads.ts).
+ * is poured into the built blog layout shell (src/lib/uploads.ts). Posts in REPO_WINS
+ * (scripts/lib/repo-wins.mjs) always get the built page and stay off the list below.
  *
  * The blog list at /blog/ gets uploaded posts the last build does not have yet, added at the top, so
  * a post is on the list as soon as it is published. Category pages, the sitemap and the feed catch
@@ -13,6 +14,7 @@
 import { BLOG_CATEGORIES } from '../../src/lib/blog';
 import { freshHood } from '../../src/lib/post-links';
 import { SHELL, addToList, ensureUploadSchema, fillShell, getUpload, type Post, type UploadEnv } from '../../src/lib/uploads';
+import { REPO_WINS } from '../../scripts/lib/repo-wins.mjs';
 
 interface Context {
   request: Request;
@@ -31,7 +33,7 @@ export async function onRequest({ request, env, next }: Context): Promise<Respon
       // A new post takes a photo that none of the cards just below it show.
       const shown = [...html.replace(/<template id="card-media"[\s\S]*?<\/template>/, '').matchAll(/<span class="bcard__media" data-hood="([^"]*)"/g)].map((m) => m[1]);
       const used: string[] = [];
-      const out = addToList(html, results.map((r) => JSON.parse(r.post) as Post), BLOG_CATEGORIES, (p) => {
+      const out = addToList(html, results.map((r) => JSON.parse(r.post) as Post).filter((p) => !REPO_WINS.includes(p.slug)), BLOG_CATEGORIES, (p) => {
         const hood = freshHood(p.slug, undefined, p.headline, [...used, ...shown].slice(0, 11));
         used.unshift(hood);
         return hood;
@@ -64,7 +66,7 @@ export async function onRequest({ request, env, next }: Context): Promise<Respon
   const built = await next();
   if (built.ok) {
     const html = await built.text();
-    if (html.includes(`data-upload="${upload.post.updated}"`)) return new Response(html, built);
+    if (html.includes(`data-upload="${upload.post.updated}"`) || REPO_WINS.includes(slug)) return new Response(html, built);
   }
   const shell = await env.ASSETS!.fetch(new URL(`${SHELL}${upload.post.category}/`, request.url));
   if (!shell.ok) return built.ok ? next() : shell;

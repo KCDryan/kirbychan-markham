@@ -17,6 +17,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import site from '../src/data/site.json' with { type: 'json' };
 import { place } from './pull-uploads.mjs';
+import { REPO_WINS } from './lib/repo-wins.mjs';
 
 const out = mkdtempSync(join(tmpdir(), 'upload-test-'));
 await build({
@@ -169,17 +170,20 @@ const view = async (slug) => {
 ok((await view('built-full')).html.includes('<h1>A built post, now edited on the upload page</h1>'), 'a saved built post shows its saved version at once');
 ok((await view('built-two')).status === 404, 'a removed built post answers not found');
 ok((await view('built-locked')).html.includes('the built page of built-locked'), 'every other post stays the built page');
+sqlite.prepare('INSERT INTO uploads (slug, live, post, updated) VALUES (?, 1, ?, 1)').run(REPO_WINS[0], JSON.stringify({ ...saved, slug: REPO_WINS[0] }));
+ok((await view(REPO_WINS[0])).html.includes(`the built page of ${REPO_WINS[0]}`), 'a post in REPO_WINS keeps its built page over the saved version');
 
 console.log('Build');
 const root = mkdtempSync(join(tmpdir(), 'pull-test-'));
 mkdirSync(join(root, 'quick'));
-for (const f of ['built-full.mdx', 'built-two.mdx', 'untouched.mdx', 'quick/quick-moved.mdx', 'quick/quick-down.mdx', 'quick/quick-kept.mdx']) writeFileSync(join(root, f), 'repo copy');
-const placed = place({ posts: [saved, { ...saved, slug: 'quick-moved' }, { ...saved, slug: 'only-uploaded' }, { ...saved, slug: '../escape' }], down: ['built-two', 'quick-down', 'quick-moved', '../untouched', 7] }, root);
+for (const f of [`quick/${REPO_WINS[0]}.mdx`, 'built-full.mdx', 'built-two.mdx', 'untouched.mdx', 'quick/quick-moved.mdx', 'quick/quick-down.mdx', 'quick/quick-kept.mdx']) writeFileSync(join(root, f), 'repo copy');
+const placed = place({ posts: [saved, { ...saved, slug: 'quick-moved' }, { ...saved, slug: 'only-uploaded' }, { ...saved, slug: '../escape' }, { ...saved, slug: REPO_WINS[0] }], down: ['built-two', 'quick-down', 'quick-moved', '../untouched', 7] }, root);
 const has = (f) => existsSync(join(root, f));
 ok(has('quick/built-full.md') && !has('built-full.mdx') && has('quick/quick-moved.md') && !has('quick/quick-moved.mdx') && has('quick/only-uploaded.md'), 'the uploaded version replaces the website file in the build');
 ok(!has('built-two.mdx') && !has('quick/quick-down.mdx') && !has('quick/built-two.md'), 'a taken down post is left out of the build');
 ok(has('untouched.mdx') && has('quick/quick-kept.mdx') && placed.added === 3 && placed.dropped === 4, 'every other file is left alone');
 const written = readFileSync(join(root, 'quick/built-full.md'), 'utf8');
+ok(has(`quick/${REPO_WINS[0]}.mdx`) && !has(`quick/${REPO_WINS[0]}.md`), 'a post in REPO_WINS keeps its website file in the build');
 ok(written.includes(`title: ${JSON.stringify(SEO_TITLE)}`) && written.includes(`description: ${JSON.stringify(SEO_DESC)}`) && written.includes('guide: "downsizing-markham"') && written.includes(`published: "${new Date(BUILT[0].published).toISOString()}"`), 'the build file keeps the search title, description, guide and date');
 
 ok((await up('logout', {}, { cookie })).status === 200 && (await up('list', undefined, { cookie })).status === 401, 'signing out ends the session');

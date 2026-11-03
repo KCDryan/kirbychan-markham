@@ -7,7 +7,8 @@
  * been saved there, the saved version wins: its file (src/content/blog/<slug>.mdx or
  * quick/<slug>.mdx) is left out of this build and the saved version is written instead, so the
  * address is never built twice. One that was removed or put back to a draft there is left out too,
- * so it does not come back.
+ * so it does not come back. Posts in REPO_WINS (scripts/lib/repo-wins.mjs) are never written: their
+ * file always wins.
  *
  * Service pages made at /uploadservice/ are written into src/content/services/ the same way
  * (placeServices). Each is fixed and checked first, so one can never stop the build.
@@ -22,6 +23,7 @@ import site from '../src/data/site.json' with { type: 'json' };
 import { tidy } from './lib/quick-tidy.mjs';
 import { buildProblems, isGenerated, serviceMdx } from './lib/service-pages.mjs';
 import { takenSlugs } from './lib/service-taken.mjs';
+import { REPO_WINS } from './lib/repo-wins.mjs';
 
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const q = (v) => JSON.stringify(v); // JSON strings are valid YAML
@@ -38,7 +40,7 @@ export function place({ posts = [], down = [] }, root = 'src/content/blog') {
   };
   const added = new Set();
   for (const p of posts) {
-    if (!SLUG.test(p.slug)) continue;
+    if (!SLUG.test(p.slug) || REPO_WINS.includes(p.slug)) continue;
     const lines = [
       '---',
       `headline: ${q(p.headline)}`,
