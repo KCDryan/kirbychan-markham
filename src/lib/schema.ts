@@ -28,7 +28,7 @@ export function person() {
 }
 
 /** A team member's own page: a Person who works for the team's business. */
-export function teamMember(m: { name: string; title: string; phoneIntl: string; path: string }, image?: string) {
+export function teamMember(m: { name: string; title: string; team: string; phoneIntl: string; path: string }, image?: string) {
   return {
     '@type': 'Person',
     '@id': `${canonical(m.path)}#person`,
@@ -37,7 +37,8 @@ export function teamMember(m: { name: string; title: string; phoneIntl: string; 
     telephone: m.phoneIntl,
     url: canonical(m.path),
     ...(image ? { image } : {}),
-    worksFor: { '@id': AGENT_ID },
+    worksFor: { '@type': 'Organization', name: site.brokerage.legalName, url: site.brokerage.url },
+    memberOf: { '@type': 'Organization', name: m.team },
   };
 }
 
