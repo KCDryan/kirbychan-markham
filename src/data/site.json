@@ -18,6 +18,18 @@
     "postalCode": "L3T 6Z4",
     "country": "CA"
   },
+  "team": [
+    {
+      "id": "cecilia-guo",
+      "name": "Cecilia Guo",
+      "title": "Sales Representative",
+      "phone": "(647) 860-2266",
+      "phoneHref": "tel:+16478602266",
+      "phoneIntl": "+1-647-860-2266",
+      "path": "/cecilia-guo/",
+      "photo": "cecilia-guo"
+    }
+  ],
   "brokerage": {
     "legalName": "eXp Realty Brokerage",
     "url": "https://www.exprealty.ca/",

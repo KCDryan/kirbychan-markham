@@ -1,0 +1,168 @@
+---
+/**
+ * Cecilia Guo's own page. It says only what the owner confirmed: her name, her registered title,
+ * her phone number and that she is on the team. Add her languages, experience and areas here once
+ * the owner sends them, never before. Her details live in src/data/site.json under `team`.
+ */
+import { getImage } from 'astro:assets';
+import Page from '../layouts/Page.astro';
+import Photo from '../components/Photo.astro';
+import ServiceGrid from '../components/ServiceGrid.astro';
+import Cta from '../components/Cta.astro';
+import site from '../data/site.json';
+import { photo } from '../lib/photos';
+import { teamMember } from '../lib/schema';
+
+const m = site.team.find((t) => t.id === 'cecilia-guo')!;
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Meet Kirby', path: '/about/' },
+  { name: m.name, path: m.path },
+];
+const src = photo(m.photo);
+const image = src ? new URL((await getImage({ src, width: 800, format: 'jpg' })).src, site.url).href : undefined;
+
+const faq = [
+  {
+    q: 'How do I contact Cecilia Guo?',
+    a: `Call Cecilia on ${m.phone}. You can also send an enquiry through the contact page, or email the team at ${site.contact.email}.`,
+  },
+  {
+    q: 'What is Cecilia Guo registered as?',
+    a: `Cecilia Guo is a ${m.title} with ${site.brokerage.legalName}, working with Kirby Chan & Co. Real Estate Team. You can check any Ontario registrant on the public register of the Real Estate Council of Ontario at reco.on.ca.`,
+  },
+  {
+    q: 'Who leads the team?',
+    a: 'Kirby Chan, Broker, and co-founder Carrie Szeto lead Kirby Chan & Co. Real Estate Team, supported by a group of specialists.',
+  },
+  {
+    q: 'Which areas does the team serve?',
+    a: 'Markham, Richmond Hill and the wider Greater Toronto Area. This website focuses on Markham, with a guide to each of its main neighbourhoods.',
+  },
+];
+---
+
+<Page
+  title="Cecilia Guo | Sales Representative, Markham Real Estate"
+  description="Meet Cecilia Guo, Sales Representative with Kirby Chan & Co. Real Estate Team at eXp Realty Brokerage. Call (647) 860-2266 about buying or selling a home in Markham."
+  eyebrow="Meet Cecilia"
+  h1="Cecilia Guo"
+  lede={`${m.title} with Kirby Chan & Co. Real Estate Team at ${site.brokerage.legalName}.`}
+  crumbs={crumbs}
+  faq={faq}
+  extraJsonLd={[teamMember(m, image)]}
+>
+  <section class="section">
+    <div class="wrap cg-grid">
+      <div class="cg-media">
+        <Photo name={m.photo} alt="Cecilia Guo, wearing a white blazer" label="Portrait of Cecilia Guo" ratio="3 / 4" sizes="(min-width: 900px) 380px, 80vw" priority />
+        <p class="cg-caption"><strong>{m.name}</strong>, {m.title}</p>
+        <p class="cg-caption">{site.brokerage.legalName}</p>
+      </div>
+      <div class="cg-copy">
+        <p class="lede">
+          Cecilia Guo is a {m.title} with Kirby Chan &amp; Co. Real Estate Team. The team helps people buy and sell homes in
+          Markham and Cecilia is one of the people you can speak to.
+        </p>
+        <p>
+          Call Cecilia on <a href={m.phoneHref}>{m.phone}</a> to talk about a move. You can also send the team an enquiry
+          from the <a href="/contact/">contact page</a> and say which situation you are in.
+        </p>
+        <p class="cg-actions">
+          <a class="btn btn--primary" href={m.phoneHref}>Call {m.phone}</a>
+          <a class="btn btn--ghost" href="/contact/">Send an enquiry</a>
+        </p>
+        <p class="cg-note">
+          Kirby Chan &amp; Co. Real Estate Team | {site.brokerage.legalName}. Learn about the people who lead the team on the
+          <a href="/about/">Meet Kirby page</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap-narrow prose">
+      <h2>Where to start in Markham</h2>
+      <p>
+        Before you call, these pages show the numbers and the neighbourhood facts most moves start from. Browse
+        <a href="/homes-for-sale/">every Markham home for sale</a>, see
+        <a href="/sold/">what nearby homes sold for</a> and check
+        <a href="/markham-house-prices/">Markham house prices by property type</a>. Each of the twelve
+        <a href="/neighbourhoods/">Markham neighbourhoods</a> has its own guide.
+      </p>
+      <p>
+        To work out the cost of a move, use the
+        <a href="/land-transfer-tax-calculator-markham/">land transfer tax calculator</a> and the
+        <a href="/mortgage-calculator-markham/">mortgage calculator</a>. If you own a home and want to know what it could
+        sell for, ask for a <a href="/home-valuation/">home valuation</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">How the team helps</p>
+        <h2>What Kirby Chan &amp; Co. Real Estate Team helps with</h2>
+      </div>
+      <ServiceGrid level={3} />
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap-narrow prose">
+      <h2>Questions about Cecilia and the team</h2>
+      {
+        faq.map((f) => (
+          <>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </>
+        ))
+      }
+    </div>
+  </section>
+
+  <Cta />
+</Page>
+
+<style>
+  .cg-grid {
+    display: grid;
+    gap: var(--sp-7);
+    align-items: start;
+  }
+  .cg-media {
+    max-width: 380px;
+  }
+  .cg-caption {
+    margin-top: var(--sp-3);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .cg-caption + .cg-caption {
+    margin-top: 0.1rem;
+  }
+  .cg-caption strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .cg-copy > p + p {
+    margin-top: var(--sp-5);
+  }
+  .cg-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+  }
+  .cg-note {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+  @media (min-width: 900px) {
+    .cg-grid {
+      grid-template-columns: 380px 1fr;
+      gap: var(--sp-8, 4rem);
+    }
+  }
+</style>

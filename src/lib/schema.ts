@@ -27,6 +27,20 @@ export function person() {
   };
 }
 
+/** A team member's own page: a Person who works for the team's business. */
+export function teamMember(m: { name: string; title: string; phoneIntl: string; path: string }, image?: string) {
+  return {
+    '@type': 'Person',
+    '@id': `${canonical(m.path)}#person`,
+    name: m.name,
+    jobTitle: m.title,
+    telephone: m.phoneIntl,
+    url: canonical(m.path),
+    ...(image ? { image } : {}),
+    worksFor: { '@id': AGENT_ID },
+  };
+}
+
 /**
  * WebSite, on the home page only. Google reads it for the site name shown in results. No
  * SearchAction: the sitelinks search box is retired and the site has no search results page.

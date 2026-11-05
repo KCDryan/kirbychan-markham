@@ -84,6 +84,35 @@ const faq = en
     </div>
   </section>
 
+  {
+    en && site.team.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Our team</p>
+            <h2>People you can call</h2>
+          </div>
+          <ul class="team-list" role="list">
+            {
+              site.team.map((m) => (
+                <li class="team-card">
+                  <a class="team-card__photo" href={m.path} aria-label={`${m.name}, ${m.title}`}>
+                    <Photo name={m.photo} alt={`${m.name}, ${m.title}`} label={`Portrait of ${m.name}`} ratio="3 / 4" sizes="(min-width: 700px) 220px, 60vw" />
+                  </a>
+                  <div>
+                    <h3><a href={m.path}>{m.name}</a></h3>
+                    <p>{m.title}, {site.brokerage.legalName}</p>
+                    <p><a href={m.phoneHref}>{m.phone}</a></p>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
   <section class="section">
     <div class="wrap">
       <div class="section-head">
@@ -202,6 +231,24 @@ const faq = en
     font-size: var(--step-2);
     line-height: 1.45;
     color: var(--brand);
+  }
+
+  .team-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 260px));
+    gap: var(--sp-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .team-card h3 {
+    margin: var(--sp-3) 0 var(--sp-2);
+    font-size: var(--step-1);
+  }
+  .team-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
   }
 
   .pillars {
