@@ -4,4 +4,4 @@
  * and scripts/pull-uploads.mjs never replaces the file. For a saved version that is out of date
  * and cannot be removed from the database. Every other post works as the upload page describes.
  */
-export const REPO_WINS = ['downsizing-in-milliken-mills-a-markham-homeowners-guide'];
+export const REPO_WINS = ['downsizing-in-milliken-mills-a-markham-homeowners-guide', 'first-time-home-buyer-ontario-guide-moving'];
