@@ -1,19 +1,19 @@
 {
-  "updated": "2026-11-07T16:51:25.402Z",
+  "updated": "2026-11-08T17:05:24.477Z",
   "markham": {
-    "total": 1028,
+    "total": 1025,
     "bungalow": 46,
     "condo": 292,
     "townhouse": 215,
-    "house": 478
+    "house": 475
   },
   "areas": {
     "berczy-village": {
-      "total": 32,
+      "total": 31,
       "bungalow": 2,
       "condo": 0,
       "townhouse": 10,
-      "house": 21
+      "house": 20
     },
     "unionville": {
       "total": 229,
