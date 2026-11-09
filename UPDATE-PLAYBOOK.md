@@ -27,7 +27,7 @@ Never publish a figure you read in a search result snippet without opening the p
 
 ## 1. What a run does
 
-Four tasks, in this order. Each is independent. If one cannot be completed, skip it, record why in
+Five tasks, in this order. Each is independent. If one cannot be completed, skip it, record why in
 the log and continue with the next.
 
 | Task | Where | Frequency |
@@ -36,6 +36,7 @@ the log and continue with the next.
 | B. Markham news roundup | `src/content/news/` | Every run, if there is enough real news |
 | C. Neighbourhood fact check | `src/content/neighbourhoods/` | Three neighbourhoods per run, oldest reviewed first |
 | D. Monthly city figures | `src/data/trreb-monthly.json` | Only when TRREB has published a Market Watch newer than the file's `period` |
+| E. Downsizing guide, every quarter | `src/content/guides/downsizing-markham.mdx` and its `zh`, `fr` and `fa` copies | Only when a newer full quarter of Market Watch or a newer community report exists |
 
 Listings, listing photos and the "homes for sale right now" counts update themselves (the counts via
 `.github/workflows/refresh-listing-counts.yml` every morning). Never edit `src/data/listing-counts.json`.
@@ -54,6 +55,9 @@ Then verify, log, commit and push. See sections 6 to 8.
 - `src/content/market-reports/*.mdx`, new files copied from `template.mdx`
 - `src/content/news/*.mdx`, new files copied from `_template.mdx`
 - `src/content/neighbourhoods/*.mdx`, only as described in task C
+- `src/content/guides/downsizing-markham.mdx`, `src/content/guides/zh/downsizing-markham.mdx`,
+  `src/content/guides/fr/downsizing-markham.mdx` and `src/content/guides/fa/downsizing-markham.mdx`,
+  only as described in task E
 - `UPDATE-LOG.md`, append only
 
 **Never change, even if something there looks wrong or unfinished:**
@@ -221,6 +225,45 @@ so updating the numbers is all this task does. Never edit the pages themselves.
    whole month of consistent older figures is better than one that mixes two months. Record why in
    the log.
 6. Change nothing else in the file. Leave `_readme` as it is.
+
+### Task E. Downsizing guide, every quarter
+
+The owner wants `/downsizing-markham/` on the newest quarter at all times. It has two price tables
+and each has its own trigger. Check both on every run.
+
+1. **Citywide table** ("TRREB prices by property type, Markham, <quarter>"). Update it when all
+   three Market Watch issues for a quarter newer than the table's quarter are out (Q4 needs
+   `mwYY10`, `mwYY11` and `mwYY12`). Take the Markham row of the all home types, detached,
+   semi-detached, att/row/townhouse, condo townhouse and condo apartment tables for each month.
+   Read the table heading above each row to confirm its type, because the layout changes between
+   issues.
+   - Sales: the three monthly sales added together.
+   - Average price: the three monthly dollar volumes added together, divided by the summed sales,
+     rounded to the dollar.
+   - Never show a quarterly median. TRREB does not publish one and monthly medians cannot be combined.
+   - Check: the types plus link, co-op and other rows must add up to the all types sales. If they do
+     not, or any figure cannot be read with certainty, leave the whole table as it is and log why.
+2. **Neighbourhood table** ("Prices by neighbourhood, <quarter>"). Update it when
+   `trreb.ca/wp-content/files/market-stats/community-reports/YYYY/Q#/MarkhamQ#YYYY.pdf` exists for a
+   newer quarter. Replace the median and sales for the five rows from the summary table. Recompute
+   the sentence after the table (lowest medians, condo apartment share of sales) from the new
+   report. If the share by type can only be read from a chart and not with certainty, delete that
+   part of the sentence rather than keep old numbers. Q3 is usually posted about December 1.
+3. **Everything that depends on the figures**, in the same commit:
+   - the land transfer tax worked example (condo apartment average) and the two figures after it
+     (freehold townhouse average and all types average), using the rates already on the page;
+   - the FAQ answer "How much does it cost to downsize in Markham?";
+   - the table headings, the source lines under each table and the `sources` list in the frontmatter;
+   - the sentence above the neighbourhood table saying which quarter TRREB has not published yet;
+     delete its "not out yet" part once both tables show the same quarter;
+   - the bold **Updated** line at the top of the body, which names the period of each table;
+   - `updated:` set to today;
+   - the year in `title`, which is the year of the newest citywide figures.
+4. **The `zh`, `fr` and `fa` copies** get the same numbers and periods. Change only figures, month
+   and quarter names and the Updated line. Do not retranslate other prose. Number formats: Chinese
+   `1,156,299 加元`, French `1 156 299 $` with a decimal comma, Farsi in Persian digits with `٬`
+   between thousands and `٫` for decimals.
+5. Log the quarter used for each table in `UPDATE-LOG.md`.
 
 ---
 
