@@ -271,6 +271,11 @@ Other queued drafts checked against live posts: living-in-unionville-markham-a-n
 - Commit identity: used the KCDryan noreply address, because `git log -1` currently returns the github-actions bot
 - Needs owner attention: the post's photo is a Wikimedia CC0 shot of a Markham condo townhouse complex with a building number (316) readable on the sign. Playbook section 5 bans photos of private homes. Kept because photo files are off limits to this run; please confirm or swap it
 
+## 2026-11-09, seller-disclosure-ontario
+
+- Published from the queued draft after a source, figure and phone spot-check (no phone number in the post). Live 200, in sitemap-0.xml, own og:image, first on /blog/. IndexNow 200. Commit 0d743dc
+- Drafts left after this publish: markham-waste-collection-calendar, ontario-non-resident-speculation-tax, selling-tenanted-property-ontario, capital-gains-inherited-property-ontario
+
 ## 2026-11-09, revised draft markham-waste-collection-calendar (still draft)
 
 - Yard material corrected: every other week April to October, every week November to mid-December (curbside collection page), with the 2026 fall leaf season November 3 to December 11 (yard material page). Removed "April 7 to October 30, 2026", which the yard material page no longer gives. Updated takeaway, short answer, frequency table and the leaf section; added the 7 a.m. set out rule, bushel baskets, twigs, flowers and root balls, the no grass clippings in garbage rule and Earl Turcott as a garbage drop off
@@ -280,3 +285,5 @@ Other queued drafts checked against live posts: living-in-unionville-markham-a-n
 - Changes follow the City page text in the task brief, which was checked against the live City pages. No sources added or removed
 - Kept `draft: true`, the 2026-10-07 date and the photo. Not published
 - Needs owner attention: set the real publish date before publishing
+- Spot-checked by Markham against the live City pages on 2026-11-09 after commit 2c8940d: yard schedule, H2 keyword and winter parking dates match; left as a draft for a later publish
+
