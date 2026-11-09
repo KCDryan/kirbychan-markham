@@ -1,46 +1,46 @@
 {
-  "updated": "2026-11-08T17:05:24.477Z",
+  "updated": "2026-11-09T21:27:07.598Z",
   "markham": {
-    "total": 1025,
-    "bungalow": 46,
-    "condo": 292,
-    "townhouse": 215,
-    "house": 475
+    "total": 1013,
+    "bungalow": 47,
+    "condo": 288,
+    "townhouse": 210,
+    "house": 471
   },
   "areas": {
     "berczy-village": {
-      "total": 31,
+      "total": 32,
       "bungalow": 2,
       "condo": 0,
       "townhouse": 10,
-      "house": 20
+      "house": 21
     },
     "unionville": {
-      "total": 229,
+      "total": 226,
       "bungalow": 3,
-      "condo": 125,
+      "condo": 124,
       "townhouse": 27,
-      "house": 70
+      "house": 68
     },
     "thornhill": {
-      "total": 176,
+      "total": 173,
       "bungalow": 14,
-      "condo": 63,
+      "condo": 61,
       "townhouse": 24,
-      "house": 85
+      "house": 84
     },
     "cornell": {
-      "total": 82,
+      "total": 81,
       "bungalow": 0,
       "condo": 6,
-      "townhouse": 44,
+      "townhouse": 43,
       "house": 32
     },
     "markham-village": {
-      "total": 46,
+      "total": 45,
       "bungalow": 5,
       "condo": 0,
-      "townhouse": 7,
+      "townhouse": 6,
       "house": 34
     },
     "milliken-mills": {
@@ -58,31 +58,31 @@
       "house": 12
     },
     "cathedraltown": {
-      "total": 22,
+      "total": 21,
       "bungalow": 0,
       "condo": 13,
-      "townhouse": 5,
+      "townhouse": 4,
       "house": 4
     },
     "angus-glen": {
-      "total": 28,
+      "total": 29,
       "bungalow": 2,
       "condo": 1,
       "townhouse": 12,
-      "house": 13
-    },
-    "greensborough": {
-      "total": 49,
-      "bungalow": 8,
-      "condo": 13,
-      "townhouse": 20,
       "house": 14
     },
+    "greensborough": {
+      "total": 50,
+      "bungalow": 9,
+      "condo": 13,
+      "townhouse": 20,
+      "house": 15
+    },
     "wismer": {
-      "total": 59,
+      "total": 58,
       "bungalow": 0,
       "condo": 13,
-      "townhouse": 18,
+      "townhouse": 16,
       "house": 28
     }
   }
