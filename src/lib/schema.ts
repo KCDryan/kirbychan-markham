@@ -28,13 +28,14 @@ export function person() {
 }
 
 /** A team member's own page: a Person who works for the team's business. */
-export function teamMember(m: { name: string; title: string; team: string; phoneIntl: string; path: string }, image?: string) {
+export function teamMember(m: { name: string; title: string; team: string; phoneIntl: string; path: string; languageCodes: string[] }, image?: string) {
   return {
     '@type': 'Person',
     '@id': `${canonical(m.path)}#person`,
     name: m.name,
     jobTitle: m.title,
     telephone: m.phoneIntl,
+    knowsLanguage: m.languageCodes,
     url: canonical(m.path),
     ...(image ? { image } : {}),
     worksFor: { '@type': 'Organization', name: site.brokerage.legalName, url: site.brokerage.url },

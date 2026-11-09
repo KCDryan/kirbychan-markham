@@ -25,7 +25,11 @@ const image = src ? new URL((await getImage({ src, width: 800, format: 'jpg' }))
 const faq = [
   {
     q: 'How do I contact Cecilia Guo?',
-    a: `Call Cecilia on ${m.phone}. You can also send an enquiry through the contact page, or email the team at ${site.contact.email}.`,
+    a: `Call Cecilia on ${m.phone}. You can also send an enquiry through the contact page or email the team at ${site.contact.email}.`,
+  },
+  {
+    q: 'Which languages does Cecilia speak?',
+    a: `Cecilia speaks ${m.languages.join(' and ')}. This website is also available in Chinese.`,
   },
   {
     q: 'What is Cecilia Guo registered as?',
@@ -33,11 +37,11 @@ const faq = [
   },
   {
     q: 'Who runs this website?',
-    a: `This website is run by Kirby Chan & Co. Real Estate Team at ${site.brokerage.legalName}. Kirby Chan, Broker, and co-founder Carrie Szeto lead that team.`,
+    a: `This website is run by Kirby Chan & Co. Real Estate Team at ${site.brokerage.legalName}. Kirby Chan, Broker and co-founder Carrie Szeto lead that team.`,
   },
   {
     q: 'Which areas does this website cover?',
-    a: 'It focuses on Markham, with a guide to each of its main neighbourhoods, and the homes for sale, sold prices and calculators that go with them.',
+    a: 'It focuses on Markham, with a guide to each of its main neighbourhoods and the homes for sale, sold prices and calculators that go with them.',
   },
 ];
 ---
@@ -47,7 +51,7 @@ const faq = [
   description="Meet Cecilia Guo, Sales Representative with Team Forward at eXp Realty Brokerage. Call (647) 860-2266 to talk about buying or selling a home in Markham."
   eyebrow="Meet Cecilia"
   h1="Cecilia Guo"
-  lede={`${m.title} with ${m.team} at ${site.brokerage.legalName}.`}
+  lede={`${m.role}. ${m.title} with ${m.team} at ${site.brokerage.legalName}.`}
   crumbs={crumbs}
   faq={faq}
   extraJsonLd={[teamMember(m, image)]}
@@ -61,12 +65,15 @@ const faq = [
       </div>
       <div class="cg-copy">
         <p class="lede">
-          Cecilia Guo is a {m.title} with {m.team} at {site.brokerage.legalName}. She helps people buy and sell homes.
-          You can reach her through this website.
+          Cecilia Guo is a {m.title} with {m.team} at {site.brokerage.legalName} and our main Markham agent. She helps
+          people buy and sell homes. She speaks {m.languages.join(' and ')}.
         </p>
         <p>
           Call Cecilia on <a href={m.phoneHref}>{m.phone}</a> to talk about a move. You can also send an enquiry from the
           <a href="/contact/">contact page</a> and say which situation you are in.
+        </p>
+        <p>
+          This website is also available in Chinese: <a href="/zh/" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>.
         </p>
         <p class="cg-actions">
           <a class="btn btn--primary" href={m.phoneHref}>Call {m.phone}</a>

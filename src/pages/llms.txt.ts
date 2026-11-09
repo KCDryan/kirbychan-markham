@@ -63,7 +63,7 @@ export const GET: APIRoute = async () => {
   add(`- [Sellers](${canonical('/sellers/')}): how the team prepares, prices and sells a Markham home`);
   add(`- [Buyers](${canonical('/buyers/')}): how the team searches, checks and makes offers in Markham`);
   add(`- [Meet Kirby Chan](${canonical('/about/')}): ${site.brokerage.registrant}, ${site.brokerage.registrationCategory}, co-founder of the team`);
-  for (const m of site.team) add(`- [Meet ${m.name}](${canonical(m.path)}): ${m.name}, ${m.title}, with ${m.team} at ${site.brokerage.legalName}. Phone ${m.phone}`);
+  for (const m of site.team) add(`- [Meet ${m.name}](${canonical(m.path)}): ${m.name}, ${m.title}, with ${m.team} at ${site.brokerage.legalName}. ${m.role}. Speaks ${m.languages.join(' and ')}. Phone ${m.phone}`);
   add(`- [Client stories](${canonical('/client-stories/')}): published sales with list and sale prices`);
   add(`- [Contact](${canonical('/contact/')})`);
   add();

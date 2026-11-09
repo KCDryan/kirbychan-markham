@@ -1,17 +1,32 @@
 ---
 import Photo from './Photo.astro';
+import site from '../data/site.json';
 import { langFromPath, localePath, t } from '../i18n';
 
 const lang = langFromPath(Astro.url.pathname);
 const dict = t(lang);
 const k = dict.home.kirby;
+// The team members shown beside Kirby: English pages only, since their text is not translated.
+const team = lang === 'en' ? site.team : [];
 ---
 
 <section class="kirby section section--alt">
   <div class="wrap kirby__inner">
-    <div class="kirby__media">
-      <Photo name="kirby-portrait" alt={dict.about.photoAlt} label="Portrait of Kirby Chan" ratio="1 / 1" />
-      <p class="broker-caption"><strong>Kirby Chan</strong>, Broker</p>
+    <div class:list={['kirby__media', team.length > 0 && 'kirby__media--pair']}>
+      <figure class="kirby__person">
+        <Photo name="kirby-portrait" alt={dict.about.photoAlt} label="Portrait of Kirby Chan" ratio="1 / 1" sizes="(min-width: 880px) 220px, 45vw" />
+        <figcaption class="broker-caption"><strong>Kirby Chan</strong>, Broker</figcaption>
+      </figure>
+      {
+        team.map((m) => (
+          <figure class="kirby__person">
+            <a href={m.path} aria-label={`Meet ${m.name}`}>
+              <Photo name={m.photo} alt={`${m.name}, ${m.title}`} label={`Portrait of ${m.name}`} ratio="1 / 1" sizes="(min-width: 880px) 220px, 45vw" />
+            </a>
+            <figcaption class="broker-caption"><strong>{m.name}</strong>, {m.title}</figcaption>
+          </figure>
+        ))
+      }
     </div>
     <div class="kirby__copy">
       <p class="eyebrow">{k.eyebrow}</p>
@@ -21,6 +36,14 @@ const k = dict.home.kirby;
       <blockquote class="kirby__quote">
         <p>{dict.about.quote}</p>
       </blockquote>
+      {
+        team.map((m) => (
+          <p class="kirby__also">
+            <strong>{m.name}</strong> is our main Markham agent. She speaks {m.languages.join(' and ')}. Call{' '}
+            <a href={m.phoneHref}>{m.phone}</a> or <a href={m.path}>meet {m.name.split(' ')[0]}</a>.
+          </p>
+        ))
+      }
       <a class="btn btn--primary" href={localePath(lang, '/about/')}>{k.button}</a>
     </div>
   </div>
@@ -35,6 +58,22 @@ const k = dict.home.kirby;
   .kirby__media {
     max-width: 380px;
     width: 100%;
+  }
+  .kirby__media--pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-4);
+    max-width: 480px;
+  }
+  .kirby__person {
+    margin: 0;
+  }
+  .kirby__also {
+    padding: var(--sp-4) var(--sp-5);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-inline-start: 3px solid var(--brass);
+    border-radius: var(--radius-lg);
   }
   .broker-caption {
     margin-top: var(--sp-3);
@@ -65,7 +104,7 @@ const k = dict.home.kirby;
 
   @media (min-width: 880px) {
     .kirby__inner {
-      grid-template-columns: 0.75fr 1.25fr;
+      grid-template-columns: 0.9fr 1.1fr;
       gap: var(--sp-8);
     }
   }
