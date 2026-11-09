@@ -287,3 +287,14 @@ Other queued drafts checked against live posts: living-in-unionville-markham-a-n
 - Needs owner attention: set the real publish date before publishing
 - Spot-checked by Markham against the live City pages on 2026-11-09 after commit 2c8940d: yard schedule, H2 keyword and winter parking dates match; left as a draft for a later publish
 
+
+## 2026-11-09, Markham specificity: playbook rule and draft revisions (no publish)
+
+- Owner instruction: "Make the blogs more specific to the cities." Added "Every post must be specific to Markham" under section 3 of `BLOG-PLAYBOOK.md` and fact check step 7 in section 8. No other playbook rule changed
+- Revised drafts, all still `draft: true` with their dates, photos and slugs unchanged:
+  - capital-gains-inherited-property-ontario: title, H1, three H2s, example and checklist now name Markham; new section on City of Markham tax certificate ($146.00 from January 1, 2026) and Property Ownership Change form (markham.ca tax account changes, added to sources); links to /blog/markham-property-tax/ and /services/estate-sales/. CRA rules unchanged and re-checked on the CRA capital gains page
+  - selling-tenanted-property-ontario: title, H1 and checklist name Markham; new section on registering a two-unit house with Markham Fire ($260 inspection, $246 registration, pre-July 1, 1993 declaration, Bill 23 three units), from markham.ca basement apartments and second suites (added to sources). RTA and N12 rules unchanged; N12 instructions re-checked
+  - ontario-non-resident-speculation-tax: title and two H2s name Markham. Rate and effective date re-checked on ontario.ca
+  - quick/neighborhood-built-from-relocated-buildings-what-to-know: replaced the Tucson, Calgary and Los Angeles examples with Markham Heritage Estates (markham.ca page and the City's February 2021 administrative guidelines): 1988 origin, 42 lots, Highway 48 and 16th Avenue, eligibility, designation, heritage easement, City approval of exterior changes, five year forgivable mortgage. Headline, summary, quick answer and two FAQs updated; three non-primary sources removed, three markham.ca sources added
+- Left alone: markham-waste-collection-calendar (revised in 2c8940d, already Markham-specific), quick/living-in-unionville-markham-a-neighbourhood-guide and quick/cornell-markham-real-estate-what-makes-it-different (already Markham-specific). No published post touched
+- Needs owner attention: the relocated-buildings quick post still relies on Wikipedia and Seattle Met for the general house-moving mechanics section; replace or cut before publishing. Set real publish dates on all drafts before publishing

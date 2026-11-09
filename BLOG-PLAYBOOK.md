@@ -77,6 +77,31 @@ because the run fires in the early afternoon UTC and the Toronto day can differ.
    today's theme has nothing left worth writing, publish nothing, say so in `BLOG-LOG.md` and push
    only the log. Nobody is counting the streak.
 
+### Every post must be specific to Markham
+
+The owner's instruction is that the blog must be about Markham, not Ontario or the GTA in general.
+This applies to every new post, every quick post and every queued draft before it is published.
+
+- **Name Markham and the neighbourhoods that matter** in the title (or H1), in at least two `##`
+  headings, in the worked examples and in the closing call to action. Use real Markham
+  neighbourhoods where they fit: Unionville, Cornell, Markham Village, Markham-side Thornhill,
+  Berczy Village, Cathedraltown, Wismer, Angus Glen, Box Grove, Greensborough, Milliken Mills and
+  downtown Markham.
+- **Use City of Markham rules and pages.** Where a municipal rule, fee, by-law, service, permit or
+  registration touches the topic, cite it from markham.ca (York Region from york.ca where the Region
+  delivers the service). Provincial and federal rules still come from ontario.ca and canada.ca, but
+  the post must then show how they apply to a buyer, seller or owner of a Markham home.
+- **Markham, not Vaughan.** Do not use Vaughan rules, pages or examples. Thornhill is split
+  between Markham and Vaughan; write about Markham-side Thornhill (east of Yonge Street) and never
+  treat Thornhill as Vaughan only.
+- **No swapped-in city name.** Do not write a generic Ontario or GTA post and add "Markham" to a
+  few sentences. Test: if a find and replace of "Markham" with "Toronto" or "North York" would
+  leave an accurate, complete post, it is not specific enough. Add the Markham facts or pick
+  another topic.
+- **Good:** the Markham waste collection calendar, Markham property tax and the City's rebates,
+  registering a two-unit house with Markham Fire, buying in Markham-side Thornhill.
+  **Bad:** an Ontario-only capital gains explainer with one "in Markham" sentence.
+
 ## 4. Research and sources
 
 Every number, rate, threshold, date, deadline, law, programme rule, fee, schedule or statistic in
@@ -228,6 +253,11 @@ After writing, go through the post line by line, including the takeaway and ever
 5. Check place facts against the neighbourhood guides in `src/content/neighbourhoods/`. If a post
    and a guide disagree, the post must match the guide or leave the claim out.
 6. Read the whole post once more purely for house style and the banned phrases in section 5.
+7. Check Markham specificity against section 3 ("Every post must be specific to Markham"): Markham
+   or a Markham neighbourhood in the title or H1, at least two `##` headings, the examples and the
+   call to action; at least one City of Markham (markham.ca) or York Region fact where one applies;
+   nothing taken from Vaughan; and the post fails the Toronto or North York find and replace test.
+   If it does not pass, revise it or publish nothing.
 
 ## 9. Topic list and log
 
