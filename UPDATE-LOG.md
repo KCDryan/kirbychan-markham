@@ -88,3 +88,14 @@ Needs owner attention:
 **How:** By-type sales and prices were read from the Q2 report's charts (rounded to the thousand by TRREB, so written as "about"). For every community the by-type sales add up to the all-types sales in the summary table. Ranking, "highest" and "pulled down by condos" claims were recomputed from Q2 rather than carried over.
 **Left as is:** `src/content/market-reports/august-2026.mdx` still cites Q1, because it is the August report and Q1 was the latest community report when it was written. `lastReviewed` dates were not changed, since only the figures were re-checked.
 **Not done:** Downtown Markham has no TRREB community figures. Milliken Mills is two communities (East and West) and is shown as two.
+
+## 2026-11-09 (done by hand at the owner's request)
+
+**Downsizing guide:** `/downsizing-markham/` and its `zh`, `fr` and `fa` copies moved their citywide table to TRREB Q3 2026 (July to September). Sales are the three months added together and each average is summed dollar volume divided by summed sales. No median is shown because monthly medians cannot be combined. The types plus link and co-op rows add up to the 815 all types sales. The land transfer tax example now uses averages, so the condo figure went from $7,751 (August median) to $8,835 (Q3 average). The market did not move by that much.
+**Left on Q2:** the neighbourhood table. `community-reports/2026/Q3/MarkhamQ32026.pdf` returned 404 today. Last year's Q3 report was posted on December 1. Task E in the playbook picks it up.
+**Still on August figures, not touched:** the first-time buyers guide (English and Chinese), the Downtown neighbourhood page, the fees video page and the August market report.
+
+Sources:
+- TRREB Market Watch, July 2026: https://trreb.ca/wp-content/files/market-stats/market-watch/mw2607.pdf
+- TRREB Market Watch, August 2026: https://trreb.ca/wp-content/files/market-stats/market-watch/mw2608.pdf
+- TRREB Market Watch, September 2026: https://trreb.ca/wp-content/files/market-stats/market-watch/mw2609.pdf
