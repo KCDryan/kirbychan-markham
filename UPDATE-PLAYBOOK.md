@@ -36,7 +36,7 @@ the log and continue with the next.
 | B. Markham news roundup | `src/content/news/` | Every run, if there is enough real news |
 | C. Neighbourhood fact check | `src/content/neighbourhoods/` | Three neighbourhoods per run, oldest reviewed first |
 | D. Monthly city figures | `src/data/trreb-monthly.json` | Only when TRREB has published a Market Watch newer than the file's `period` |
-| E. Downsizing guide, every quarter | `src/content/guides/downsizing-markham.mdx` and its `zh`, `fr` and `fa` copies | Only when a newer full quarter of Market Watch or a newer community report exists |
+| E. Downsizing guide, every quarter | `src/content/guides/downsizing-markham.mdx` and its `zh`, `fr` and `fa` copies | When a newer full quarter of Market Watch or a newer community report exists, and on the first run of each January for the title year |
 
 Listings, listing photos and the "homes for sale right now" counts update themselves (the counts via
 `.github/workflows/refresh-listing-counts.yml` every morning). Never edit `src/data/listing-counts.json`.
@@ -258,7 +258,11 @@ and each has its own trigger. Check both on every run.
      delete its "not out yet" part once both tables show the same quarter;
    - the bold **Updated** line at the top of the body, which names the period of each table;
    - `updated:` set to today;
-   - the year in `title`, which is the year of the newest citywide figures.
+   - the year in `title`, which is the current calendar year (Toronto time).
+   Also, on the first run of each January, change the year in `title` in all four files to the new
+   year even if no new figures are out. Change only the year, then set `updated:` and the date in
+   the Updated line to today. The year sits in `Downsizing in Markham 2026:` (English),
+   `（2026）` (Chinese), `à Markham en 2026` (French) and `مارکهام ۲۰۲۶` in Persian digits (Farsi).
 4. **The `zh`, `fr` and `fa` copies** get the same numbers and periods. Change only figures, month
    and quarter names and the Updated line. Do not retranslate other prose. Number formats: Chinese
    `1,156,299 加元`, French `1 156 299 $` with a decimal comma, Farsi in Persian digits with `٬`
