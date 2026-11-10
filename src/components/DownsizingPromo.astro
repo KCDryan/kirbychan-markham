@@ -4,22 +4,59 @@ import site from '../data/site.json';
 interface Props {
   /** Short line tailored to the page, for example a neighbourhood name. */
   context?: string;
+  /** Which audience the promo speaks to. Downsizing is the default everywhere. */
+  variant?: 'downsizing' | 'buying' | 'selling' | 'general';
 }
-const { context } = Astro.props;
+const { context, variant = 'downsizing' } = Astro.props;
+
+const PROMOS = {
+  buying: {
+    eyebrow: 'Markham Buyer Guides',
+    heading: 'Buying a home in Markham?',
+    text: 'Whether it is your first home or a bigger one for a growing family, our guides cover the steps, the costs and the neighbourhoods. Then talk it through with Kirby. No pressure and no obligation.',
+    primary: { href: '/first-time-home-buyers-markham/', label: 'First-time buyer guide' },
+    secondary: { href: '/upsizing-markham/', label: 'Upsizing guide' },
+  },
+  selling: {
+    eyebrow: 'Selling in Markham',
+    heading: 'Thinking about selling in Markham?',
+    text: 'See how we prepare, price and market a home, then find out what yours could sell for today. No pressure and no obligation.',
+    primary: { href: '/sellers/', label: 'How we sell homes' },
+    secondary: { href: '/home-valuation/', label: 'What is my home worth?' },
+  },
+  general: {
+    eyebrow: 'Kirby Chan & Co. Real Estate Team',
+    heading: 'Buying or selling in Markham?',
+    text: 'Local advice on prices, timing and neighbourhoods from a team that lives and works here. Start with the guide that fits, then talk it through with Kirby. No pressure and no obligation.',
+    primary: { href: '/buyers/', label: 'Buying in Markham' },
+    secondary: { href: '/sellers/', label: 'Selling in Markham' },
+  },
+};
+const promo = variant === 'downsizing' ? undefined : PROMOS[variant];
 ---
 
 <aside class="dpromo on-dark" aria-labelledby="dpromo-heading">
-  <div class="dpromo__text">
-    <p class="dpromo__eyebrow">Markham Downsizing Guide</p>
-    <h2 id="dpromo-heading">{context ? `Downsizing from ${context}?` : 'Thinking about downsizing in Markham?'}</h2>
-    <p>
-      Timing, costs, where people move in Markham and how to sell a long-time family home without
-      rushing. Read the guide, then talk it through with Kirby. No pressure and no obligation.
-    </p>
-  </div>
+  {
+    promo ? (
+      <div class="dpromo__text">
+        <p class="dpromo__eyebrow">{promo.eyebrow}</p>
+        <h2 id="dpromo-heading">{promo.heading}</h2>
+        <p>{promo.text}</p>
+      </div>
+    ) : (
+      <div class="dpromo__text">
+        <p class="dpromo__eyebrow">Markham Downsizing Guide</p>
+        <h2 id="dpromo-heading">{context ? `Downsizing from ${context}?` : 'Thinking about downsizing in Markham?'}</h2>
+        <p>
+          Timing, costs, where people move in Markham and how to sell a long-time family home without
+          rushing. Read the guide, then talk it through with Kirby. No pressure and no obligation.
+        </p>
+      </div>
+    )
+  }
   <div class="dpromo__actions">
-    <a class="btn btn--brass" href="/downsizing-markham/">Read the downsizing guide</a>
-    <a class="btn btn--ghost" href="/home-valuation/">What is my home worth?</a>
+    <a class="btn btn--brass" href={promo ? promo.primary.href : '/downsizing-markham/'}>{promo ? promo.primary.label : 'Read the downsizing guide'}</a>
+    <a class="btn btn--ghost" href={promo ? promo.secondary.href : '/home-valuation/'}>{promo ? promo.secondary.label : 'What is my home worth?'}</a>
     <a class="dpromo__phone" href={site.contact.phoneHref}>Or call {site.contact.phone}</a>
   </div>
 </aside>
