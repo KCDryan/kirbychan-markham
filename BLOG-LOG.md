@@ -309,3 +309,7 @@ Other queued drafts checked against live posts: living-in-unionville-markham-a-n
 
 ## 2026-11-11 (Markham, Wednesday publish)
 - markham-waste-collection-calendar: NOT published. Figures re-checked against City pages today (yard weekly Nov 3–Dec 11, 2026; winter parking Nov 15, 2026–Apr 15, 2027; windrow and road standards) and SEO/photo checks pass, but `npm run verify` fails check:links: broken internal link `/services/relocation/` (src/pages/services has only [slug].astro and index.astro; no relocation page). Needs owner attention: Claude to fix the link (use an existing page) in the post.
+
+## 2026-11-11, markham-waste-collection-calendar: broken link fixed (still draft)
+- Removed the broken `/services/relocation/` link (no such page); "relocation service" left as plain text. `/relocating-to-markham/` was already linked in the same sentence
+- Kept `draft: true`. Not published, IndexNow not run
