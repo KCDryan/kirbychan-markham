@@ -1,43 +1,43 @@
 {
-  "updated": "2026-11-10T18:41:03.096Z",
+  "updated": "2026-11-11T18:43:05.455Z",
   "markham": {
-    "total": 1012,
+    "total": 1009,
     "bungalow": 47,
-    "condo": 288,
+    "condo": 283,
     "townhouse": 211,
     "house": 469
   },
   "areas": {
     "berczy-village": {
-      "total": 33,
+      "total": 32,
       "bungalow": 2,
       "condo": 0,
       "townhouse": 11,
-      "house": 21
+      "house": 20
     },
     "unionville": {
-      "total": 225,
+      "total": 223,
       "bungalow": 3,
-      "condo": 123,
+      "condo": 122,
       "townhouse": 28,
-      "house": 67
+      "house": 66
     },
     "thornhill": {
-      "total": 175,
+      "total": 173,
       "bungalow": 14,
-      "condo": 62,
+      "condo": 61,
       "townhouse": 24,
-      "house": 85
+      "house": 84
     },
     "cornell": {
-      "total": 82,
+      "total": 81,
       "bungalow": 0,
       "condo": 6,
-      "townhouse": 43,
+      "townhouse": 42,
       "house": 33
     },
     "markham-village": {
-      "total": 45,
+      "total": 46,
       "bungalow": 5,
       "condo": 0,
       "townhouse": 6,
@@ -58,32 +58,32 @@
       "house": 12
     },
     "cathedraltown": {
-      "total": 21,
+      "total": 19,
       "bungalow": 0,
-      "condo": 13,
+      "condo": 11,
       "townhouse": 4,
       "house": 4
     },
     "angus-glen": {
-      "total": 29,
+      "total": 30,
       "bungalow": 2,
       "condo": 1,
-      "townhouse": 12,
+      "townhouse": 13,
       "house": 14
     },
     "greensborough": {
-      "total": 50,
+      "total": 49,
       "bungalow": 9,
-      "condo": 14,
+      "condo": 13,
       "townhouse": 19,
       "house": 15
     },
     "wismer": {
-      "total": 58,
+      "total": 60,
       "bungalow": 0,
       "condo": 13,
-      "townhouse": 16,
-      "house": 28
+      "townhouse": 17,
+      "house": 29
     }
   }
 }
