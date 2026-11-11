@@ -306,3 +306,6 @@ Other queued drafts checked against live posts: living-in-unionville-markham-a-n
 - Rewrote FAQs to be Markham-specific (origin of the houses, why they were moved) and softened the financing and checklist answers to "ask your lender, insurer, lawyer and the City" with no invented requirements
 - Re-checked the markham.ca Heritage Estates page, the guidelines PDF and the heritage districts page: 42 lots, last resort, below market lots, 1988, eligibility, designation, easement, City approval of exterior changes including colours and the five year forgivable second mortgage all still match. Sources are now the three markham.ca pages only
 - Kept `draft: true` and the 2026-10-20 date. No photo on this post. Not published, IndexNow not run
+
+## 2026-11-11 (Markham, Wednesday publish)
+- markham-waste-collection-calendar: NOT published. Figures re-checked against City pages today (yard weekly Nov 3–Dec 11, 2026; winter parking Nov 15, 2026–Apr 15, 2027; windrow and road standards) and SEO/photo checks pass, but `npm run verify` fails check:links: broken internal link `/services/relocation/` (src/pages/services has only [slug].astro and index.astro; no relocation page). Needs owner attention: Claude to fix the link (use an existing page) in the post.
