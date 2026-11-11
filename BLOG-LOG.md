@@ -319,3 +319,7 @@ Other queued drafts checked against live posts: living-in-unionville-markham-a-n
 - Dated figures re-checked this morning against City of Markham pages (weekly yard collection Nov 3–Dec 11, 2026; winter parking Nov 15, 2026–Apr 15, 2027).
 - Live 200, own og:image, in sitemap-0.xml, first on /blog/. IndexNow 200.
 - Hold: ontario-non-resident-speculation-tax still links to missing /services/relocation/ (line 143); needs Claude fix before it publishes.
+
+## 2026-11-11, ontario-non-resident-speculation-tax: broken link fixed (still draft)
+- Removed the broken `/services/relocation/` link (no such page); "relocation service" left as plain text. `/relocating-to-markham/` was already linked in the same paragraph
+- Kept `draft: true`. Not published, IndexNow not run
