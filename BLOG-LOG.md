@@ -313,3 +313,9 @@ Other queued drafts checked against live posts: living-in-unionville-markham-a-n
 ## 2026-11-11, markham-waste-collection-calendar: broken link fixed (still draft)
 - Removed the broken `/services/relocation/` link (no such page); "relocation service" left as plain text. `/relocating-to-markham/` was already linked in the same sentence
 - Kept `draft: true`. Not published, IndexNow not run
+
+## 2026-11-11 — Published markham-waste-collection-calendar (catch-up)
+- After Claude's link fix (798db8f), flipped draft off and set published 2026-11-11 (19887d1). Verify passed (no broken internal links).
+- Dated figures re-checked this morning against City of Markham pages (weekly yard collection Nov 3–Dec 11, 2026; winter parking Nov 15, 2026–Apr 15, 2027).
+- Live 200, own og:image, in sitemap-0.xml, first on /blog/. IndexNow 200.
+- Hold: ontario-non-resident-speculation-tax still links to missing /services/relocation/ (line 143); needs Claude fix before it publishes.
