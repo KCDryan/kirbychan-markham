@@ -323,3 +323,26 @@ Other queued drafts checked against live posts: living-in-unionville-markham-a-n
 ## 2026-11-11, ontario-non-resident-speculation-tax: broken link fixed (still draft)
 - Removed the broken `/services/relocation/` link (no such page); "relocation service" left as plain text. `/relocating-to-markham/` was already linked in the same paragraph
 - Kept `draft: true`. Not published, IndexNow not run
+
+## 2026-11-13, minor-variance-markham-deck-addition (new draft, not published)
+
+- Primary keyword: minor variance Markham (title 51 characters, description 157, H1 90). Category selling, Wednesday theme. Does not overlap the unticked "building permits and open permit" topic: this post is about the Committee of Adjustment, mentions permits only for context
+- Words: about 1,890 (body). `draft: true`, `published: 2026-11-13` (next free Friday slot after the latest draft date, 2026-11-11). Set the real date on publish day
+- Sources opened this run: markham.ca Minor Variance (MNV) page, What to Expect at a COA Hearing, Committee of Adjustment page, Decks construction permits, Building permit process, Zoning and development by-law information, Building permits services page, ePLAN request pages (compliance report, certificate of completion), Fee By-law 211-83 PDF consolidated to January 1, 2026 (text read directly from the PDF; Table 7 fees and footnotes), ontario.ca Citizen's guide zoning bylaws
+- Fees quoted: $2,942 residential under 50 square metres, $6,931 for 50 square metres or more, $2,412 technical variance, $0 heritage variance (where Heritage staff asked for a historic condition). By-law indexes fees each January 1 (CPI, up to 5 percent), so RE-CHECK on publish day, especially after January 1, 2027
+- Claims left out because not verified: the Planning Act text itself (e-Laws page does not render), Bill 60 changes, zoning numbers for deck or garage setbacks in By-law 2024-19, what a Compliance Report or Completion Certificate covers and costs, any statement that an approved variance transfers to a new owner, how lenders or title insurers treat unapproved structures
+- Figures and dates to re-check on publish day: Jan 31, 2027 transitional date, the four fee lines, hearing format (Zoom and livestream), OLT appeal fee ($400 plus $286 plus HST), 20 day appeal period
+- Photo: MarkhamCivicCenter20.jpg, author Raysonho, CC0 1.0, https://commons.wikimedia.org/wiki/File:MarkhamCivicCenter20.jpg, resized to 1920x1272 JPEG quality 80, entry added to src/data/photo-credits.json. No private home shown
+- Illustrative Cornell example is labelled as invented
+- Needs owner attention: confirm the publish date. The post is not in a publish queue
+
+## 2026-11-13, fact check of pending drafts (all still draft)
+
+- ontario-non-resident-speculation-tax: ontario.ca NRST page (updated May 4, 2026) still says 25% effective October 25, 2022, anywhere in Ontario, designated land one to six single family residences. Rebates page (updated November 21, 2025) and exemptions page (updated March 27, 2024) match the draft. Federal ban section was stale: Budget 2026 (tabled November 5, 2026, budget.canada.ca chapter 3) proposes extending the ban on existing residential properties to January 1, 2029 and exempting new residential properties. Added that sentence, flagged as a proposal not yet law, and added the Budget 2026 source. CMHC page still shows January 1, 2027 as the legislated date. Re-check the federal status on publish day
+- selling-tenanted-property-ontario: removed "Since September 21, 2026" for the 120 day own use notice exception. The N12 instructions say only "Updated: September 21, 2026", not when the exception began. Reworded to cite the instructions and limit the exception to the own use reason. Markham fire fees ($260 inspection, $246 registration) re-confirmed on markham.ca
+- capital-gains-inherited-property-ontario: CRA T4037 (2025) still says the 2025 inclusion rate is 50 percent; Markham tax certificate $146.00 as of January 1, 2026 re-confirmed. The post said the certificate fee "is emailed the next day" for online requests; the City page agrees. Left as written
+- quick/living-in-unionville: the GoTransit source URL returns 404, so the "7:59 a.m. to 8:40 a.m." trip was removed from the FAQ and the body and the source dropped. Metrolinx 2022 upgrade page re-confirmed (286 net new parking spots). Festival: City page confirms June 1 and 2, 2024 only
+- quick/cornell-markham-real-estate: not changed. Needs owner attention: sources are Wikipedia, a York University paper and an UrbanToronto forum thread, with no markham.ca source; no photo
+- quick/neighborhood-built-from-relocated-buildings: not re-fetched this run (markham.ca sources checked 2026-11-09). No photo, as already flagged
+
+- Publish run 2026-11-13: minor-variance-markham-deck-addition set to draft: false, published 2026-11-13 (owner approved the Nov 13 batch). npm run verify passed. Other drafts left as drafts.

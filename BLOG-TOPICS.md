@@ -96,6 +96,7 @@ page opened during the run.
 - [x] The best time of year to sell a home in Markham | selling | best time to sell house ontario | best-time-to-sell-house-markham
 - [x] What a seller pays at closing in Ontario | costs-and-taxes | seller closing costs ontario | selling-a-house-in-ontario-costs
 - [ ] Building permits in Markham for renovations, and what an open permit does to a sale | selling | markham building permit
+- [x] Minor variance in Markham for a deck, addition or garage | selling | minor variance markham | minor-variance-markham-deck-addition (draft)
 - [ ] Seller property disclosure in Ontario: what you must say | selling | seller disclosure ontario
 - [ ] Open offers versus offer dates: how Markham sellers choose | selling | offer date strategy ontario
 - [ ] Selling a tenanted property in Ontario | investing | selling tenanted property ontario

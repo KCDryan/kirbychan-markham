@@ -258,5 +258,15 @@
     "author": "Kirby Chan & Co. Real Estate Team",
     "license": "All rights reserved",
     "own": true
+  },
+  {
+    "slug": "minor-variance-markham-deck-addition",
+    "file": "blog/minor-variance-markham-deck-addition",
+    "shows": "The Markham Civic Centre seen across its reflecting pond, with solar panels on the roof and a clear blue sky.",
+    "author": "Raysonho",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:MarkhamCivicCenter20.jpg",
+    "title": "MarkhamCivicCenter20.jpg"
   }
 ]
