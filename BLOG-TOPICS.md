@@ -65,7 +65,7 @@ in the body. This is the cluster that feeds the pillar guide, so it stays the pr
 - [x] How much deposit a Markham buyer needs and when it is due | buying | deposit on a house ontario | deposit-on-a-house-ontario
 - [x] Conditions in an Ontario offer: financing, inspection and status certificate | buying | conditions in an offer ontario | conditions-in-an-offer-ontario
 - [x] What a buyer representation agreement commits you to under TRESA | buying | buyer representation agreement ontario | buyer-representation-agreement-ontario
-- [ ] Home insurance basics for a Markham home | buying | home insurance ontario
+- [x] Home insurance basics for a Markham home | buying | home insurance for first-time buyers in markham | home-insurance-first-time-buyers-markham
 - [ ] The 10 day cooling-off period for new condos in Ontario | condos | condo cooling off period ontario
 
 ## Tuesday: probate and estate sales in Markham
