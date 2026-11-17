@@ -10,6 +10,7 @@ import BlogCard from '../components/BlogCard.astro';
 import Toc from '../components/Toc.astro';
 import DownsizingPromo from '../components/DownsizingPromo.astro';
 import Cta from '../components/Cta.astro';
+import PostPerson from '../components/PostPerson.astro';
 import site from '../data/site.json';
 import { longDate, neighbourhoodPath } from '../lib/format';
 import { BLOG_CATEGORIES } from '../lib/blog';
@@ -164,6 +165,7 @@ const jsonLd = [
           }
 
           <div class="prose">
+            <PostPerson slug={entry.id} />
             <slot />
           </div>
 

@@ -1,0 +1,50 @@
+---
+/**
+ * A real photo of the site's main person inside every blog post, floated beside the opening text.
+ * The photo comes from `blogPeople` in src/data/site.json; the same post always gets the same one.
+ * Add a person or photo there (with its credit in photo-credits.json) and it joins the rotation.
+ */
+import Photo from './Photo.astro';
+import site from '../data/site.json';
+
+interface Props {
+  slug: string;
+}
+
+let h = 0;
+for (const c of Astro.props.slug) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+const p = site.blogPeople[h % site.blogPeople.length];
+const first = p.name.split(' ')[0];
+---
+
+<figure class="post-person">
+  <Photo name={p.photo} alt={p.alt} label={p.name} ratio="4 / 5" sizes="(min-width: 760px) 240px, 80vw" fallbackFormat="jpg" />
+  <figcaption>
+    <strong>{p.name}</strong>, {p.title}<br />
+    <a href={p.phoneHref}>{p.phone}</a> &middot; <a href={p.href}>Meet {first}</a>
+  </figcaption>
+</figure>
+
+<style>
+  .post-person {
+    max-width: 320px;
+    margin: 0 auto var(--sp-6, 1.5rem);
+  }
+  .post-person figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+  .post-person strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  @media (min-width: 760px) {
+    .post-person {
+      float: right;
+      width: 240px;
+      margin: 0.25rem 0 var(--sp-5, 1.25rem) var(--sp-6, 1.5rem);
+    }
+  }
+</style>

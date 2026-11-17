@@ -25,8 +25,14 @@
       "title": "Sales Representative",
       "team": "Team Forward",
       "role": "Main Markham agent",
-      "languages": ["English", "Chinese"],
-      "languageCodes": ["en", "zh"],
+      "languages": [
+        "English",
+        "Chinese"
+      ],
+      "languageCodes": [
+        "en",
+        "zh"
+      ],
       "phone": "(647) 860-2266",
       "phoneHref": "tel:+16478602266",
       "phoneIntl": "+1-647-860-2266",
@@ -58,5 +64,34 @@
   "requireOneCutPro": true,
   "oneCutOnly": true,
   "torontoSite": "https://kirbychantoronto.com/",
-  "indexListings": true
+  "indexListings": true,
+  "blogPeople": [
+    {
+      "photo": "kirby-portrait",
+      "alt": "Portrait of Kirby Chan, Broker",
+      "name": "Kirby Chan",
+      "title": "Broker",
+      "href": "/about/",
+      "phone": "(647) 249-7105",
+      "phoneHref": "tel:+16472497105"
+    },
+    {
+      "photo": "home-hero",
+      "alt": "Kirby Chan, Broker, standing in a suit",
+      "name": "Kirby Chan",
+      "title": "Broker",
+      "href": "/about/",
+      "phone": "(647) 249-7105",
+      "phoneHref": "tel:+16472497105"
+    },
+    {
+      "photo": "cecilia-guo",
+      "alt": "Cecilia Guo, Sales Representative, wearing a white blazer",
+      "name": "Cecilia Guo",
+      "title": "Sales Representative",
+      "href": "/cecilia-guo/",
+      "phone": "(647) 860-2266",
+      "phoneHref": "tel:+16478602266"
+    }
+  ]
 }
