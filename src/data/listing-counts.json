@@ -1,47 +1,47 @@
 {
-  "updated": "2026-11-19T19:29:35.847Z",
+  "updated": "2026-11-20T19:07:26.332Z",
   "markham": {
-    "total": 975,
-    "bungalow": 47,
-    "condo": 278,
-    "townhouse": 201,
-    "house": 451
+    "total": 973,
+    "bungalow": 48,
+    "condo": 277,
+    "townhouse": 204,
+    "house": 446
   },
   "areas": {
     "berczy-village": {
-      "total": 33,
+      "total": 32,
       "bungalow": 2,
       "condo": 0,
-      "townhouse": 11,
+      "townhouse": 10,
       "house": 22
     },
     "unionville": {
       "total": 213,
       "bungalow": 3,
-      "condo": 118,
-      "townhouse": 27,
+      "condo": 117,
+      "townhouse": 28,
       "house": 60
     },
     "thornhill": {
       "total": 171,
-      "bungalow": 15,
+      "bungalow": 16,
       "condo": 58,
       "townhouse": 24,
       "house": 85
     },
     "cornell": {
-      "total": 74,
+      "total": 73,
       "bungalow": 0,
       "condo": 6,
       "townhouse": 42,
-      "house": 26
+      "house": 25
     },
     "milliken-mills": {
-      "total": 45,
+      "total": 43,
       "bungalow": 1,
       "condo": 3,
-      "townhouse": 4,
-      "house": 28
+      "townhouse": 3,
+      "house": 27
     },
     "box-grove": {
       "total": 15,
@@ -51,10 +51,10 @@
       "house": 11
     },
     "cathedraltown": {
-      "total": 20,
+      "total": 21,
       "bungalow": 0,
       "condo": 12,
-      "townhouse": 4,
+      "townhouse": 5,
       "house": 4
     },
     "angus-glen": {
@@ -65,25 +65,25 @@
       "house": 12
     },
     "greensborough": {
-      "total": 45,
+      "total": 46,
       "bungalow": 8,
-      "condo": 15,
-      "townhouse": 14,
+      "condo": 14,
+      "townhouse": 16,
       "house": 14
     },
     "markham-village": {
-      "total": 46,
+      "total": 45,
       "bungalow": 5,
       "condo": 1,
       "townhouse": 6,
-      "house": 33
+      "house": 32
     },
     "wismer": {
-      "total": 57,
+      "total": 58,
       "bungalow": 0,
       "condo": 10,
       "townhouse": 18,
-      "house": 28
+      "house": 29
     }
   }
 }
