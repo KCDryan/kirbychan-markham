@@ -130,6 +130,7 @@ page opened during the run.
 - [ ] Buying a pre-construction home in Markham: deposits and your rights | new-construction | pre construction markham
 - [ ] The Tarion and HCRA new home warranty in Ontario | new-construction | new home warranty ontario
 - [ ] HST on new homes and the new housing rebate | costs-and-taxes | hst new home rebate ontario
+- [x] Buying a house with a pool in Markham: the City's pool enclosure rules | buying | buying a house with a pool markham | buying-house-with-pool-markham
 
 ## Saturday: writer's choice
 
