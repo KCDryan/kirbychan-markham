@@ -104,7 +104,7 @@ page opened during the run.
 - [x] Minor variance in Markham for a deck, addition or garage | selling | minor variance markham | minor-variance-markham-deck-addition (draft)
 - [ ] Seller property disclosure in Ontario: what you must say | selling | seller disclosure ontario
 - [ ] Open offers versus offer dates: how Markham sellers choose | selling | offer date strategy ontario
-- [ ] Selling a tenanted property in Ontario | investing | selling tenanted property ontario
+- [x] Selling a tenanted property in Ontario | investing | selling tenanted property ontario | selling-tenanted-property-ontario
 - [ ] Markham property assessments and how to appeal to MPAC | costs-and-taxes | mpac appeal
 
 ## Thursday: relocating to Markham
