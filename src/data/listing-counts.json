@@ -1,75 +1,75 @@
 {
-  "updated": "2026-11-25T20:29:12.239Z",
+  "updated": "2026-11-26T20:12:08.220Z",
   "markham": {
-    "total": 942,
-    "bungalow": 47,
+    "total": 937,
+    "bungalow": 46,
     "condo": 263,
-    "townhouse": 197,
+    "townhouse": 193,
     "house": 438
   },
   "areas": {
     "berczy-village": {
-      "total": 29,
+      "total": 30,
       "bungalow": 2,
       "condo": 0,
       "townhouse": 7,
-      "house": 22
+      "house": 23
     },
     "unionville": {
-      "total": 209,
+      "total": 210,
       "bungalow": 3,
-      "condo": 111,
+      "condo": 113,
       "townhouse": 28,
-      "house": 61
+      "house": 60
     },
     "thornhill": {
-      "total": 161,
+      "total": 157,
       "bungalow": 14,
-      "condo": 54,
+      "condo": 52,
       "townhouse": 22,
-      "house": 82
+      "house": 80
     },
     "cornell": {
-      "total": 67,
+      "total": 65,
       "bungalow": 0,
       "condo": 6,
-      "townhouse": 37,
-      "house": 24
-    },
-    "milliken-mills": {
-      "total": 41,
-      "bungalow": 1,
-      "condo": 3,
-      "townhouse": 3,
+      "townhouse": 34,
       "house": 25
     },
+    "milliken-mills": {
+      "total": 40,
+      "bungalow": 1,
+      "condo": 2,
+      "townhouse": 3,
+      "house": 26
+    },
     "box-grove": {
-      "total": 16,
+      "total": 17,
       "bungalow": 1,
       "condo": 1,
       "townhouse": 3,
-      "house": 11
+      "house": 12
     },
     "angus-glen": {
-      "total": 25,
+      "total": 24,
       "bungalow": 2,
       "condo": 0,
       "townhouse": 11,
-      "house": 13
+      "house": 12
     },
     "greensborough": {
-      "total": 49,
+      "total": 50,
       "bungalow": 8,
-      "condo": 14,
+      "condo": 15,
       "townhouse": 18,
       "house": 15
     },
     "markham-village": {
-      "total": 42,
+      "total": 41,
       "bungalow": 5,
       "condo": 1,
       "townhouse": 6,
-      "house": 30
+      "house": 29
     },
     "wismer": {
       "total": 56,
