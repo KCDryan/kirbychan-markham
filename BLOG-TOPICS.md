@@ -37,6 +37,7 @@ and record why in `BLOG-LOG.md`. A near duplicate of an existing post is worse t
 - [x] Status certificates when buying a condo in Markham | condos | status certificate ontario condo | condo-status-certificate-markham
 - [x] The mortgage stress test explained for Markham buyers | buying | mortgage stress test canada | mortgage-stress-test-markham
 - [x] What happens on closing day when you buy a home in Ontario | buying | closing day ontario | closing-day-ontario-markham
+- [x] Buying a house in Markham Heritage Estates | buying | buying a house in markham heritage estates | buying-house-markham-heritage-estates
 
 ## Sunday: downsizing in Markham
 
